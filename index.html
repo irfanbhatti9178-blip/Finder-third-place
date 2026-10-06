@@ -1,461 +1,1750 @@
 <!DOCTYPE html>
 <html lang="en">
-<head><style>
-@font-face {
-  font-family: "Optimistic";
-  font-style: normal;
-  font-weight: 400 600;
-  font-display: swap;
-  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
-}
-@font-face {
-  font-family: "Optimistic Mono";
-  font-style: normal;
-  font-weight: 400;
-  font-display: swap;
-  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
-}
-:where(html) {
-  font-family: "Optimistic", system-ui, sans-serif;
-}
-:where(code, pre, kbd, samp) {
-  font-family: "Optimistic Mono", ui-monospace, monospace;
-}
-</style>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Third Place Near Me – Free Meetup & Map Finder | 500+ Cities, 20+ Countries</title>
-<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-*{box-sizing:border-box;margin:0;padding:0}html{overflow-x:hidden}
-body{font-family:Inter,system-ui,sans-serif;background:#fcfbf9;color:#111827;line-height:1.45;overflow-x:hidden}
-.wrap{max-width:1440px;margin:0 auto;padding:12px 12px 24px}
-.header{padding:10px 2px 16px}.h1{font-size:30px;font-weight:800;letter-spacing:-.03em;line-height:1}@media(min-width:768px){.h1{font-size:42px}}
-.subtitle{font-size:16px;font-weight:600;margin-top:8px}.support{font-size:13px;color:#6b7280;margin-top:6px;max-width:640px}
-.card-shell{border:1px solid #e7e5e4;background:#fff;border-radius:22px;padding:12px;box-shadow:0 8px 30px rgba(0,0,0,.04)}
-.grid{display:grid;grid-template-columns:1fr;gap:10px}@media(min-width:900px){.grid{grid-template-columns:2.2fr 1.2fr 1.8fr 2.6fr}}
-label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#78716c;margin-bottom:6px;display:block}
-.input,.select{height:46px;width:100%;border-radius:9999px;border:1px solid #e7e5e4;background:#f5f5f4;padding:0 14px;font-size:14px;font-weight:500;outline:none}
-.input:focus,.select:focus{background:#fff;border-color:#111827;box-shadow:0 0 0 3px rgba(0,0,0,.05)}
-.search-wrap{position:relative}.ico{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#a8a29e;pointer-events:none}.input-pad{padding-left:34px}
-.suggest{position:absolute;z-index:80;top:52px;left:0;right:0;max-height:300px;overflow:auto;background:#fff;border:1px solid #e7e5e4;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.15);padding:6px;display:none}.suggest.on{display:block}
-.s-item{padding:10px 12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;cursor:pointer}.s-item:hover{background:#f5f5f4}.s-item.active{background:#1c1917;color:#fff}
-.btn{height:46px;border-radius:9999px;border:1px solid #1c1917;background:#1c1917;color:#fff;padding:0 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;white-space:nowrap}.btn:disabled{opacity:.35;pointer-events:none}.btn.on{background:#111827}
-.filters{margin-top:12px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}.fbtn{border-radius:9999px;border:1px solid #e7e5e4;background:#fff;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;min-height:32px;transition:.15s}.fbtn.active{background:#1c1917;color:#fff;border-color:#1c1917;transform:scale(1.02)}.moreBtn{border:1px dashed #d6d3d1}
-.status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;color:#a8a29e}.dot{width:8px;height:8px;border-radius:50%;background:#10b981}.spinner{width:16px;height:16px;border:2px solid #e7e5e4;border-top-color:#1c1917;border-radius:50%;animation:spin .6s linear infinite;display:none}.spinner.on{display:inline-block}@keyframes spin{to{transform:rotate(360deg)}}
-.look{margin-top:12px;padding-top:12px;border-top:1px solid #f5f5f4}.look-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#57534e;margin-bottom:8px}.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid #e7e5e4;background:#fff;border-radius:9999px;padding:6px 11px;font-size:12px;font-weight:500;cursor:pointer;display:flex;gap:5px;align-items:center;min-height:30px;transition:.15s}.chip.active{background:#fef3c7;border-color:#fbbf24;color:#78350f;transform:scale(1.03);font-weight:700}
-.main{margin-top:14px;display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1024px){.main{grid-template-columns:1.45fr 1fr}}
-.mapBox{border:1px solid #e7e5e4;border-radius:20px;overflow:hidden;background:#f5f5f4;position:relative}
-/* MAP HEIGHT FIX - MOBILE 280-330px */
-#map{width:100%;height:300px;min-height:280px;max-height:330px}
-@media(min-width:768px){#map{height:480px;min-height:480px;max-height:none}}
-@media(min-width:1024px){#map{height:760px;min-height:760px;max-height:none}}
-.mapTag{position:absolute;left:10px;top:10px;z-index:400;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);padding:6px 12px;border-radius:9999px;font-size:11px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.08);max-width:78%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.listHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.listTitle{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#78716c}
-.list{max-height:760px;overflow:auto;display:flex;flex-direction:column;gap:12px;padding-right:2px}@media(max-width:1023px){.list{max-height:none;overflow:visible}}
-.place{border:1px solid #e7e5e4;border-radius:20px;background:#fff;overflow:hidden;cursor:pointer;position:relative}.place.selected{outline:2px solid #111827}
-.imgWrap{position:relative;height:170px;background:#e8e5de;overflow:hidden;cursor:zoom-in;display:flex;align-items:center;justify-content:center}.img{width:100%;height:100%;object-fit:cover;display:block;position:absolute;inset:0}
-.imgFallback{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;background:linear-gradient(135deg,#f5f5f4,#e7e5e4);color:#57534e;font-size:12px;font-weight:600;gap:6px}
-.badges{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;z-index:2;max-width:85%;pointer-events:none}.b{padding:5px 10px;border-radius:9999px;font-size:11px;font-weight:600;backdrop-filter:blur(8px)}.b-free{background:rgba(16,185,129,.94);color:#fff}.b-paid{background:rgba(245,158,11,.94);color:#fff}.b-unk{background:rgba(120,113,108,.9);color:#fff}.b-cat{background:rgba(255,255,255,.96);color:#1c1917;border:1px solid rgba(0,0,0,.06)}
-.grad{position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(to top,rgba(0,0,0,.65),transparent);display:flex;align-items:flex-end;padding:10px 12px;z-index:1;pointer-events:none}.gradName{color:#fff;font-size:13px;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.body{padding:12px 14px}.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.name{font-size:15px;font-weight:700;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}.dist{background:#1c1917;color:#fff;border-radius:9999px;padding:4px 8px;font-size:11px;font-weight:600;flex-shrink:0}
-.meta{font-size:12px;color:#78716c;margin-top:3px}.tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}.t{border-radius:9999px;padding:4px 8px;font-size:11px;font-weight:500;background:#f5f5f4;border:1px solid #e7e5e4;color:#44403c}
-.good{margin-top:10px;padding:8px 10px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px}.good-l{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#92400e}.good-v{font-size:12px;color:#78350f;margin-top:2px;line-height:1.4}
-.btnRow{margin-top:10px;display:grid;grid-template-columns:1fr 1fr;gap:6px}.aBtn{height:36px;border-radius:9999px;border:1px solid #e7e5e4;background:#fff;font-size:12px;font-weight:600;display:flex;align-items:center;justify-content:center;gap:5px;cursor:pointer;text-decoration:none;color:#1c1917;user-select:none}.aBtn.primary{background:#1c1917;color:#fff;border-color:#1c1917}.aBtn:active{transform:scale(.98)}
-.skeleton{border-radius:20px;border:1px solid #e7e5e4;background:#fff;padding:14px}.sk{height:12px;background:#f5f5f4;border-radius:8px;margin-bottom:8px;animation:skel 1.2s infinite}@keyframes skel{0%,100%{opacity:1}50%{opacity:.5}}
-.empty{border:1px dashed #d6d3d1;border-radius:20px;padding:28px 18px;text-align:center;background:#fff}
-.seo{margin-top:22px;padding:18px;border-radius:18px;background:#fff;border:1px solid #e7e5e4}.seo h2{font-size:17px;font-weight:700}.seo p{font-size:13px;color:#57534e;margin-top:8px;line-height:1.6}
-.detailBg{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:1200;display:none;padding:12px;overflow:auto}.detailBg.on{display:block}.detail{max-width:560px;margin:20px auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
-.detailImgWrap{height:260px;background:#f5f5f4;position:relative;overflow:hidden;cursor:zoom-in}
-.gallery{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1300;display:none;align-items:center;justify-content:center;padding:12px;flex-direction:column;gap:12px}.gallery.on{display:flex}.gallery img{max-width:100%;max-height:78vh;border-radius:12px;background:#111}.gallery .close{position:absolute;top:14px;right:14px;background:#fff;border-radius:9999px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
-.hidden{display:none!important}
-</style>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+  <meta name="description" content="Find third places near you including cafés, parks, libraries, gaming spots, community spaces, coworking places, sports, nightlife and social places.">
+  <meta name="keywords" content="third place near me, meetup places, cafes near me, parks, libraries, coworking, community spaces">
+  <meta name="theme-color" content="#0f766e">
+  <title>Third Place Near Me – Free Meetup & Map Finder</title>
+  <link rel="preconnect" href="https://unpkg.com">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+  <style>
+    :root {
+      --primary: #0f766e;
+      --primary-dark: #0d5c56;
+      --primary-light: #14b8a6;
+      --accent: #f59e0b;
+      --bg: #f8fafc;
+      --card: #ffffff;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --border: #e2e8f0;
+      --radius: 12px;
+      --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 12px rgba(0,0,0,0.04);
+      --shadow-lg: 0 4px 20px rgba(0,0,0,0.1);
+      --success: #10b981;
+      --danger: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .container {
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 0 16px;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(135deg, var(--primary) 0%, #0d9488 100%);
+      color: white;
+      padding: 20px 0 28px;
+      text-align: center;
+    }
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      margin-bottom: 6px;
+    }
+    header .subtitle {
+      font-size: 0.95rem;
+      opacity: 0.92;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+
+    /* Main tool card */
+    .tool-card {
+      background: var(--card);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow-lg);
+      margin: -20px auto 24px;
+      padding: 20px 16px 24px;
+      position: relative;
+      z-index: 10;
+    }
+
+    .section-label {
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+
+    /* Search input */
+    .search-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+    .search-input-wrap {
+      flex: 1;
+      position: relative;
+    }
+    .search-input-wrap input {
+      width: 100%;
+      padding: 12px 14px 12px 40px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 1rem;
+      background: #fff;
+      transition: border-color 0.15s;
+    }
+    .search-input-wrap input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15,118,110,0.12);
+    }
+    .search-input-wrap .icon {
+      position: absolute;
+      left: 12px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Location row */
+    .location-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 14px;
+      align-items: stretch;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 11px 16px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background 0.15s, transform 0.1s;
+      white-space: nowrap;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+    .btn-primary {
+      background: var(--primary);
+      color: white;
+    }
+    .btn-primary:hover:not(:disabled) { background: var(--primary-dark); }
+    .btn-secondary {
+      background: #f1f5f9;
+      color: var(--text);
+      border: 1.5px solid var(--border);
+    }
+    .btn-secondary:hover:not(:disabled) { background: #e2e8f0; }
+    .btn-location {
+      background: #ecfdf5;
+      color: var(--primary);
+      border: 1.5px solid #a7f3d0;
+      flex-shrink: 0;
+    }
+    .btn-location:hover:not(:disabled) { background: #d1fae5; }
+    .btn-location.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .btn-sm {
+      padding: 8px 12px;
+      font-size: 0.85rem;
+    }
+    .btn-outline {
+      background: transparent;
+      border: 1.5px solid var(--border);
+      color: var(--text-muted);
+    }
+    .btn-outline:hover { border-color: var(--primary); color: var(--primary); }
+
+    select, .city-input {
+      padding: 11px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 0.95rem;
+      background: #fff;
+      min-width: 0;
+      flex: 1;
+    }
+    select:focus, .city-input:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(15,118,110,0.12);
+    }
+
+    .city-wrap {
+      flex: 1.2;
+      position: relative;
+      min-width: 140px;
+    }
+    .city-suggestions {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      right: 0;
+      background: white;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      margin-top: 4px;
+      max-height: 220px;
+      overflow-y: auto;
+      z-index: 100;
+      box-shadow: var(--shadow-lg);
+      display: none;
+    }
+    .city-suggestions.show { display: block; }
+    .city-suggestions div {
+      padding: 10px 14px;
+      cursor: pointer;
+      font-size: 0.9rem;
+    }
+    .city-suggestions div:hover,
+    .city-suggestions div.active {
+      background: #f0fdfa;
+      color: var(--primary);
+    }
+
+    /* Category chips */
+    .categories {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+    .chip {
+      padding: 8px 14px;
+      border-radius: 999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      cursor: pointer;
+      transition: all 0.15s;
+      user-select: none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .chip:hover { border-color: var(--primary-light); }
+    .chip.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* Quick filters */
+    .quick-filters {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 16px;
+    }
+    .qchip {
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      border: 1px solid var(--border);
+      background: #f8fafc;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+    .qchip.active {
+      background: #fef3c7;
+      border-color: var(--accent);
+      color: #92400e;
+    }
+
+    /* Find button */
+    .find-btn {
+      width: 100%;
+      padding: 14px;
+      font-size: 1.05rem;
+      border-radius: 12px;
+      margin-bottom: 8px;
+    }
+    .actions-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .actions-row .btn { flex: 1; }
+
+    /* Status / messages */
+    .status-bar {
+      padding: 12px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      margin-bottom: 14px;
+      display: none;
+    }
+    .status-bar.show { display: block; }
+    .status-bar.loading {
+      background: #f0fdfa;
+      color: var(--primary);
+      border: 1px solid #99f6e4;
+    }
+    .status-bar.error {
+      background: #fef2f2;
+      color: #b91c1c;
+      border: 1px solid #fecaca;
+    }
+    .status-bar.info {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+    .status-bar.success {
+      background: #ecfdf5;
+      color: #047857;
+      border: 1px solid #a7f3d0;
+    }
+
+    /* Layout: results + map */
+    .main-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* Map */
+    .map-container {
+      width: 100%;
+      height: 320px;
+      min-height: 280px;
+      max-height: 360px;
+      border-radius: var(--radius);
+      overflow: hidden;
+      border: 1.5px solid var(--border);
+      background: #e2e8f0;
+      z-index: 1;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+    }
+    .leaflet-popup-content {
+      margin: 10px 12px;
+      font-size: 0.9rem;
+      line-height: 1.4;
+    }
+    .leaflet-popup-content strong { display: block; margin-bottom: 4px; }
+    .popup-actions {
+      display: flex;
+      gap: 6px;
+      margin-top: 8px;
+    }
+    .popup-actions a {
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      border-radius: 6px;
+      text-decoration: none;
+      font-weight: 600;
+    }
+    .popup-actions .dir {
+      background: var(--primary);
+      color: white;
+    }
+    .popup-actions .view {
+      background: #f1f5f9;
+      color: var(--text);
+    }
+
+    /* Results */
+    .results-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .results-header h2 {
+      font-size: 1.1rem;
+      font-weight: 700;
+    }
+    .results-count {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+    .results-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      max-height: 480px;
+      overflow-y: auto;
+      padding-right: 4px;
+    }
+    .result-card {
+      background: var(--card);
+      border: 1.5px solid var(--border);
+      border-radius: 12px;
+      padding: 14px;
+      transition: box-shadow 0.15s;
+    }
+    .result-card:hover { box-shadow: var(--shadow); }
+    .result-card h3 {
+      font-size: 1rem;
+      font-weight: 650;
+      margin-bottom: 4px;
+      color: var(--text);
+    }
+    .result-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      font-size: 0.82rem;
+      color: var(--text-muted);
+      margin-bottom: 8px;
+    }
+    .result-meta .badge {
+      background: #f0fdfa;
+      color: var(--primary);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-weight: 600;
+      font-size: 0.75rem;
+    }
+    .result-address {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 10px;
+    }
+    .result-actions {
+      display: flex;
+      gap: 8px;
+    }
+    .result-actions .btn {
+      flex: 1;
+      padding: 9px;
+      font-size: 0.85rem;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 32px 16px;
+      color: var(--text-muted);
+    }
+    .empty-state h3 {
+      font-size: 1.05rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+    .empty-state p { margin-bottom: 16px; font-size: 0.9rem; }
+    .empty-state .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    /* SEO content */
+    .seo-content {
+      max-width: 720px;
+      margin: 40px auto 60px;
+      padding: 0 16px;
+    }
+    .seo-content h2 {
+      font-size: 1.25rem;
+      margin: 28px 0 10px;
+      color: var(--text);
+    }
+    .seo-content p {
+      font-size: 0.95rem;
+      color: #334155;
+      margin-bottom: 12px;
+    }
+    .seo-content ul {
+      padding-left: 20px;
+      margin-bottom: 12px;
+    }
+    .seo-content li {
+      font-size: 0.95rem;
+      color: #334155;
+      margin-bottom: 6px;
+    }
+
+    footer {
+      text-align: center;
+      padding: 24px 16px;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border);
+    }
+    footer a { color: var(--primary); text-decoration: none; }
+
+    /* Desktop */
+    @media (min-width: 768px) {
+      header h1 { font-size: 1.85rem; }
+      .tool-card { padding: 28px 28px 32px; }
+      .main-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 20px;
+        align-items: start;
+      }
+      .map-container {
+        height: 420px;
+        max-height: 480px;
+        position: sticky;
+        top: 16px;
+      }
+      .results-list { max-height: 520px; }
+      .location-row { flex-wrap: nowrap; }
+    }
+
+    @media (min-width: 1024px) {
+      .map-container { height: 460px; }
+    }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 16px;
+      height: 16px;
+      border: 2px solid currentColor;
+      border-right-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.6s linear infinite;
+      vertical-align: middle;
+    }
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* Marker cluster-like custom */
+    .custom-marker {
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      width: 28px;
+      height: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      border: 2px solid white;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+  </style>
 </head>
 <body>
-<div class="wrap">
-<header class="header">
-<div class="h1">Find Third Place</div>
-<div class="subtitle">Find places to relax, socialize, connect and spend time.</div>
-<div class="support">Discover cafés, parks, libraries, youth spaces, activities and community places near you.</div>
-</header>
+  <header>
+    <div class="container">
+      <h1>Third Place Near Me</h1>
+      <p class="subtitle">Find places to relax, socialize, connect and spend time.</p>
+    </div>
+  </header>
 
-<div class="card-shell">
-<div class="grid">
-<div><label>Finder Place Box</label><div class="search-wrap"><span class="ico">⌕</span><input id="searchBox" class="input input-pad" placeholder="Search library, park, café..."></div></div>
-<div><label>Your Location</label><button id="locBtn" class="btn">📍 Use My Location</button></div>
-<div><label>Country — 20 countries</label><select id="countrySel" class="select"></select></div>
-<div><label>City — 500+ cities <span id="cityCount" style="font-weight:400;color:#a8a29e"></span></label>
-<div style="position:relative"><input id="cityInput" class="select" placeholder="Search city..."><div id="citySuggest" class="suggest"></div></div>
-</div>
-</div>
+  <div class="container">
+    <div class="tool-card">
+      <!-- Search keyword -->
+      <div class="section-label">What are you looking for?</div>
+      <div class="search-row">
+        <div class="search-input-wrap">
+          <span class="icon" aria-hidden="true">
+            <svg width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          </span>
+          <input type="text" id="keywordInput" placeholder="Search library, park, café..." autocomplete="off" aria-label="Search place type">
+        </div>
+      </div>
 
-<div class="look">
-<div class="look-title">What are you looking for?</div>
-<div class="chips" id="purposeChips">
-<button class="chip" data-look="meet">🤝 Meet People</button>
-<button class="chip" data-look="gaming">🎮 Gaming</button>
-<button class="chip" data-look="sports">🏆 Sports</button>
-<button class="chip" data-look="music">🎵 Music</button>
-<button class="chip" data-look="events">🎉 Events</button>
-<button class="chip" data-look="night">🌙 Nightlife</button>
-<button class="chip" data-look="relax">☕ Relax</button>
-<button class="chip" data-look="study">📚 Study</button>
-<button class="chip" data-look="outdoor">🌳 Outdoor</button>
-</div>
-</div>
+      <!-- Location -->
+      <div class="section-label">Where?</div>
+      <div class="location-row">
+        <button type="button" class="btn btn-location" id="btnLocation" aria-label="Use my current location">
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          Use My Location
+        </button>
+        <select id="countrySelect" aria-label="Select country">
+          <option value="">Select country</option>
+        </select>
+        <div class="city-wrap">
+          <input type="text" class="city-input" id="cityInput" placeholder="City..." autocomplete="off" aria-label="City" disabled>
+          <div class="city-suggestions" id="citySuggestions" role="listbox"></div>
+        </div>
+      </div>
 
-<div class="filters" id="mainFilters">
-<span style="font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#78716c">Quick:</span>
-<button class="fbtn active" data-f="all">All</button>
-<button class="fbtn" data-f="free">🟢 Free</button>
-<button class="fbtn" data-f="paid">🟡 Paid</button>
-<button class="fbtn" data-f="social">🤝 Social</button>
-<button class="fbtn" data-f="gaming">🎮 Gaming</button>
-<button class="fbtn" data-f="sports">🏆 Sports</button>
-<button class="fbtn" data-f="nightlife">🌙 Nightlife</button>
-<button class="fbtn moreBtn" id="moreFiltersBtn">More ▾</button>
-<div class="status"><span id="spin" class="spinner"></span><span id="statusDot" class="dot"></span><span id="statusText">Select a city and click Find Third Place</span></div>
-<button id="findBtn" class="btn" style="margin-left:auto;width:auto;min-width:150px;padding:0 20px" disabled>🔍 Find Third Place</button>
-</div>
+      <!-- Categories -->
+      <div class="section-label">Category</div>
+      <div class="categories" id="categoryChips" role="group" aria-label="Place categories">
+        <!-- filled by JS -->
+      </div>
 
-<div class="filters hidden" id="extraFilters">
-<button class="fbtn" data-f="cafe">☕ Cafés</button>
-<button class="fbtn" data-f="music">🎵 Live Music</button>
-<button class="fbtn" data-f="clubs">🕺 Night Clubs</button>
-<button class="fbtn" data-f="shisha">🚬 Smoking / Shisha</button>
-<button class="fbtn" data-f="art">🎨 Art & Culture</button>
-<button class="fbtn" data-f="books">📚 Libraries</button>
-<button class="fbtn" data-f="gym">🏋️ Gyms</button>
-<button class="fbtn" data-f="recreation">🎳 Recreation</button>
-<button class="fbtn" data-f="karaoke">🎤 Karaoke</button>
-<button class="fbtn" data-f="parks">🌳 Parks</button>
-<button class="fbtn" data-f="community">🏢 Community Centers</button>
-<button class="fbtn" data-f="youth">🧑‍🤝‍🧑 Youth Spaces</button>
-<button class="fbtn" data-f="cowork">💻 Coworking</button>
-<button class="fbtn" data-f="restaurants">🍽️ Social Dining</button>
-</div>
-</div>
+      <!-- Quick filters -->
+      <div class="section-label">Quick filters</div>
+      <div class="quick-filters" id="quickFilters" role="group" aria-label="Quick filters">
+        <!-- filled by JS -->
+      </div>
 
-<div class="main">
-<div class="mapBox"><div id="map"></div><div id="mapTag" class="mapTag">📍 Select a city and click Find Third Place</div></div>
-<div>
-<div class="listHead"><div class="listTitle">Nearby Third Places</div><div id="coord" style="font-size:11px;color:#a8a29e"></div></div>
-<div id="list" class="list">
-<div class="empty"><b>👋 Welcome</b><p style="margin-top:8px">Select Country & City, then press <b>Find Third Place</b>. No auto-search.<br>Free OpenStreetMap data — no API key needed.</p></div>
-</div>
-</div>
-</div>
+      <!-- Actions -->
+      <button type="button" class="btn btn-primary find-btn" id="btnFind">
+        Find Third Place
+      </button>
+      <div class="actions-row">
+        <button type="button" class="btn btn-outline btn-sm" id="btnReset">Clear Filters</button>
+      </div>
 
-<div class="seo">
-<h2>Find Third Places Near You</h2>
-<p>Find parks, libraries, cafés, community centers, youth spaces, sports facilities and other social places where you can relax, take part in activities and meet people.</p>
-</div>
-</div>
+      <!-- Status -->
+      <div class="status-bar" id="statusBar" role="status" aria-live="polite"></div>
 
-<div id="detailBg" class="detailBg"><div class="detail" id="detailBox"></div></div>
-<div id="gallery" class="gallery"><div class="close" id="gClose">✕</div><img id="gImg" src="" alt="Place preview"><div id="gMeta" style="color:#fff;font-size:12px;text-align:center;max-width:90%"></div><div style="display:flex;gap:8px"><a id="gDir" class="aBtn" href="#" target="_blank" rel="noopener noreferrer" style="background:#fff;color:#111;padding:0 18px;height:36px">🧭 Directions</a><button id="gMapBtn" class="aBtn" style="background:#111;color:#fff;border-color:#111;padding:0 18px;height:36px">📍 View on Map</button></div></div>
+      <!-- Results + Map -->
+      <div class="main-grid">
+        <div class="results-panel">
+          <div class="results-header">
+            <h2>Results</h2>
+            <span class="results-count" id="resultsCount"></span>
+          </div>
+          <div class="results-list" id="resultsList">
+            <div class="empty-state">
+              <h3>Ready to explore</h3>
+              <p>Choose a location and category, then tap Find Third Place.</p>
+            </div>
+          </div>
+        </div>
+        <div class="map-panel">
+          <div class="map-container">
+            <div id="map" role="application" aria-label="Map of third places"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 
-<script>
-function openGoogleMapsPlace(lat,lng){const url=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lat+','+lng)}`;window.open(url,'_blank','noopener,noreferrer');}
-function getGoogleDirectionsUrl(lat,lng){return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat+','+lng)}`;}
+  <!-- SEO content -->
+  <section class="seo-content">
+    <h2>What Is a Third Place?</h2>
+    <p>A third place is somewhere that isn’t home (first place) or work/school (second place). It’s a welcoming public or semi-public space where people can relax, meet others, study, play, or simply spend time. Classic examples include cafés, parks, libraries, community centers, and local hangouts.</p>
 
-const COUNTRIES=["USA","UK","Australia","Germany","France","Italy","Spain","Turkey","Pakistan","Canada","India","Brazil","Netherlands","UAE","Saudi Arabia","Portugal","Poland","Sweden","Switzerland","Japan"];
+    <h2>How to Find a Third Place Near Me</h2>
+    <p>Use the tool above: tap <strong>Use My Location</strong> or pick a country and city, choose a category (or leave it on All), then press <strong>Find Third Place</strong>. Results appear as cards and map markers with directions.</p>
 
-const CITIES={
-"USA":[
-{name:"New York",lat:40.7128,lng:-74.0060},{name:"Los Angeles",lat:34.0522,lng:-118.2437},{name:"Chicago",lat:41.8781,lng:-87.6298},{name:"Houston",lat:29.7604,lng:-95.3698},{name:"Phoenix",lat:33.4484,lng:-112.0740},{name:"Philadelphia",lat:39.9526,lng:-75.1652},{name:"San Antonio",lat:29.4241,lng:-98.4936},{name:"San Diego",lat:32.7157,lng:-117.1611},{name:"Dallas",lat:32.7767,lng:-96.7970},{name:"Austin",lat:30.2672,lng:-97.7431},{name:"San Jose",lat:37.3382,lng:-121.8863},{name:"Jacksonville",lat:30.3322,lng:-81.6557},{name:"Fort Worth",lat:32.7555,lng:-97.3308},{name:"Columbus",lat:39.9612,lng:-82.9988},{name:"Charlotte",lat:35.2271,lng:-80.8431},{name:"Indianapolis",lat:39.7684,lng:-86.1581},{name:"Seattle",lat:47.6062,lng:-122.3321},{name:"Denver",lat:39.7392,lng:-104.9903},{name:"Washington DC",lat:38.9072,lng:-77.0369},{name:"Boston",lat:42.3601,lng:-71.0589},{name:"Nashville",lat:36.1627,lng:-86.7816},{name:"Detroit",lat:42.3314,lng:-83.0458},{name:"Portland",lat:45.5155,lng:-122.6789},{name:"Las Vegas",lat:36.1699,lng:-115.1398},{name:"Miami",lat:25.7617,lng:-80.1918},{name:"Atlanta",lat:33.7490,lng:-84.3880},{name:"Orlando",lat:28.5383,lng:-81.3792},{name:"Minneapolis",lat:44.9778,lng:-93.2650},{name:"New Orleans",lat:29.9511,lng:-90.0715},{name:"San Francisco",lat:37.7749,lng:-122.4194}
-],
-"UK":[
-{name:"London",lat:51.5074,lng:-0.1278},{name:"Birmingham",lat:52.4862,lng:-1.8904},{name:"Manchester",lat:53.4808,lng:-2.2426},{name:"Liverpool",lat:53.4084,lng:-2.9916},{name:"Leeds",lat:53.8008,lng:-1.5491},{name:"Glasgow",lat:55.8642,lng:-4.2518},{name:"Edinburgh",lat:55.9533,lng:-3.1883},{name:"Bristol",lat:51.4545,lng:-2.5879},{name:"Cardiff",lat:51.4816,lng:-3.1790},{name:"Belfast",lat:54.5973,lng:-5.9301},{name:"Sheffield",lat:53.3811,lng:-1.4701},{name:"Nottingham",lat:52.9548,lng:-1.1581},{name:"Leicester",lat:52.6369,lng:-1.1398},{name:"Coventry",lat:52.4068,lng:-1.5197},{name:"Newcastle",lat:54.9783,lng:-1.6178},{name:"Southampton",lat:50.9097,lng:-1.4044},{name:"Brighton",lat:50.8225,lng:-0.1372},{name:"Oxford",lat:51.7520,lng:-1.2577},{name:"Cambridge",lat:52.2053,lng:0.1218},{name:"Aberdeen",lat:57.1497,lng:-2.0943},{name:"Dundee",lat:56.4620,lng:-2.9707},{name:"Plymouth",lat:50.3755,lng:-4.1427},{name:"Exeter",lat:50.7184,lng:-3.5339},{name:"York",lat:53.9590,lng:-1.0815},{name:"Reading",lat:51.4543,lng:-0.9781}
-],
-"Australia":[
-{name:"Sydney",lat:-33.8688,lng:151.2093},{name:"Melbourne",lat:-37.8136,lng:144.9631},{name:"Brisbane",lat:-27.4698,lng:153.0251},{name:"Perth",lat:-31.9505,lng:115.8605},{name:"Adelaide",lat:-34.9285,lng:138.6007},{name:"Canberra",lat:-35.2809,lng:149.1300},{name:"Hobart",lat:-42.8821,lng:147.3272},{name:"Darwin",lat:-12.4634,lng:130.8456},{name:"Gold Coast",lat:-28.0167,lng:153.4000},{name:"Newcastle",lat:-32.9283,lng:151.7817},{name:"Wollongong",lat:-34.4278,lng:150.8931},{name:"Geelong",lat:-38.1499,lng:144.3617},{name:"Cairns",lat:-16.9186,lng:145.7781},{name:"Townsville",lat:-19.2589,lng:146.8169},{name:"Toowoomba",lat:-27.5608,lng:151.9537},{name:"Ballarat",lat:-37.5622,lng:143.8503},{name:"Bendigo",lat:-36.7570,lng:144.2786},{name:"Albury",lat:-36.0737,lng:146.9135},{name:"Launceston",lat:-41.4332,lng:147.1441},{name:"Mackay",lat:-21.1412,lng:149.1860},{name:"Rockhampton",lat:-23.3791,lng:150.5100},{name:"Bunbury",lat:-33.3267,lng:115.6347},{name:"Coffs Harbour",lat:-30.2963,lng:153.1159},{name:"Wagga Wagga",lat:-35.1150,lng:147.3677}
-],
-"Germany":[
-{name:"Berlin",lat:52.5200,lng:13.4050},{name:"Munich",lat:48.1351,lng:11.5820},{name:"Hamburg",lat:53.5511,lng:9.9937},{name:"Cologne",lat:50.9375,lng:6.9603},{name:"Frankfurt",lat:50.1109,lng:8.6821},{name:"Stuttgart",lat:48.7758,lng:9.1829},{name:"Düsseldorf",lat:51.2277,lng:6.7735},{name:"Leipzig",lat:51.3397,lng:12.3731},{name:"Dortmund",lat:51.5136,lng:7.4653},{name:"Essen",lat:51.4556,lng:7.0116},{name:"Bremen",lat:53.0793,lng:8.8017},{name:"Dresden",lat:51.0504,lng:13.7373},{name:"Hanover",lat:52.3759,lng:9.7320},{name:"Nuremberg",lat:49.4521,lng:11.0767},{name:"Duisburg",lat:51.4344,lng:6.7623},{name:"Bochum",lat:51.4818,lng:7.2162},{name:"Wuppertal",lat:51.2562,lng:7.1508},{name:"Bielefeld",lat:52.0302,lng:8.5325},{name:"Bonn",lat:50.7374,lng:7.0982},{name:"Münster",lat:51.9607,lng:7.6261},{name:"Karlsruhe",lat:49.0069,lng:8.4037},{name:"Mannheim",lat:49.4875,lng:8.4660},{name:"Augsburg",lat:48.3705,lng:10.8978},{name:"Wiesbaden",lat:50.0782,lng:8.2398}
-],
-"France":[
-{name:"Paris",lat:48.8566,lng:2.3522},{name:"Marseille",lat:43.2965,lng:5.3698},{name:"Lyon",lat:45.7640,lng:4.8357},{name:"Toulouse",lat:43.6047,lng:1.4442},{name:"Nice",lat:43.7102,lng:7.2620},{name:"Nantes",lat:47.2184,lng:-1.5536},{name:"Strasbourg",lat:48.5734,lng:7.7521},{name:"Montpellier",lat:43.6108,lng:3.8767},{name:"Bordeaux",lat:44.8378,lng:-0.5792},{name:"Lille",lat:50.6292,lng:3.0573},{name:"Rennes",lat:48.1173,lng:-1.6778},{name:"Reims",lat:49.2583,lng:4.0317},{name:"Le Havre",lat:49.4944,lng:0.1079},{name:"Toulon",lat:43.1242,lng:5.9280},{name:"Grenoble",lat:45.1885,lng:5.7245},{name:"Dijon",lat:47.3220,lng:5.0415},{name:"Angers",lat:47.4784,lng:-0.5632},{name:"Nîmes",lat:43.8367,lng:4.3601},{name:"Villeurbanne",lat:45.7662,lng:4.8796},{name:"Saint-Denis",lat:48.9362,lng:2.3579},{name:"Aix-en-Provence",lat:43.5297,lng:5.4474},{name:"Brest",lat:48.3904,lng:-4.4861}
-],
-"Italy":[
-{name:"Rome",lat:41.9028,lng:12.4964},{name:"Milan",lat:45.4642,lng:9.1900},{name:"Naples",lat:40.8518,lng:14.2681},{name:"Turin",lat:45.0703,lng:7.6869},{name:"Palermo",lat:38.1157,lng:13.3615},{name:"Genoa",lat:44.4056,lng:8.9463},{name:"Bologna",lat:44.4949,lng:11.3426},{name:"Florence",lat:43.7696,lng:11.2558},{name:"Bari",lat:41.1171,lng:16.8719},{name:"Catania",lat:37.5079,lng:15.0830},{name:"Venice",lat:45.4408,lng:12.3155},{name:"Verona",lat:45.4386,lng:10.9928},{name:"Messina",lat:38.1938,lng:15.5540},{name:"Padua",lat:45.4064,lng:11.8768},{name:"Trieste",lat:45.6495,lng:13.7768},{name:"Brescia",lat:45.5416,lng:10.2118},{name:"Parma",lat:44.8015,lng:10.3279},{name:"Prato",lat:43.8777,lng:11.1022},{name:"Modena",lat:44.6471,lng:10.9252},{name:"Reggio Calabria",lat:38.1113,lng:15.6473},{name:"Reggio Emilia",lat:44.6980,lng:10.6312},{name:"Perugia",lat:43.1107,lng:12.3908}
-],
-"Spain":[
-{name:"Madrid",lat:40.4168,lng:-3.7038},{name:"Barcelona",lat:41.3851,lng:2.1734},{name:"Valencia",lat:39.4699,lng:-0.3763},{name:"Seville",lat:37.3891,lng:-5.9845},{name:"Zaragoza",lat:41.6488,lng:-0.8891},{name:"Málaga",lat:36.7213,lng:-4.4214},{name:"Murcia",lat:37.9922,lng:-1.1307},{name:"Palma",lat:39.5696,lng:2.6502},{name:"Las Palmas",lat:28.1235,lng:-15.4363},{name:"Bilbao",lat:43.2630,lng:-2.9350},{name:"Alicante",lat:38.3452,lng:-0.4810},{name:"Córdoba",lat:37.8882,lng:-4.7794},{name:"Valladolid",lat:41.6523,lng:-4.7245},{name:"Vigo",lat:42.2406,lng:-8.7207},{name:"Gijón",lat:43.5322,lng:-5.6611},{name:"L'Hospitalet",lat:41.3597,lng:2.1000},{name:"A Coruña",lat:43.3623,lng:-8.4115},{name:"Granada",lat:37.1773,lng:-3.5986},{name:"Vitoria",lat:42.8467,lng:-2.6716},{name:"Elche",lat:38.2699,lng:-0.7126},{name:"Oviedo",lat:43.3614,lng:-5.8593},{name:"Badalona",lat:41.4500,lng:2.2474}
-],
-"Turkey":[
-{name:"Istanbul",lat:41.0082,lng:28.9784},{name:"Ankara",lat:39.9334,lng:32.8597},{name:"Izmir",lat:38.4237,lng:27.1428},{name:"Bursa",lat:40.1885,lng:29.0609},{name:"Antalya",lat:36.8969,lng:30.7133},{name:"Adana",lat:37.0000,lng:35.3213},{name:"Konya",lat:37.8667,lng:32.4833},{name:"Gaziantep",lat:37.0662,lng:37.3833},{name:"Mersin",lat:36.8000,lng:34.6333},{name:"Diyarbakır",lat:37.9144,lng:40.2306},{name:"Şanlıurfa",lat:37.1591,lng:38.7969},{name:"Eskişehir",lat:39.7767,lng:30.5206},{name:"Kayseri",lat:38.7312,lng:35.4787},{name:"Samsun",lat:41.2867,lng:36.33},{name:"Denizli",lat:37.7765,lng:29.0864},{name:"Adapazarı",lat:40.7731,lng:30.3948},{name:"Malatya",lat:38.3552,lng:38.3095},{name:"Erzurum",lat:39.9000,lng:41.2700},{name:"Trabzon",lat:41.0015,lng:39.7178},{name:"Van",lat:38.4898,lng:43.4089},{name:"Elazığ",lat:38.6810,lng:39.2264},{name:"Batman",lat:37.8812,lng:41.1351}
-],
-"Pakistan":[
-{name:"Karachi",lat:24.8607,lng:67.0011},{name:"Lahore",lat:31.5204,lng:74.3587},{name:"Islamabad",lat:33.6844,lng:73.0479},{name:"Faisalabad",lat:31.4504,lng:73.1350},{name:"Rawalpindi",lat:33.5651,lng:73.0169},{name:"Multan",lat:30.1575,lng:71.5249},{name:"Peshawar",lat:34.0151,lng:71.5249},{name:"Quetta",lat:30.1798,lng:66.9750},{name:"Sialkot",lat:32.4945,lng:74.5229},{name:"Gujranwala",lat:32.1877,lng:74.1945},{name:"Sargodha",lat:32.0836,lng:72.6711},{name:"Bahawalpur",lat:29.3956,lng:71.6836},{name:"Sahiwal",lat:30.6682,lng:73.1114},{name:"Okara",lat:30.8100,lng:73.4590},{name:"Pattoki",lat:31.0200,lng:73.8500},{name:"Kasur",lat:31.1155,lng:74.4467},{name:"Sheikhupura",lat:32.0711,lng:74.0000},{name:"Gujrat",lat:32.5731,lng:74.0789},{name:"Jhelum",lat:32.9337,lng:73.7264},{name:"Mardan",lat:34.1986,lng:72.0231},{name:"Mingora",lat:34.7717,lng:72.3604},{name:"Sukkur",lat:27.7058,lng:68.8574}
-],
-"Canada":[
-{name:"Toronto",lat:43.6532,lng:-79.3832},{name:"Montreal",lat:45.5017,lng:-73.5673},{name:"Vancouver",lat:49.2827,lng:-123.1207},{name:"Calgary",lat:51.0447,lng:-114.0719},{name:"Edmonton",lat:53.5461,lng:-113.4938},{name:"Ottawa",lat:45.4215,lng:-75.6972},{name:"Winnipeg",lat:49.8951,lng:-97.1384},{name:"Quebec City",lat:46.8139,lng:-71.2080},{name:"Hamilton",lat:43.2557,lng:-79.8711},{name:"Kitchener",lat:43.4516,lng:-80.4925},{name:"London",lat:42.9849,lng:-81.2453},{name:"Victoria",lat:48.4284,lng:-123.3656},{name:"Halifax",lat:44.6488,lng:-63.5752},{name:"Oshawa",lat:43.8971,lng:-78.8658},{name:"Windsor",lat:42.3149,lng:-83.0364},{name:"Saskatoon",lat:52.1332,lng:-106.6700},{name:"St. Catharines",lat:43.1594,lng:-79.2468},{name:"Regina",lat:50.4452,lng:-104.6189},{name:"Kelowna",lat:49.8880,lng:-119.4960},{name:"Barrie",lat:44.3894,lng:-79.6903},{name:"Sherbrooke",lat:45.4000,lng:-71.9000},{name:"Guelph",lat:43.5448,lng:-80.2482}
-],
-"India":[
-{name:"Mumbai",lat:19.0760,lng:72.8777},{name:"Delhi",lat:28.7041,lng:77.1025},{name:"Bangalore",lat:12.9716,lng:77.5946},{name:"Hyderabad",lat:17.3850,lng:78.4867},{name:"Chennai",lat:13.0827,lng:80.2707},{name:"Kolkata",lat:22.5726,lng:88.3639},{name:"Pune",lat:18.5204,lng:73.8567},{name:"Ahmedabad",lat:23.0225,lng:72.5714},{name:"Jaipur",lat:26.9124,lng:75.7873},{name:"Lucknow",lat:26.8467,lng:80.9462},{name:"Kanpur",lat:26.4499,lng:80.3319},{name:"Nagpur",lat:21.1458,lng:79.0882},{name:"Indore",lat:22.7196,lng:75.8577},{name:"Thane",lat:19.2183,lng:72.9781},{name:"Bhopal",lat:23.2599,lng:77.4126},{name:"Visakhapatnam",lat:17.6868,lng:83.2185},{name:"Pimpri",lat:18.6298,lng:73.7997},{name:"Patna",lat:25.5941,lng:85.1376},{name:"Vadodara",lat:22.3072,lng:73.1812},{name:"Ghaziabad",lat:28.6692,lng:77.4538},{name:"Ludhiana",lat:30.9010,lng:75.8573},{name:"Agra",lat:27.1767,lng:78.0081}
-],
-"Brazil":[
-{name:"São Paulo",lat:-23.5505,lng:-46.6333},{name:"Rio de Janeiro",lat:-22.9068,lng:-43.1729},{name:"Brasília",lat:-15.7939,lng:-47.8828},{name:"Salvador",lat:-12.9777,lng:-38.5016},{name:"Fortaleza",lat:-3.7172,lng:-38.5433},{name:"Belo Horizonte",lat:-19.9167,lng:-43.9345},{name:"Manaus",lat:-3.1190,lng:-60.0217},{name:"Curitiba",lat:-25.4284,lng:-49.2733},{name:"Recife",lat:-8.0476,lng:-34.8770},{name:"Porto Alegre",lat:-30.0346,lng:-51.2177},{name:"Belém",lat:-1.4558,lng:-48.4902},{name:"Goiânia",lat:-16.6869,lng:-49.2648},{name:"Guarulhos",lat:-23.4538,lng:-46.5333},{name:"Campinas",lat:-22.9099,lng:-47.0626},{name:"São Luís",lat:-2.5307,lng:-44.3068},{name:"São Gonçalo",lat:-22.8268,lng:-43.0634},{name:"Maceió",lat:-9.6658,lng:-35.7353},{name:"Duque de Caxias",lat:-22.7858,lng:-43.3117},{name:"Natal",lat:-5.7945,lng:-35.2110},{name:"Teresina",lat:-5.0919,lng:-42.8034},{name:"São Bernardo",lat:-23.6914,lng:-46.5646},{name:"Campo Grande",lat:-20.4697,lng:-54.6201}
-],
-"Netherlands":[
-{name:"Amsterdam",lat:52.3676,lng:4.9041},{name:"Rotterdam",lat:51.9244,lng:4.4777},{name:"The Hague",lat:52.0705,lng:4.3007},{name:"Utrecht",lat:52.0907,lng:5.1214},{name:"Eindhoven",lat:51.4416,lng:5.4697},{name:"Tilburg",lat:51.5555,lng:5.0913},{name:"Groningen",lat:53.2194,lng:6.5665},{name:"Almere",lat:52.3508,lng:5.2647},{name:"Breda",lat:51.5719,lng:4.7683},{name:"Nijmegen",lat:51.8426,lng:5.8528},{name:"Enschede",lat:52.2215,lng:6.8937},{name:"Apeldoorn",lat:52.2112,lng:5.9699},{name:"Haarlem",lat:52.3874,lng:4.6462},{name:"Arnhem",lat:51.9851,lng:5.8987},{name:"Amersfoort",lat:52.1561,lng:5.3878},{name:"Zaanstad",lat:52.4420,lng:4.8292},{name:"Haarlemmermeer",lat:52.3030,lng:4.6920},{name:"'s-Hertogenbosch",lat:51.6978,lng:5.3037},{name:"Zwolle",lat:52.5168,lng:6.0830},{name:"Zoetermeer",lat:52.0575,lng:4.4937},{name:"Leiden",lat:52.1601,lng:4.4970},{name:"Maastricht",lat:50.8514,lng:5.6910}
-],
-"UAE":[
-{name:"Dubai",lat:25.2048,lng:55.2708},{name:"Abu Dhabi",lat:24.4539,lng:54.3773},{name:"Sharjah",lat:25.3463,lng:55.4209},{name:"Al Ain",lat:24.2075,lng:55.7447},{name:"Ajman",lat:25.4052,lng:55.5136},{name:"Ras Al Khaimah",lat:25.7895,lng:55.9432},{name:"Fujairah",lat:25.1338,lng:56.3267},{name:"Umm Al Quwain",lat:25.5420,lng:55.5533},{name:"Khor Fakkan",lat:25.3347,lng:56.3561},{name:"Dibba Al-Fujairah",lat:25.5907,lng:56.2610},{name:"Dibba Al-Hisn",lat:25.6150,lng:56.2728},{name:"Kalba",lat:25.0728,lng:56.3561},{name:"Jebel Ali",lat:24.9857,lng:55.0556},{name:"Hatta",lat:24.8130,lng:56.1265},{name:"Madinat Zayed",lat:23.6500,lng:53.7167},{name:"Ruwais",lat:24.1300,lng:52.7300},{name:"Liwa Oasis",lat:23.1333,lng:53.7833},{name:"Al Mirfa",lat:24.1000,lng:53.4000},{name:"Ghayathi",lat:23.8400,lng:52.8100},{name:"Sila",lat:24.0500,lng:51.7500}
-],
-"Saudi Arabia":[
-{name:"Riyadh",lat:24.7136,lng:46.6753},{name:"Jeddah",lat:21.5433,lng:39.1728},{name:"Mecca",lat:21.3891,lng:39.8579},{name:"Medina",lat:24.4672,lng:39.6111},{name:"Dammam",lat:26.3927,lng:50.1986},{name:"Taif",lat:21.2703,lng:40.4158},{name:"Tabuk",lat:28.3835,lng:36.5660},{name:"Buraidah",lat:26.3260,lng:43.9750},{name:"Khamis Mushait",lat:18.3000,lng:42.7333},{name:"Al Hofuf",lat:25.3647,lng:49.5877},{name:"Al Mubarraz",lat:25.4030,lng:49.5877},{name:"Hafar Al-Batin",lat:28.3871,lng:45.9650},{name:"Hail",lat:27.5114,lng:41.7208},{name:"Najran",lat:17.4924,lng:44.1277},{name:"Jubail",lat:27.0047,lng:49.6458},{name:"Abha",lat:18.2164,lng:42.5053},{name:"Yanbu",lat:24.0895,lng:47.3067},{name:"Khobar",lat:26.2172,lng:50.1971},{name:"Arar",lat:30.9753,lng:41.0387},{name:"Sakakah",lat:29.9697,lng:40.2064},{name:"Jizan",lat:16.8892,lng:42.5706},{name:"Qurayyat",lat:31.3250,lng:37.3436}
-],
-"Portugal":[
-{name:"Lisbon",lat:38.7223,lng:-9.1393},{name:"Porto",lat:41.1579,lng:-8.6291},{name:"Amadora",lat:38.7538,lng:-9.2306},{name:"Braga",lat:41.5454,lng:-8.4265},{name:"Setúbal",lat:38.5244,lng:-8.8882},{name:"Coimbra",lat:40.2033,lng:-8.4103},{name:"Queluz",lat:38.7567,lng:-9.2588},{name:"Funchal",lat:32.6500,lng:-16.9083},{name:"Cacém",lat:38.7687,lng:-9.3020},{name:"Vila Nova de Gaia",lat:41.1238,lng:-8.6118},{name:"Loures",lat:38.8308,lng:-9.1680},{name:"Rio de Mouro",lat:38.7720,lng:-9.3250},{name:"Odivelas",lat:38.7940,lng:-9.1800},{name:"Aveiro",lat:40.6405,lng:-8.6538},{name:"Amora",lat:38.6291,lng:-9.1160},{name:"Corroios",lat:38.6428,lng:-9.1450},{name:"Barreiro",lat:38.6600,lng:-9.0700},{name:"Águas Santas",lat:41.2147,lng:-8.5768},{name:"Massamá",lat:38.7500,lng:-9.2800},{name:"Matosinhos",lat:41.1843,lng:-8.6853},{name:"Guimarães",lat:41.4422,lng:-8.2935},{name:"Oeiras",lat:38.6970,lng:-9.3150}
-],
-"Poland":[
-{name:"Warsaw",lat:52.2297,lng:21.0122},{name:"Kraków",lat:50.0647,lng:19.9450},{name:"Łódź",lat:51.7592,lng:19.4560},{name:"Wrocław",lat:51.1079,lng:17.0385},{name:"Poznań",lat:52.4064,lng:16.9252},{name:"Gdańsk",lat:54.3520,lng:18.6466},{name:"Szczecin",lat:53.4285,lng:14.5528},{name:"Bydgoszcz",lat:53.1235,lng:18.0084},{name:"Lublin",lat:51.2465,lng:22.5684},{name:"Białystok",lat:53.1325,lng:23.1688},{name:"Katowice",lat:50.2649,lng:19.0238},{name:"Gdynia",lat:54.5189,lng:18.5305},{name:"Częstochowa",lat:50.8118,lng:19.1203},{name:"Radom",lat:51.4027,lng:21.1471},{name:"Sosnowiec",lat:50.2868,lng:19.1040},{name:"Toruń",lat:53.0138,lng:18.5984},{name:"Kielce",lat:50.8661,lng:20.6286},{name:"Rzeszów",lat:50.0412,lng:21.9991},{name:"Gliwice",lat:50.2945,lng:18.6714},{name:"Zabrze",lat:50.3010,lng:18.7857},{name:"Olsztyn",lat:53.7784,lng:20.4801},{name:"Bielsko-Biała",lat:49.8224,lng:19.0444}
-],
-"Sweden":[
-{name:"Stockholm",lat:59.3293,lng:18.0686},{name:"Gothenburg",lat:57.7089,lng:11.9746},{name:"Malmö",lat:55.6050,lng:13.0038},{name:"Uppsala",lat:59.8586,lng:17.6389},{name:"Västerås",lat:59.6099,lng:16.5448},{name:"Örebro",lat:59.2741,lng:15.2066},{name:"Linköping",lat:58.4108,lng:15.6214},{name:"Helsingborg",lat:56.0465,lng:12.6945},{name:"Jönköping",lat:57.7826,lng:14.1618},{name:"Norrköping",lat:58.5877,lng:16.1924},{name:"Lund",lat:55.7047,lng:13.1910},{name:"Umeå",lat:63.8258,lng:20.2630},{name:"Gävle",lat:60.6745,lng:17.1417},{name:"Borås",lat:57.7210,lng:12.9401},{name:"Södertälje",lat:59.1955,lng:17.6253},{name:"Eskilstuna",lat:59.3666,lng:16.5077},{name:"Halmstad",lat:56.6745,lng:12.8578},{name:"Växjö",lat:56.8777,lng:14.8091},{name:"Karlstad",lat:59.4022,lng:13.5115},{name:"Sundsvall",lat:62.3908,lng:17.3069},{name:"Östersund",lat:63.1792,lng:14.6357},{name:"Trollhättan",lat:58.2837,lng:12.2886}
-],
-"Switzerland":[
-{name:"Zurich",lat:47.3769,lng:8.5417},{name:"Geneva",lat:46.2044,lng:6.1432},{name:"Basel",lat:47.5596,lng:7.5886},{name:"Bern",lat:46.9480,lng:7.4474},{name:"Lausanne",lat:46.5197,lng:6.6323},{name:"Lucerne",lat:47.0502,lng:8.3093},{name:"Winterthur",lat:47.4984,lng:8.7246},{name:"St. Gallen",lat:47.4245,lng:9.3768},{name:"Lugano",lat:46.0037,lng:8.9511},{name:"Biel",lat:47.1368,lng:7.2469},{name:"Thun",lat:46.7580,lng:7.6288},{name:"Bellinzona",lat:46.1936,lng:9.0210},{name:"Fribourg",lat:46.8065,lng:7.1610},{name:"Chur",lat:46.8508,lng:9.5329},{name:"Sion",lat:46.2333,lng:7.3606},{name:"Neuchâtel",lat:46.9929,lng:6.9319},{name:"Schaffhausen",lat:47.6973,lng:8.6338},{name:"Sierre",lat:46.2927,lng:7.5329},{name:"Montreux",lat:46.4312,lng:6.9107},{name:"Zug",lat:47.1662,lng:8.5155},{name:"Yverdon",lat:46.7785,lng:6.6406},{name:"Davos",lat:46.8027,lng:9.8300}
-],
-"Japan":[
-{name:"Tokyo",lat:35.6762,lng:139.6503},{name:"Yokohama",lat:35.4437,lng:139.6380},{name:"Osaka",lat:34.6937,lng:135.5023},{name:"Nagoya",lat:35.1815,lng:136.9066},{name:"Sapporo",lat:43.0618,lng:141.3545},{name:"Fukuoka",lat:33.5902,lng:130.4017},{name:"Kobe",lat:34.6901,lng:135.1955},{name:"Kyoto",lat:35.0116,lng:135.7681},{name:"Kawasaki",lat:35.5308,lng:139.7028},{name:"Saitama",lat:34.8579,lng:139.6430},{name:"Hiroshima",lat:34.3853,lng:132.4553},{name:"Sendai",lat:38.2682,lng:140.8694},{name:"Chiba",lat:35.6074,lng:140.1065},{name:"Kitakyushu",lat:33.8833,lng:130.8750},{name:"Sakai",lat:34.5731,lng:135.4830},{name:"Niigata",lat:37.9162,lng:139.0364},{name:"Hamamatsu",lat:34.7107,lng:137.7261},{name:"Kumamoto",lat:32.8031,lng:130.7079},{name:"Sagamihara",lat:35.5718,lng:139.3730},{name:"Shizuoka",lat:34.9756,lng:138.3828},{name:"Okayama",lat:34.6551,lng:133.9195},{name:"Kagoshima",lat:31.5966,lng:130.5571}
-]
-};
+    <h2>Best Types of Third Places</h2>
+    <ul>
+      <li><strong>Cafés &amp; coffee shops</strong> – great for casual meetups and working</li>
+      <li><strong>Parks &amp; outdoor spaces</strong> – free, open, and social</li>
+      <li><strong>Libraries</strong> – quiet study and community programs</li>
+      <li><strong>Community centers &amp; youth spaces</strong> – activities and local events</li>
+      <li><strong>Coworking spaces</strong> – work alongside others</li>
+      <li><strong>Gaming, sports &amp; music venues</strong> – shared hobbies and nightlife</li>
+    </ul>
 
-const CATEGORY_MAP={
- all:{queries:['amenity=cafe','amenity=library','amenity=community_centre','amenity=youth_centre','amenity=arts_centre','amenity=bar','amenity=pub','amenity=nightclub','amenity=restaurant','amenity=fast_food','amenity=cinema','amenity=theatre','amenity=gym','leisure=park','leisure=garden','leisure=sports_centre','leisure=fitness_centre','leisure=playground','leisure=pitch','leisure=amusement_arcade','shop=books']},
- parks:{queries:['leisure=park','leisure=garden','leisure=playground']},
- cafe:{queries:['amenity=cafe']}, books:{queries:['amenity=library']}, community:{queries:['amenity=community_centre']}, youth:{queries:['amenity=youth_centre']},
- sports:{queries:['leisure=sports_centre','leisure=pitch','leisure=fitness_centre','amenity=gym']},
- gaming:{queries:['leisure=amusement_arcade','shop=video_games']},
- recreation:{queries:['leisure=amusement_arcade','amenity=cinema','amenity=theatre']},
- cowork:{queries:['office=coworking','amenity=cafe']},
- restaurants:{queries:['amenity=restaurant','amenity=fast_food']},
- art:{queries:['amenity=arts_centre','tourism=museum','tourism=gallery']},
- nightlife:{queries:['amenity=nightclub','amenity=bar','amenity=pub']},
- clubs:{queries:['amenity=nightclub']},
- shisha:{queries:['amenity=shisha','shop=tobacco']},
- music:{queries:['amenity=bar','amenity=nightclub','amenity=pub','amenity=music_venue','amenity=theatre']},
- entertainment:{queries:['amenity=theatre','amenity=cinema']},
- karaoke:{queries:['amenity=karaoke']},
- gym:{queries:['amenity=gym','leisure=fitness_centre','leisure=sports_centre']},
- social:{queries:['amenity=community_centre','amenity=youth_centre','leisure=park','amenity=cafe','amenity=library']},
- free:{queries:[]}, paid:{queries:[]}, events:{queries:['amenity=community_centre','amenity=arts_centre']}
-};
-function classify(tags){
- const a=(tags.amenity||'')+'|'+(tags.leisure||'')+'|'+(tags.shop||'')+'|'+(tags.tourism||'');const l=a.toLowerCase();
- if(l.includes('nightclub')) return {cat:'Night Clubs',price:'Paid',good:'Nightlife • Music',tags:['🌙 Nightlife','🎵 Live Music'],group:'clubs'};
- if(l.includes('bar')||l.includes('pub')||l.includes('music_venue')) return {cat:'Live Music',price:'Paid',good:'Live Music • Nightlife',tags:['🎵 Live Music','🌙 Nightlife'],group:'music'};
- if(tags.amenity==='cafe') return {cat:'Cafés',price:'Paid',good:'Relax & socialize',tags:['☕ Café','👥 Social'],group:'cafe'};
- if(tags.amenity==='library') return {cat:'Libraries',price:'Free',good:'Reading • Study',tags:['📚 Learning'],group:'books'};
- if(tags.amenity==='community_centre') return {cat:'Community Centers',price:'Free',good:'Group activities',tags:['👥 Social'],group:'community'};
- if(l.includes('youth')) return {cat:'Youth Spaces',price:'Free',good:'Meeting people',tags:['👥 Social'],group:'youth'};
- if(tags.leisure==='park'||tags.leisure==='garden') return {cat:'Parks & Outdoor',price:'Free',good:'Outdoor • Walking',tags:['🌳 Outdoor'],group:'parks'};
- if(tags.leisure==='fitness_centre'||tags.amenity==='gym') return {cat:'Gyms',price:'Paid',good:'Fitness • Sports',tags:['🏋️ Gym'],group:'gym'};
- if(l.includes('sports')||tags.leisure==='pitch') return {cat:'Sports',price:'Paid',good:'Sports • Group',tags:['🏆 Sports'],group:'sports'};
- if(tags.leisure==='amusement_arcade') return {cat:'Gaming',price:'Paid',good:'Gaming • Fun',tags:['🎮 Gaming'],group:'gaming'};
- if(tags.amenity==='arts_centre'||tags.tourism==='museum') return {cat:'Art & Culture',price:'Free',good:'Art • Culture',tags:['🎨 Art'],group:'art'};
- if(tags.amenity==='restaurant'||tags.amenity==='fast_food') return {cat:'Social Dining',price:'Paid',good:'Social dining',tags:['🍽️ Dining'],group:'restaurants'};
- if(tags.amenity==='theatre'||tags.amenity==='cinema') return {cat:'Entertainment',price:'Paid',good:'Entertainment',tags:['🎭 Entertainment'],group:'entertainment'};
- if(l.includes('karaoke')) return {cat:'Karaoke',price:'Paid',good:'Music • Fun',tags:['🎤 Karaoke'],group:'karaoke'};
- if(l.includes('shisha')||l.includes('tobacco')) return {cat:'Smoking / Shisha',price:'Paid',good:'Relax • Evening',tags:['🚬 Shisha'],group:'shisha'};
- return {cat:'Community Space',price:'Unknown',good:'Socializing',tags:['👥 Social'],group:'social'};
-}
-let map, markers=[], selectedCity=null, selectedCountry="USA", filter="all", priceFilter="all", purpose=null, userLoc=null, places=[], selectedId=null, cache=new Map();
-const countrySel=document.getElementById('countrySel'),cityInput=document.getElementById('cityInput'),citySuggest=document.getElementById('citySuggest'),cityCount=document.getElementById('cityCount'),findBtn=document.getElementById('findBtn'),spin=document.getElementById('spin'),statusText=document.getElementById('statusText'),searchBox=document.getElementById('searchBox'),listEl=document.getElementById('list'),mapTag=document.getElementById('mapTag'),coord=document.getElementById('coord');
+    <h2>Find Third Places by City</h2>
+    <p>The finder supports hundreds of cities across the United States, United Kingdom, Australia, Pakistan, Europe, Asia, and more. Select your country, start typing a city name, and search.</p>
 
-function init(){
- countrySel.innerHTML='';
- COUNTRIES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;countrySel.appendChild(o);});
- countrySel.value="USA";
- selectedCountry="USA";
- const cities=CITIES[selectedCountry]||[];
- selectedCity=cities[0]||null;
- if(selectedCity){cityInput.value=selectedCity.name;findBtn.disabled=false;findBtn.classList.add('on');}
- cityCount.textContent=`· ${cities.length} cities`;
- map=L.map('map',{zoomControl:false}).setView([40.7128,-74.0060],4);
- L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
- L.control.zoom({position:'bottomright'}).addTo(map);
- if(selectedCity){map.setView([selectedCity.lat,selectedCity.lng],11);mapTag.textContent=`📍 ${selectedCity.name}, ${selectedCountry}`;coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;statusText.textContent=`Ready to search in ${selectedCity.name}`;}
-}
-function updateTag(){if(!selectedCity) return;mapTag.textContent=`📍 ${selectedCity.name}, ${selectedCountry}`;coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;}
-function setLoading(on,msg){spin.classList.toggle('on',on);statusText.textContent=msg||'';}
-function showSuggest(q){
- const all=CITIES[selectedCountry]||[];const filtered=q?all.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())).slice(0,12):all.slice(0,12);
- cityCount.textContent=`· ${filtered.length} / ${all.length} cities`;citySuggest.innerHTML='';filtered.forEach(c=>{
-  const d=document.createElement('div');d.className='s-item'+(selectedCity&&c.name===selectedCity.name?' active':'');
-  d.innerHTML=`<span style="font-weight:600">${c.name}</span><span style="font-size:11px;color:#a8a29e">${c.lat.toFixed(2)}, ${c.lng.toFixed(2)}</span>`;
-  d.onmousedown=()=>{selectedCity=c;cityInput.value=c.name;citySuggest.classList.remove('on');findBtn.disabled=false;findBtn.classList.add('on');updateTag();if(map) map.setView([c.lat,c.lng],13);statusText.textContent=`Ready to search in ${c.name}`;};
-  citySuggest.appendChild(d);
- });citySuggest.classList.add('on');
-}
-countrySel.addEventListener('change',e=>{
- selectedCountry=e.target.value;
- const cities=CITIES[selectedCountry]||[];
- selectedCity=cities[0]||null;
- cityInput.value=selectedCity?selectedCity.name:'';
- cityCount.textContent=cities.length?`· ${cities.length} cities`:'';
- findBtn.disabled=!selectedCity;
- if(selectedCity) findBtn.classList.add('on');
- updateTag();
- if(selectedCity&&map) map.setView([selectedCity.lat,selectedCity.lng],11);
- statusText.textContent=selectedCity?`Ready to search in ${selectedCity.name} - ${cities.length} cities available`:'Select a city';
-});
-cityInput.addEventListener('focus',()=>showSuggest(cityInput.value));cityInput.addEventListener('input',()=>showSuggest(cityInput.value));
-document.addEventListener('click',e=>{if(!e.target.closest('#cityInput')&&!e.target.closest('#citySuggest')) citySuggest.classList.remove('on');});
-async function overpassFetch(query){
- const servers=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
- let last=null;for(let url of servers){try{const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(query)});if(!res.ok) throw new Error('HTTP '+res.status);return await res.json();}catch(e){last=e;continue;}}throw last;
-}
-function buildQuery(center,catKey){
- const mapping=CATEGORY_MAP[catKey]||CATEGORY_MAP.all;let queries=mapping.queries;if(!queries||queries.length===0) queries=CATEGORY_MAP.all.queries;
- const parts=queries.map(q=>{const [k,v]=q.split('=');return `nwr["${k}"="${v}"](around:8000,${center.lat},${center.lng});`;}).join('');
- return `[out:json][timeout:25];(${parts});out center 70;`;
-}
-async function fetchPlaces(center,catKey='all'){
- if(!center){listEl.innerHTML=`<div class="empty"><b>Please select country and city first.</b></div>`;return;}
- const cacheKey=`${center.lat.toFixed(4)}_${center.lng.toFixed(4)}_${catKey}_${priceFilter}`;
- if(cache.has(cacheKey)){places=cache.get(cacheKey);render();setLoading(false,`${places.length} places found in ${center.name}`);return;}
- setLoading(true,`🔎 Searching for third places in ${center.name}…`);
- listEl.innerHTML=`<div class="skeleton"><div class="sk" style="width:60%"></div><div class="sk" style="width:90%"></div><div class="sk" style="width:80%"></div></div>`.repeat(3);
- try{
-  const q=buildQuery(center,catKey==='free'||catKey==='paid'?'all':catKey);
-  const data=await overpassFetch(q);const els=data.elements||[];const seen=new Set();let results=[];
-  els.forEach(el=>{const lat=el.lat||el.center?.lat,lng=el.lon||el.center?.lon;if(!lat||!lng)return;const id=String(el.id);if(seen.has(id))return;seen.add(id);const tags=el.tags||{};if(!tags.name) return;const cls=classify(tags);results.push({id,name:tags.name,cat:cls.cat,price:cls.price,good:cls.good,tags:cls.tags,group:cls.group,lat,lng,addr:tags['addr:street']||null,website:tags.website||null,phone:tags.phone||null,opening:tags.opening_hours||null});});
-  if(priceFilter==='free') results=results.filter(r=>r.price==='Free');
-  if(priceFilter==='paid') results=results.filter(r=>r.price==='Paid');
-  places=results;cache.set(cacheKey,places);render();setLoading(false, places.length?`${places.length} places found in ${center.name}`:`No suitable places found in ${center.name}.`);
- }catch(e){setLoading(false,`Temporarily unavailable. Try again.`);listEl.innerHTML=`<div class="empty"><b>Temporarily unavailable.</b><p>${e.message}</p><button onclick="fetchPlaces(selectedCity,filter)" class="btn" style="margin-top:10px">Retry</button></div>`;}
-}
-function hav(a,b,c,d){const R=6371,dLat=(c-a)*Math.PI/180,dLon=(d-b)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
-let currentGalleryPlace=null;
-function getStaticUrl(lat,lng,size='500x300'){return `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=16&size=${size}&markers=${lat},${lng},red-pushpin`;}
-function render(){
- markers.forEach(m=>map.removeLayer(m));markers=[];
- const center=userLoc||selectedCity;if(!center) return;map.setView([center.lat,center.lng],13);
- const q=searchBox.value.toLowerCase();
- let filtered=places.map(p=>({...p,_dist:hav(center.lat,center.lng,p.lat,p.lng)}));
- if(purpose){const boosts={meet:['Community Centers','Youth Spaces','Libraries','Cafés','Parks & Outdoor'],gaming:['Gaming'],sports:['Sports','Gyms'],music:['Live Music','Night Clubs','Entertainment'],events:['Community Centers','Entertainment'],night:['Night Clubs','Live Music'],relax:['Cafés','Parks & Outdoor','Libraries'],study:['Libraries','Cafés'],outdoor:['Parks & Outdoor']};const want=boosts[purpose]||[];filtered=filtered.sort((a,b)=>{const aB=want.includes(a.cat)?1:0,bB=want.includes(b.cat)?1:0;if(aB!==bB)return bB-aB;return 0;});}
- filtered=filtered.filter(p=>{
-  if(filter==='free'&&p.price!=='Free')return false;if(filter==='paid'&&p.price!=='Paid')return false;
-  if(filter==='social'&&!['Community Centers','Youth Spaces','Libraries','Parks & Outdoor','Cafés','Gaming'].includes(p.cat))return false;
-  if(filter==='gaming'&&p.group!=='gaming')return false;if(filter==='sports'&&p.group!=='sports'&&p.group!=='gym'&&p.group!=='parks')return false;
-  if(filter==='nightlife'&&(p.group!=='nightlife'&&p.group!=='clubs'&&p.group!=='music'))return false;
-  if(filter==='cafe'&&p.group!=='cafe')return false;if(filter==='clubs'&&p.group!=='clubs')return false;if(filter==='shisha'&&p.group!=='shisha')return false;
-  if(filter==='art'&&p.group!=='art')return false;if(filter==='books'&&p.group!=='books')return false;if(filter==='gym'&&p.group!=='gym')return false;
-  if(filter==='parks'&&p.group!=='parks')return false;if(filter==='community'&&p.group!=='community')return false;if(filter==='youth'&&p.group!=='youth')return false;
-  if(filter==='restaurants'&&p.group!=='restaurants')return false;if(filter==='music'&&p.group!=='music'&&p.group!=='clubs'&&p.group!=='entertainment')return false;
-  if(q&&!p.name.toLowerCase().includes(q)&&!p.cat.toLowerCase().includes(q))return false;return true;
- }).sort((a,b)=>a._dist-b._dist);
- listEl.innerHTML='';
- if(filtered.length===0){listEl.innerHTML=`<div class="empty"><b>No suitable places found.</b><p>Try All categories or change filter.</p></div>`;return}
- filtered.slice(0,70).forEach(p=>{
-  const color=p.price==='Free'?'#10b981':p.price==='Paid'?'#f59e0b':'#78716c';
-  const icon=L.divIcon({html:`<div style="background:${color};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)">${p.group==='cafe'?'☕':p.group==='gaming'?'🎮':p.group==='gym'?'🏋️':p.group==='music'?'🎵':'📍'}</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
-  const m=L.marker([p.lat,p.lng],{icon}).addTo(map).bindPopup(`<b>${p.name}</b><br>${p.cat}`);
-  m.on('click',()=>{selectedId=p.id;document.querySelectorAll('.place').forEach(el=>el.classList.remove('selected'));document.getElementById('card-'+p.id)?.classList.add('selected');});
-  markers.push(m);
-  const staticUrl=getStaticUrl(p.lat,p.lng,'500x300');
-  const el=document.createElement('div');el.className='place'+(selectedId===p.id?' selected':'');el.id='card-'+p.id;
-  el.innerHTML=`<div class="imgWrap"><img class="img" src="${staticUrl}" loading="lazy" alt="${p.name}"><div class="imgFallback" style="display:none">📍<span>${p.name}</span><small>Tap to view map</small></div><div class="badges"><span class="b ${p.price==='Free'?'b-free':p.price==='Paid'?'b-paid':'b-unk'}">${p.price==='Free'?'🟢 Free':p.price==='Paid'?'🟡 Paid':'⚪ Unknown'}</span><span class="b b-cat">${p.cat}</span></div><div class="grad"><div class="gradName">${p.name}</div></div></div><div class="body"><div class="top"><div class="name">${p.name}</div><div class="dist">${p._dist.toFixed(1)} km</div></div><div class="meta">Category: ${p.cat} • ${p.price==='Unknown'?'Price information unavailable':p.price}</div><div class="tags">${p.tags.map(t=>`<span class="t">${t}</span>`).join('')}</div><div class="good"><div class="good-l">Good for</div><div class="good-v">${p.good}</div></div><div class="btnRow"><button type="button" class="aBtn primary viewMap">📍 View on Map</button><a class="aBtn" href="${getGoogleDirectionsUrl(p.lat,p.lng)}" target="_blank" rel="noopener noreferrer">🧭 Directions</a></div><div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="aBtn viewPhotos" style="flex:1;height:32px;font-size:11px">📸 View Photos</button><button type="button" class="aBtn openDetail" style="flex:1;height:32px;font-size:11px">ℹ️ Details</button></div></div>`;
-  const img=el.querySelector('.img');const fb=el.querySelector('.imgFallback');
-  img.addEventListener('error',()=>{img.style.display='none';fb.style.display='flex';});
-  img.addEventListener('load',()=>{fb.style.display='none';});
-  el.querySelector('.imgWrap').addEventListener('click',(e)=>{e.stopPropagation();openGallery(p);});
-  el.querySelector('.viewMap').addEventListener('click',(e)=>{e.stopPropagation();openGoogleMapsPlace(p.lat,p.lng);});
-  el.querySelector('.viewPhotos').addEventListener('click',(e)=>{e.stopPropagation();openGallery(p);});
-  el.querySelector('.openDetail').addEventListener('click',(e)=>{e.stopPropagation();openDetail(p);});
-  el.addEventListener('click',()=>{selectedId=p.id;map.setView([p.lat,p.lng],16,{animate:true});m.openPopup();document.querySelectorAll('.place').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');});
-  listEl.appendChild(el);
- });
-}
-function openGallery(p){
- currentGalleryPlace=p;
- const url=getStaticUrl(p.lat,p.lng,'800x600');
- const gImg=document.getElementById('gImg');
- gImg.src=url;
- gImg.onerror=()=>{gImg.style.display='none';};
- document.getElementById('gMeta').textContent=`${p.name} • ${p.cat} • ${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`;
- document.getElementById('gDir').href=getGoogleDirectionsUrl(p.lat,p.lng);
- document.getElementById('gallery').classList.add('on');
-}
-document.getElementById('gClose').onclick=()=>document.getElementById('gallery').classList.remove('on');
-document.getElementById('gMapBtn').onclick=()=>{if(currentGalleryPlace){const p=currentGalleryPlace;document.getElementById('gallery').classList.remove('on');openGoogleMapsPlace(p.lat,p.lng);}};
-document.getElementById('gallery').onclick=e=>{if(e.target.id==='gallery') e.currentTarget.classList.remove('on');};
-function openDetail(p){
- const box=document.getElementById('detailBox');
- const url=getStaticUrl(p.lat,p.lng,'600x340');
- box.innerHTML=`<div class="detailImgWrap" id="detailImgWrap"><img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block" alt="${p.name}" onerror="this.style.display='none'"><div style="position:absolute;left:12px;top:12px;display:flex;gap:6px"><span class="b ${p.price==='Free'?'b-free':'b-paid'}">${p.price}</span><span class="b b-cat">${p.cat}</span></div></div><div style="padding:16px"><div style="display:flex;justify-content:space-between;gap:8px"><div style="font-size:18px;font-weight:800">${p.name}</div><button id="detailClose" style="width:32px;height:32px;border-radius:9999px;border:1px solid #e7e5e4;background:#fff;cursor:pointer">✕</button></div><div style="font-size:12px;color:#78716c;margin-top:6px">${p.cat}</div><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:13px"><div><b>📍 Address:</b> ${p.addr||'Information unavailable'}</div><div><b>💰 Price:</b> ${p.price==='Unknown'?'Price information unavailable':p.price}</div><div><b>Good for:</b> ${p.good}</div><div><b>🕒 Opening:</b> ${p.opening||'Information unavailable'}</div></div><div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="aBtn primary" id="dMap">📍 View on Map</button><a class="aBtn" href="${getGoogleDirectionsUrl(p.lat,p.lng)}" target="_blank" rel="noopener noreferrer">🧭 Directions</a></div><div style="margin-top:8px"><button class="aBtn" id="dPhoto" style="width:100%">📸 View Photos</button></div></div>`;
- document.getElementById('detailBg').classList.add('on');
- document.getElementById('detailClose').onclick=()=>document.getElementById('detailBg').classList.remove('on');
- document.getElementById('dMap').onclick=()=>{document.getElementById('detailBg').classList.remove('on');openGoogleMapsPlace(p.lat,p.lng);};
- document.getElementById('dPhoto').onclick=()=>{openGallery(p);};
- document.getElementById('detailImgWrap').onclick=()=>{openGallery(p);};
-}
-document.getElementById('detailBg').onclick=e=>{if(e.target.id==='detailBg')e.currentTarget.classList.remove('on');};
-findBtn.addEventListener('click',()=>{if(!selectedCity){alert('Please select country and city first');return;}fetchPlaces(selectedCity, filter);});
-document.getElementById('locBtn').addEventListener('click',()=>{
- if(!navigator.geolocation) return;findBtn.textContent='Locating…';findBtn.disabled=true;spin.classList.add('on');
- navigator.geolocation.getCurrentPosition(pos=>{userLoc={lat:pos.coords.latitude,lng:pos.coords.longitude};selectedCity={name:'My Location',lat:pos.coords.latitude,lng:pos.coords.longitude};findBtn.textContent='Find Third Place';findBtn.disabled=false;findBtn.classList.add('on');spin.classList.remove('on');updateTag();if(map) map.setView([userLoc.lat,userLoc.lng],13);fetchPlaces(userLoc,'all');},()=>{alert('Location denied');findBtn.textContent='Find Third Place';findBtn.disabled=false;spin.classList.remove('on');});
-});
+    <h2>Why Third Places Are Useful</h2>
+    <p>Third places reduce isolation, support casual social contact, and give people low-pressure environments to study, work, or unwind. Whether you’re new in town or looking for a change of scenery, a good third place makes everyday life better.</p>
+  </section>
 
-// CATEGORY ACTIVE FIX - 1. PROPER ACTIVE STATE
-function clearAllCategoryActive(){
- document.querySelectorAll('#mainFilters .fbtn').forEach(x=>{if(x.id!=='moreFiltersBtn') x.classList.remove('active');});
- document.querySelectorAll('#extraFilters .fbtn').forEach(x=>x.classList.remove('active'));
- document.querySelectorAll('#purposeChips .chip').forEach(x=>x.classList.remove('active'));
-}
-document.querySelectorAll('#mainFilters .fbtn').forEach(b=>{
- b.addEventListener('click',()=>{
-  if(b.id==='moreFiltersBtn') return;
-  if(b.dataset.f==='free'||b.dataset.f==='paid'){
-   priceFilter=b.dataset.f;
-   document.querySelectorAll('#mainFilters .fbtn[data-f="free"],#mainFilters .fbtn[data-f="paid"],#mainFilters .fbtn[data-f="all"]').forEach(x=>x.classList.remove('active'));
-   b.classList.add('active');
-   if(places.length) render();
-   return;
+  <footer>
+    <p>Third Place Near Me – Free Meetup &amp; Map Finder · Data from OpenStreetMap</p>
+    <p style="margin-top:6px"><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener">© OpenStreetMap contributors</a></p>
+  </footer>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+  <script>
+(function () {
+  'use strict';
+
+  // ============================================================
+  // DATA: Countries & Cities (500+ real cities)
+  // ============================================================
+  const countryCities = {
+    "United States": [
+      "New York","Los Angeles","Chicago","Houston","Phoenix","Philadelphia","San Antonio","San Diego","Dallas","Austin",
+      "San Jose","Jacksonville","Fort Worth","Columbus","Charlotte","Indianapolis","Seattle","Denver","Washington DC","Boston",
+      "Nashville","Detroit","Portland","Las Vegas","Miami","Atlanta","Orlando","Minneapolis","New Orleans","San Francisco",
+      "Sacramento","Kansas City","Raleigh","Tampa","Cleveland","Pittsburgh","Cincinnati","St. Louis","Orlando","Baltimore",
+      "Milwaukee","Albuquerque","Tucson","Fresno","Mesa","Honolulu","Oakland","Tulsa","Arlington","Wichita"
+    ],
+    "United Kingdom": [
+      "London","Birmingham","Manchester","Liverpool","Leeds","Glasgow","Edinburgh","Bristol","Cardiff","Belfast",
+      "Sheffield","Nottingham","Leicester","Coventry","Newcastle","Southampton","Brighton","Oxford","Cambridge","Aberdeen",
+      "Dundee","Plymouth","Exeter","York","Reading","Bradford","Wolverhampton","Derby","Swansea","Portsmouth",
+      "Norwich","Luton","Blackpool","Bournemouth","Middlesbrough","Ipswich","Sunderland","Bath","Canterbury","Inverness"
+    ],
+    "Australia": [
+      "Sydney","Melbourne","Brisbane","Perth","Adelaide","Canberra","Hobart","Darwin","Gold Coast","Newcastle",
+      "Wollongong","Geelong","Cairns","Townsville","Toowoomba","Ballarat","Bendigo","Albury","Launceston","Mackay",
+      "Rockhampton","Bunbury","Coffs Harbour","Wagga Wagga","Bundaberg","Mildura","Shepparton","Gladstone","Tamworth","Orange"
+    ],
+    "Pakistan": [
+      "Karachi","Lahore","Islamabad","Rawalpindi","Faisalabad","Multan","Peshawar","Quetta","Gujranwala","Sialkot",
+      "Bahawalpur","Sargodha","Abbottabad","Murree","Gujrat","Sahiwal","Rahim Yar Khan","Jhelum","Attock","Mardan",
+      "Mingora","Hyderabad","Sukkur","Larkana","Gwadar","Mirpur","Muzaffarabad","Kasur","Sheikhupura","Okara"
+    ],
+    "Germany": [
+      "Berlin","Munich","Hamburg","Cologne","Frankfurt","Stuttgart","Düsseldorf","Leipzig","Dortmund","Essen",
+      "Bremen","Dresden","Hanover","Nuremberg","Duisburg","Bochum","Wuppertal","Bielefeld","Bonn","Münster",
+      "Karlsruhe","Mannheim","Augsburg","Wiesbaden","Gelsenkirchen","Mönchengladbach","Braunschweig","Chemnitz","Kiel","Aachen"
+    ],
+    "France": [
+      "Paris","Marseille","Lyon","Toulouse","Nice","Nantes","Strasbourg","Montpellier","Bordeaux","Lille",
+      "Rennes","Reims","Saint-Étienne","Toulon","Le Havre","Grenoble","Dijon","Angers","Nîmes","Aix-en-Provence",
+      "Clermont-Ferrand","Brest","Limoges","Tours","Amiens","Perpignan","Metz","Besançon","Orléans","Rouen"
+    ],
+    "Italy": [
+      "Rome","Milan","Naples","Turin","Palermo","Genoa","Bologna","Florence","Bari","Catania",
+      "Venice","Verona","Messina","Padua","Trieste","Brescia","Parma","Taranto","Prato","Modena",
+      "Reggio Calabria","Reggio Emilia","Perugia","Livorno","Ravenna","Cagliari","Foggia","Rimini","Salerno","Ferrara"
+    ],
+    "Spain": [
+      "Madrid","Barcelona","Valencia","Seville","Zaragoza","Málaga","Murcia","Palma","Las Palmas","Bilbao",
+      "Alicante","Córdoba","Valladolid","Vigo","Gijón","Hospitalet","Vitoria","A Coruña","Granada","Elche",
+      "Oviedo","Badalona","Cartagena","Terrassa","Jerez","Sabadell","Móstoles","Santa Cruz","Pamplona","Almería"
+    ],
+    "Netherlands": [
+      "Amsterdam","Rotterdam","The Hague","Utrecht","Eindhoven","Groningen","Tilburg","Almere","Breda","Nijmegen",
+      "Apeldoorn","Haarlem","Arnhem","Amersfoort","Dordrecht","Leiden","Zoetermeer","Zwolle","Maastricht","Delft"
+    ],
+    "Belgium": [
+      "Brussels","Antwerp","Ghent","Charleroi","Liège","Bruges","Namur","Leuven","Mons","Aalst",
+      "Mechelen","La Louvière","Kortrijk","Hasselt","Ostend","Tournai","Genk","Seraing","Roeselare","Verviers"
+    ],
+    "Switzerland": [
+      "Zurich","Geneva","Basel","Lausanne","Bern","Winterthur","Lucerne","St. Gallen","Lugano","Biel",
+      "Thun","Köniz","La Chaux-de-Fonds","Schaffhausen","Fribourg","Chur","Neuchâtel","Vernier","Uster","Sion"
+    ],
+    "Austria": [
+      "Vienna","Graz","Linz","Salzburg","Innsbruck","Klagenfurt","Villach","Wels","Sankt Pölten","Dornbirn",
+      "Wiener Neustadt","Steyr","Feldkirch","Bregenz","Leonding","Klosterneuburg","Baden","Wolfsberg","Leoben","Krems"
+    ],
+    "Sweden": [
+      "Stockholm","Gothenburg","Malmö","Uppsala","Västerås","Örebro","Linköping","Helsingborg","Jönköping","Norrköping",
+      "Lund","Umeå","Gävle","Borås","Södertälje","Eskilstuna","Karlstad","Täby","Växjö","Halmstad"
+    ],
+    "Norway": [
+      "Oslo","Bergen","Trondheim","Stavanger","Drammen","Fredrikstad","Kristiansand","Sandnes","Tromsø","Sarpsborg",
+      "Skien","Ålesund","Sandefjord","Haugesund","Tønsberg","Moss","Porsgrunn","Bodø","Arendal","Hamar"
+    ],
+    "Denmark": [
+      "Copenhagen","Aarhus","Odense","Aalborg","Esbjerg","Randers","Kolding","Horsens","Vejle","Roskilde",
+      "Herning","Hørsholm","Silkeborg","Næstved","Fredericia","Viborg","Køge","Holstebro","Taastrup","Slagelse"
+    ],
+    "Finland": [
+      "Helsinki","Espoo","Tampere","Vantaa","Oulu","Turku","Jyväskylä","Lahti","Kuopio","Pori",
+      "Kouvola","Joensuu","Lappeenranta","Hämeenlinna","Vaasa","Seinäjoki","Rovaniemi","Mikkeli","Kotka","Salo"
+    ],
+    "Poland": [
+      "Warsaw","Kraków","Łódź","Wrocław","Poznań","Gdańsk","Szczecin","Bydgoszcz","Lublin","Katowice",
+      "Białystok","Gdynia","Częstochowa","Radom","Sosnowiec","Toruń","Kielce","Gliwice","Zabrze","Bytom"
+    ],
+    "Portugal": [
+      "Lisbon","Porto","Vila Nova de Gaia","Amadora","Braga","Funchal","Coimbra","Setúbal","Almada","Agualva-Cacém",
+      "Queluz","Aveiro","Faro","Évora","Viseu","Guimarães","Leiria","Portimão","Cascais","Sintra"
+    ],
+    "Ireland": [
+      "Dublin","Cork","Limerick","Galway","Waterford","Drogheda","Dundalk","Swords","Bray","Navan",
+      "Ennis","Kilkenny","Carlow","Tralee","Newbridge","Naas","Athlone","Portlaoise","Mullingar","Wexford"
+    ],
+    "Greece": [
+      "Athens","Thessaloniki","Patras","Heraklion","Larissa","Volos","Rhodes","Ioannina","Chania","Chalcis",
+      "Agrinio","Katerini","Trikala","Serres","Lamia","Alexandroupoli","Kozani","Kavala","Kalamata","Veria"
+    ],
+    "Czech Republic": [
+      "Prague","Brno","Ostrava","Plzeň","Liberec","Olomouc","Ústí nad Labem","České Budějovice","Hradec Králové","Pardubice",
+      "Zlín","Havířov","Kladno","Most","Opava","Frýdek-Místek","Karviná","Jihlava","Teplice","Děčín"
+    ],
+    "Romania": [
+      "Bucharest","Cluj-Napoca","Timișoara","Iași","Constanța","Craiova","Brașov","Galați","Ploiești","Oradea",
+      "Brăila","Arad","Pitești","Sibiu","Bacău","Târgu Mureș","Baia Mare","Buzău","Botoșani","Satu Mare"
+    ],
+    "Hungary": [
+      "Budapest","Debrecen","Szeged","Miskolc","Pécs","Győr","Nyíregyháza","Kecskemét","Székesfehérvár","Szombathely",
+      "Szolnok","Tatabánya","Kaposvár","Érd","Veszprém","Békéscsaba","Zalaegerszeg","Sopron","Eger","Nagykanizsa"
+    ],
+    "Canada": [
+      "Toronto","Montreal","Vancouver","Calgary","Edmonton","Ottawa","Winnipeg","Quebec City","Hamilton","Kitchener",
+      "London","Victoria","Halifax","Oshawa","Windsor","Saskatoon","Regina","St. John's","Barrie","Kelowna",
+      "Abbotsford","Sherbrooke","Guelph","Kingston","Kanata","Moncton","Thunder Bay","Saint John","Nanaimo","Peterborough"
+    ],
+    "New Zealand": [
+      "Auckland","Wellington","Christchurch","Hamilton","Tauranga","Napier-Hastings","Dunedin","Palmerston North","Nelson","Rotorua",
+      "New Plymouth","Whangarei","Invercargill","Whanganui","Gisborne","Timaru","Blenheim","Pukekohe","Taupo","Masterton"
+    ],
+    "United Arab Emirates": [
+      "Dubai","Abu Dhabi","Sharjah","Al Ain","Ajman","Ras Al Khaimah","Fujairah","Umm Al Quwain","Khor Fakkan","Kalba",
+      "Dibba Al-Fujairah","Madinat Zayed","Ruwais","Ghayathi","Liwa Oasis"
+    ],
+    "Saudi Arabia": [
+      "Riyadh","Jeddah","Mecca","Medina","Dammam","Khobar","Tabuk","Buraidah","Khamis Mushait","Abha",
+      "Najran","Yanbu","Al Jubail","Hail","Jizan","Al Hofuf","Taif","Qatif","Arar","Sakakah"
+    ],
+    "Turkey": [
+      "Istanbul","Ankara","Izmir","Bursa","Antalya","Adana","Gaziantep","Konya","Mersin","Diyarbakır",
+      "Kayseri","Eskişehir","Urfa","Malatya","Erzurum","Van","Samsun","Denizli","Batman","Elazığ"
+    ],
+    "India": [
+      "Mumbai","Delhi","Bengaluru","Hyderabad","Ahmedabad","Chennai","Kolkata","Surat","Pune","Jaipur",
+      "Lucknow","Kanpur","Nagpur","Indore","Thane","Bhopal","Visakhapatnam","Patna","Vadodara","Ghaziabad",
+      "Ludhiana","Agra","Nashik","Faridabad","Meerut","Rajkot","Varanasi","Srinagar","Amritsar","Chandigarh"
+    ],
+    "Bangladesh": [
+      "Dhaka","Chittagong","Khulna","Rajshahi","Sylhet","Rangpur","Comilla","Narayanganj","Gazipur","Mymensingh",
+      "Barisal","Jessore","Bogra","Dinajpur","Cox's Bazar","Tangail","Narsingdi","Pabna","Saidpur","Jamalpur"
+    ],
+    "Japan": [
+      "Tokyo","Yokohama","Osaka","Nagoya","Sapporo","Fukuoka","Kobe","Kawasaki","Kyoto","Saitama",
+      "Hiroshima","Sendai","Chiba","Kitakyushu","Sakai","Niigata","Hamamatsu","Kumamoto","Sagamihara","Shizuoka"
+    ],
+    "South Korea": [
+      "Seoul","Busan","Incheon","Daegu","Daejeon","Gwangju","Suwon","Ulsan","Changwon","Goyang",
+      "Yongin","Seongnam","Bucheon","Cheongju","Ansan","Jeonju","Anyang","Pohang","Jeju","Uijeongbu"
+    ],
+    "Singapore": ["Singapore"],
+    "Malaysia": [
+      "Kuala Lumpur","George Town","Ipoh","Johor Bahru","Melaka","Kota Kinabalu","Kuching","Shah Alam","Petaling Jaya","Klang",
+      "Subang Jaya","Seremban","Kuantan","Kota Bharu","Alor Setar","Miri","Sandakan","Tawau","Taiping","Kangar"
+    ],
+    "Indonesia": [
+      "Jakarta","Surabaya","Bandung","Medan","Semarang","Makassar","Palembang","Depok","Tangerang","South Tangerang",
+      "Bekasi","Batam","Bogor","Pekanbaru","Bandar Lampung","Padang","Malang","Denpasar","Samarinda","Tasikmalaya"
+    ],
+    "Thailand": [
+      "Bangkok","Nonthaburi","Nakhon Ratchasima","Chiang Mai","Hat Yai","Udon Thani","Pak Kret","Khon Kaen","Chaophraya Surasak","Nakhon Si Thammarat",
+      "Pattaya","Songkhla","Surat Thani","Rangsit","Phuket","Nakhon Sawan","Ubon Ratchathani","Nakhon Pathom","Phitsanulok","Yala"
+    ],
+    "South Africa": [
+      "Johannesburg","Cape Town","Durban","Pretoria","Port Elizabeth","Bloemfontein","East London","Nelspruit","Kimberley","Polokwane",
+      "Pietermaritzburg","Rustenburg","George","Stellenbosch","Paarl","Worcester","Upington","Middelburg","Vanderbijlpark","Soweto"
+    ],
+    "Brazil": [
+      "São Paulo","Rio de Janeiro","Brasília","Salvador","Fortaleza","Belo Horizonte","Manaus","Curitiba","Recife","Goiânia",
+      "Belém","Porto Alegre","Guarulhos","Campinas","São Luís","São Gonçalo","Maceió","Duque de Caxias","Natal","Teresina"
+    ],
+    "Mexico": [
+      "Mexico City","Guadalajara","Monterrey","Puebla","Tijuana","León","Juárez","Zapopan","Mérida","San Luis Potosí",
+      "Aguascalientes","Hermosillo","Saltillo","Mexicali","Culiacán","Acapulco","Querétaro","Torreón","Morelia","Chihuahua"
+    ]
+  };
+
+  // ============================================================
+  // CATEGORIES
+  // ============================================================
+  // Primary chips (user-facing). "all" clears selection.
+  // Each maps to Overpass tags / keywords for real search.
+  const PRIMARY_CATEGORIES = [
+    { id: "all", label: "All" },
+    { id: "meet", label: "Meet People" },
+    { id: "gaming", label: "Gaming" },
+    { id: "sports", label: "Sports" },
+    { id: "music", label: "Music" },
+    { id: "events", label: "Events" },
+    { id: "nightlife", label: "Nightlife" },
+    { id: "relax", label: "Relax" },
+    { id: "study", label: "Study" },
+    { id: "outdoor", label: "Outdoor" },
+    { id: "cafes", label: "Cafés" },
+    { id: "libraries", label: "Libraries" },
+    { id: "parks", label: "Parks" },
+    { id: "coworking", label: "Coworking" },
+    { id: "community", label: "Community Centers" },
+    { id: "gyms", label: "Gyms" },
+    { id: "karaoke", label: "Karaoke" },
+    { id: "art", label: "Art & Culture" },
+    { id: "dining", label: "Social Dining" }
+  ];
+
+  // Quick filters act as modifiers (not exclusive with primary category)
+  const QUICK_FILTERS = [
+    { id: "all", label: "All" },
+    { id: "free", label: "Free" },
+    { id: "paid", label: "Paid" },
+    { id: "social", label: "Social" },
+    { id: "gaming", label: "Gaming" },
+    { id: "sports", label: "Sports" },
+    { id: "nightlife", label: "Nightlife" }
+  ];
+
+  // Overpass query builders per category
+  const CATEGORY_QUERIES = {
+    all: [
+      'node["amenity"~"cafe|library|community_centre|coworking_space|bar|pub|restaurant|cinema|theatre|arts_centre|nightclub|karaoke_box"]',
+      'way["amenity"~"cafe|library|community_centre|coworking_space|bar|pub|restaurant|cinema|theatre|arts_centre|nightclub"]',
+      'node["leisure"~"park|garden|sports_centre|fitness_centre|pitch|playground"]',
+      'way["leisure"~"park|garden|sports_centre|fitness_centre"]',
+      'node["tourism"~"museum|gallery|attraction"]',
+      'node["shop"="books"]'
+    ],
+    meet: [
+      'node["amenity"~"cafe|community_centre|library|bar|pub|restaurant"]',
+      'way["amenity"~"cafe|community_centre|library|bar|pub"]',
+      'node["leisure"="park"]',
+      'way["leisure"="park"]'
+    ],
+    gaming: [
+      'node["leisure"~"amusement_arcade|bowling_alley"]',
+      'node["amenity"="internet_cafe"]',
+      'node["shop"="video_games"]',
+      'node["leisure"="sports_centre"]["sport"~"esports|billiards|darts"]'
+    ],
+    sports: [
+      'node["leisure"~"sports_centre|fitness_centre|stadium|pitch|swimming_pool"]',
+      'way["leisure"~"sports_centre|fitness_centre|stadium|pitch|swimming_pool"]',
+      'node["sport"]'
+    ],
+    music: [
+      'node["amenity"~"theatre|nightclub|bar"]',
+      'node["tourism"="music_venue"]',
+      'node["amenity"="arts_centre"]',
+      'node["leisure"="bandstand"]'
+    ],
+    events: [
+      'node["amenity"~"community_centre|theatre|arts_centre|cinema"]',
+      'way["amenity"~"community_centre|theatre|arts_centre"]',
+      'node["tourism"="attraction"]'
+    ],
+    nightlife: [
+      'node["amenity"~"nightclub|bar|pub|biergarten"]',
+      'way["amenity"~"nightclub|bar|pub"]',
+      'node["amenity"="karaoke_box"]'
+    ],
+    relax: [
+      'node["amenity"="cafe"]',
+      'way["amenity"="cafe"]',
+      'node["leisure"~"park|garden"]',
+      'way["leisure"~"park|garden"]',
+      'node["amenity"="library"]',
+      'node["tourism"="spa"]'
+    ],
+    study: [
+      'node["amenity"="library"]',
+      'way["amenity"="library"]',
+      'node["amenity"="cafe"]',
+      'node["amenity"="coworking_space"]',
+      'node["office"="coworking"]'
+    ],
+    outdoor: [
+      'node["leisure"~"park|garden|nature_reserve|playground"]',
+      'way["leisure"~"park|garden|nature_reserve"]',
+      'node["tourism"="viewpoint"]',
+      'node["natural"="beach"]'
+    ],
+    cafes: [
+      'node["amenity"="cafe"]',
+      'way["amenity"="cafe"]',
+      'node["amenity"="coffee_shop"]'
+    ],
+    libraries: [
+      'node["amenity"="library"]',
+      'way["amenity"="library"]'
+    ],
+    parks: [
+      'node["leisure"="park"]',
+      'way["leisure"="park"]',
+      'node["leisure"="garden"]',
+      'way["leisure"="garden"]'
+    ],
+    coworking: [
+      'node["amenity"="coworking_space"]',
+      'node["office"="coworking"]',
+      'way["amenity"="coworking_space"]'
+    ],
+    community: [
+      'node["amenity"="community_centre"]',
+      'way["amenity"="community_centre"]',
+      'node["amenity"="social_facility"]'
+    ],
+    gyms: [
+      'node["leisure"="fitness_centre"]',
+      'way["leisure"="fitness_centre"]',
+      'node["leisure"="sports_centre"]',
+      'node["sport"="fitness"]'
+    ],
+    karaoke: [
+      'node["amenity"="karaoke_box"]',
+      'node["leisure"="karaoke"]'
+    ],
+    art: [
+      'node["tourism"~"museum|gallery"]',
+      'node["amenity"="arts_centre"]',
+      'way["tourism"~"museum|gallery"]',
+      'node["amenity"="theatre"]'
+    ],
+    dining: [
+      'node["amenity"="restaurant"]',
+      'way["amenity"="restaurant"]',
+      'node["amenity"="food_court"]',
+      'node["amenity"="pub"]'
+    ]
+  };
+
+  // Keyword boost for free-text search
+  const KEYWORD_TAG_HINTS = {
+    cafe: 'cafe', coffee: 'cafe', library: 'library', park: 'park', gym: 'fitness_centre',
+    cowork: 'coworking_space', karaoke: 'karaoke_box', museum: 'museum', bar: 'bar',
+    pub: 'pub', club: 'nightclub', restaurant: 'restaurant', cinema: 'cinema'
+  };
+
+  // ============================================================
+  // STATE
+  // ============================================================
+  const state = {
+    selectedCategory: "all",
+    selectedQuick: "all",
+    userLat: null,
+    userLon: null,
+    searchLat: null,
+    searchLon: null,
+    searchLabel: "",
+    usingGeolocation: false,
+    isSearching: false,
+    results: [],
+    markers: [],
+    map: null,
+    markerLayer: null
+  };
+
+  // ============================================================
+  // DOM refs
+  // ============================================================
+  const $ = (id) => document.getElementById(id);
+  const els = {
+    keyword: $("keywordInput"),
+    btnLocation: $("btnLocation"),
+    country: $("countrySelect"),
+    city: $("cityInput"),
+    citySug: $("citySuggestions"),
+    catChips: $("categoryChips"),
+    quickFilters: $("quickFilters"),
+    btnFind: $("btnFind"),
+    btnReset: $("btnReset"),
+    status: $("statusBar"),
+    resultsList: $("resultsList"),
+    resultsCount: $("resultsCount")
+  };
+
+  // ============================================================
+  // INIT
+  // ============================================================
+  function init() {
+    loadCountries();
+    renderCategories();
+    renderQuickFilters();
+    initMap();
+    bindEvents();
   }
-  if(b.dataset.f==='all'){
-   priceFilter='all';filter='all';purpose=null;
-   clearAllCategoryActive();
-   b.classList.add('active');
-   if(places.length) render();
-   return;
+
+  function loadCountries() {
+    const countries = Object.keys(countryCities).sort();
+    countries.forEach(c => {
+      const opt = document.createElement("option");
+      opt.value = c;
+      opt.textContent = c;
+      els.country.appendChild(opt);
+    });
   }
-  clearAllCategoryActive();
-  b.classList.add('active');
-  filter=b.dataset.f;purpose=null;
-  if(places.length) render();
- });
-});
-document.getElementById('moreFiltersBtn').onclick=()=>{const ex=document.getElementById('extraFilters');ex.classList.toggle('hidden');document.getElementById('moreFiltersBtn').textContent=ex.classList.contains('hidden')?'More ▾':'Less ▴';};
-document.querySelectorAll('#extraFilters .fbtn').forEach(b=>{
- b.addEventListener('click',()=>{
-  clearAllCategoryActive();
-  b.classList.add('active');
-  filter=b.dataset.f;purpose=null;
-  if(places.length) render();
- });
-});
-document.querySelectorAll('#purposeChips .chip').forEach(b=>{
- b.addEventListener('click',()=>{
-  if(b.classList.contains('active')){
-   b.classList.remove('active');purpose=null;filter='all';
-   document.querySelectorAll('#mainFilters .fbtn[data-f="all"]').forEach(x=>x.classList.add('active'));
-  }else{
-   clearAllCategoryActive();
-   b.classList.add('active');
-   purpose=b.dataset.look;filter='all';
+
+  function renderCategories() {
+    els.catChips.innerHTML = "";
+    PRIMARY_CATEGORIES.forEach(cat => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "chip" + (cat.id === state.selectedCategory ? " active" : "");
+      chip.dataset.id = cat.id;
+      chip.textContent = cat.label;
+      chip.setAttribute("aria-pressed", cat.id === state.selectedCategory ? "true" : "false");
+      chip.addEventListener("click", () => selectCategory(cat.id));
+      els.catChips.appendChild(chip);
+    });
   }
-  if(places.length) render();
- });
-});
-searchBox.addEventListener('input',()=>{if(places.length) render();});
-init();
-</script>
-<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+
+  function renderQuickFilters() {
+    els.quickFilters.innerHTML = "";
+    QUICK_FILTERS.forEach(f => {
+      const chip = document.createElement("button");
+      chip.type = "button";
+      chip.className = "qchip" + (f.id === state.selectedQuick ? " active" : "");
+      chip.dataset.id = f.id;
+      chip.textContent = f.label;
+      chip.addEventListener("click", () => selectQuick(f.id));
+      els.quickFilters.appendChild(chip);
+    });
+  }
+
+  function selectCategory(id) {
+    state.selectedCategory = id;
+    // Update UI: only one active
+    els.catChips.querySelectorAll(".chip").forEach(c => {
+      const active = c.dataset.id === id;
+      c.classList.toggle("active", active);
+      c.setAttribute("aria-pressed", active ? "true" : "false");
+    });
+  }
+
+  function selectQuick(id) {
+    state.selectedQuick = id;
+    els.quickFilters.querySelectorAll(".qchip").forEach(c => {
+      c.classList.toggle("active", c.dataset.id === id);
+    });
+  }
+
+  // ============================================================
+  // MAP
+  // ============================================================
+  function initMap() {
+    state.map = L.map("map", {
+      zoomControl: true,
+      attributionControl: true
+    }).setView([20, 0], 2);
+
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+      maxZoom: 19,
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+    }).addTo(state.map);
+
+    state.markerLayer = L.layerGroup().addTo(state.map);
+  }
+
+  function centerMap(lat, lon, zoom) {
+    state.map.setView([lat, lon], zoom || 13);
+  }
+
+  function clearMarkers() {
+    state.markerLayer.clearLayers();
+    state.markers = [];
+  }
+
+  function renderMarkers(places) {
+    clearMarkers();
+    if (!places.length) return;
+
+    const bounds = [];
+    places.forEach((p, i) => {
+      if (p.lat == null || p.lon == null) return;
+      const marker = L.marker([p.lat, p.lon]);
+      const popupHtml = `
+        <strong>${escapeHtml(p.name)}</strong>
+        <div style="color:#64748b;font-size:0.82rem;margin:2px 0">${escapeHtml(p.categoryLabel || "")}</div>
+        ${p.address ? `<div style="font-size:0.82rem">${escapeHtml(p.address)}</div>` : ""}
+        <div class="popup-actions">
+          <a class="dir" href="${directionsUrl(p)}" target="_blank" rel="noopener">Directions</a>
+          <a class="view" href="#" data-idx="${i}">View</a>
+        </div>
+      `;
+      marker.bindPopup(popupHtml);
+      marker.on("popupopen", () => {
+        const link = marker.getPopup().getElement()?.querySelector("a.view");
+        if (link) {
+          link.addEventListener("click", (e) => {
+            e.preventDefault();
+            viewPlaceOnMap(p);
+          });
+        }
+      });
+      marker.addTo(state.markerLayer);
+      state.markers.push(marker);
+      bounds.push([p.lat, p.lon]);
+    });
+
+    if (bounds.length === 1) {
+      state.map.setView(bounds[0], 15);
+    } else if (bounds.length > 1) {
+      state.map.fitBounds(bounds, { padding: [40, 40], maxZoom: 15 });
+    }
+  }
+
+  // ============================================================
+  // GEOLOCATION
+  // ============================================================
+  function getUserLocation() {
+    if (!navigator.geolocation) {
+      showStatus("Geolocation is not supported by your browser. Please select a country and city.", "error");
+      return;
+    }
+    els.btnLocation.disabled = true;
+    els.btnLocation.innerHTML = '<span class="spinner"></span> Locating...';
+    showStatus("Getting your location...", "loading");
+
+    navigator.geolocation.getCurrentPosition(
+      async (pos) => {
+        const lat = pos.coords.latitude;
+        const lon = pos.coords.longitude;
+        state.userLat = lat;
+        state.userLon = lon;
+        state.searchLat = lat;
+        state.searchLon = lon;
+        state.usingGeolocation = true;
+        centerMap(lat, lon, 13);
+
+        // Reverse geocode
+        try {
+          const label = await reverseGeocode(lat, lon);
+          state.searchLabel = label || "Your location";
+          showStatus(`Location set: ${state.searchLabel}`, "success");
+          // Try to set country/city if possible
+          trySetCountryCityFromLabel(label);
+        } catch {
+          state.searchLabel = "Your location";
+          showStatus("Location found. You can search now.", "success");
+        }
+
+        els.btnLocation.disabled = false;
+        els.btnLocation.classList.add("active");
+        els.btnLocation.innerHTML = `
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          Location set`;
+      },
+      (err) => {
+        els.btnLocation.disabled = false;
+        els.btnLocation.innerHTML = `
+          <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+          Use My Location`;
+        let msg = "Could not get your location. Please select a country and city.";
+        if (err.code === 1) msg = "Location permission denied. Please select a country and city instead.";
+        showStatus(msg, "error");
+      },
+      { enableHighAccuracy: false, timeout: 12000, maximumAge: 60000 }
+    );
+  }
+
+  async function reverseGeocode(lat, lon) {
+    const url = `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json&addressdetails=1`;
+    const res = await fetch(url, {
+      headers: { "Accept-Language": "en", "User-Agent": "ThirdPlaceNearMe/1.0" }
+    });
+    if (!res.ok) throw new Error("Reverse geocode failed");
+    const data = await res.json();
+    const a = data.address || {};
+    const city = a.city || a.town || a.village || a.suburb || a.county || "";
+    const country = a.country || "";
+    return [city, country].filter(Boolean).join(", ") || data.display_name || "";
+  }
+
+  function trySetCountryCityFromLabel(label) {
+    if (!label) return;
+    // Best-effort: match country name in label
+    const countries = Object.keys(countryCities);
+    for (const c of countries) {
+      if (label.includes(c)) {
+        els.country.value = c;
+        els.city.disabled = false;
+        const parts = label.split(",");
+        if (parts[0]) {
+          const cityName = parts[0].trim();
+          const cities = countryCities[c] || [];
+          const match = cities.find(ci => ci.toLowerCase() === cityName.toLowerCase());
+          if (match) els.city.value = match;
+          else els.city.value = cityName;
+        }
+        break;
+      }
+    }
+  }
+
+  // ============================================================
+  // CITY AUTOCOMPLETE
+  // ============================================================
+  let cityDebounce = null;
+
+  function onCountryChange() {
+    const country = els.country.value;
+    els.city.value = "";
+    els.city.disabled = !country;
+    els.citySug.classList.remove("show");
+    els.citySug.innerHTML = "";
+    state.usingGeolocation = false;
+    els.btnLocation.classList.remove("active");
+    if (country) {
+      // Geocode country center roughly later on search
+    }
+  }
+
+  function onCityInput() {
+    clearTimeout(cityDebounce);
+    cityDebounce = setTimeout(() => {
+      const country = els.country.value;
+      const q = els.city.value.trim().toLowerCase();
+      if (!country || q.length < 1) {
+        els.citySug.classList.remove("show");
+        return;
+      }
+      const cities = countryCities[country] || [];
+      const matches = cities.filter(c => c.toLowerCase().includes(q)).slice(0, 12);
+      if (!matches.length) {
+        els.citySug.classList.remove("show");
+        return;
+      }
+      els.citySug.innerHTML = matches.map((c, i) =>
+        `<div role="option" data-city="${escapeHtml(c)}" class="${i === 0 ? "active" : ""}">${escapeHtml(c)}</div>`
+      ).join("");
+      els.citySug.classList.add("show");
+    }, 120);
+  }
+
+  function onCitySugClick(e) {
+    const div = e.target.closest("[data-city]");
+    if (!div) return;
+    els.city.value = div.dataset.city;
+    els.citySug.classList.remove("show");
+    state.usingGeolocation = false;
+    els.btnLocation.classList.remove("active");
+  }
+
+  // ============================================================
+  // SEARCH
+  // ============================================================
+  async function searchPlaces() {
+    if (state.isSearching) return;
+
+    // Resolve location
+    let lat = state.searchLat;
+    let lon = state.searchLon;
+    let label = state.searchLabel;
+
+    if (!state.usingGeolocation || lat == null) {
+      const country = els.country.value;
+      const city = els.city.value.trim();
+      if (!country || !city) {
+        showStatus("Please use your location or select a country and city.", "error");
+        return;
+      }
+      showStatus("Locating city...", "loading");
+      try {
+        const geo = await geocodeCity(city, country);
+        lat = geo.lat;
+        lon = geo.lon;
+        label = geo.label;
+        state.searchLat = lat;
+        state.searchLon = lon;
+        state.searchLabel = label;
+        centerMap(lat, lon, 13);
+      } catch (err) {
+        showStatus("Could not find that city. Please check the spelling or try another city.", "error");
+        return;
+      }
+    }
+
+    state.isSearching = true;
+    els.btnFind.disabled = true;
+    els.btnFind.innerHTML = '<span class="spinner"></span> Finding third places...';
+    showStatus("Finding third places near you...", "loading");
+    clearMarkers();
+    els.resultsList.innerHTML = `<div class="empty-state"><span class="spinner"></span><p style="margin-top:12px">Searching...</p></div>`;
+
+    try {
+      const places = await fetchPlaces(lat, lon, state.selectedCategory, els.keyword.value.trim());
+      // Apply quick filter client-side
+      let filtered = applyQuickFilter(places, state.selectedQuick);
+      // Sort by distance
+      filtered = filtered.map(p => {
+        p.distance = haversine(lat, lon, p.lat, p.lon);
+        return p;
+      }).sort((a, b) => a.distance - b.distance);
+
+      state.results = filtered;
+      renderResults(filtered, label);
+      renderMarkers(filtered);
+
+      if (filtered.length === 0) {
+        showStatus("No third places found for this category in this area.", "info");
+      } else {
+        showStatus(`Found ${filtered.length} place${filtered.length === 1 ? "" : "s"} near ${escapeHtml(label)}`, "success");
+      }
+    } catch (err) {
+      console.error(err);
+      showStatus("Search failed. The map service may be busy — please try again in a moment.", "error");
+      els.resultsList.innerHTML = `
+        <div class="empty-state">
+          <h3>Something went wrong</h3>
+          <p>We couldn't fetch places right now. Please try again.</p>
+          <div class="suggestions">
+            <button type="button" class="btn btn-secondary btn-sm" id="retryBtn">Try again</button>
+          </div>
+        </div>`;
+      $("retryBtn")?.addEventListener("click", searchPlaces);
+    } finally {
+      state.isSearching = false;
+      els.btnFind.disabled = false;
+      els.btnFind.textContent = "Find Third Place";
+    }
+  }
+
+  async function geocodeCity(city, country) {
+    const q = encodeURIComponent(`${city}, ${country}`);
+    const url = `https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1&addressdetails=1`;
+    const res = await fetch(url, {
+      headers: { "Accept-Language": "en", "User-Agent": "ThirdPlaceNearMe/1.0" }
+    });
+    if (!res.ok) throw new Error("Geocode failed");
+    const data = await res.json();
+    if (!data.length) throw new Error("No results");
+    return {
+      lat: parseFloat(data[0].lat),
+      lon: parseFloat(data[0].lon),
+      label: data[0].display_name.split(",").slice(0, 2).join(",").trim()
+    };
+  }
+
+  async function fetchPlaces(lat, lon, category, keyword) {
+    const radius = 3500; // meters
+    const queries = CATEGORY_QUERIES[category] || CATEGORY_QUERIES.all;
+
+    // Build Overpass QL
+    let filters = queries.map(q => {
+      // Inject around
+      if (q.startsWith("node")) return `${q}(around:${radius},${lat},${lon});`;
+      if (q.startsWith("way")) return `${q}(around:${radius},${lat},${lon});`;
+      return q;
+    }).join("\n");
+
+    // Keyword refinement: if user typed something, prefer matching name or amenity
+    let keywordFilter = "";
+    if (keyword && keyword.length >= 2) {
+      const kw = keyword.toLowerCase().replace(/[^\w\s]/g, "").trim();
+      const hint = Object.keys(KEYWORD_TAG_HINTS).find(k => kw.includes(k));
+      if (hint) {
+        const tag = KEYWORD_TAG_HINTS[hint];
+        keywordFilter = `
+          node["amenity"="${tag}"](around:${radius},${lat},${lon});
+          way["amenity"="${tag}"](around:${radius},${lat},${lon});
+          node["leisure"="${tag}"](around:${radius},${lat},${lon});
+        `;
+      } else {
+        // Name search via regex (Overpass supports case-insensitive)
+        keywordFilter = `
+          node["name"~"${escapeOverpass(kw)}",i](around:${radius},${lat},${lon});
+          way["name"~"${escapeOverpass(kw)}",i](around:${radius},${lat},${lon});
+        `;
+      }
+    }
+
+    const ql = `
+      [out:json][timeout:20];
+      (
+        ${filters}
+        ${keywordFilter}
+      );
+      out center tags 40;
+    `;
+
+    const endpoints = [
+      "https://overpass-api.de/api/interpreter",
+      "https://overpass.kumi.systems/api/interpreter"
+    ];
+
+    let lastErr;
+    for (const endpoint of endpoints) {
+      try {
+        const res = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/x-www-form-urlencoded" },
+          body: "data=" + encodeURIComponent(ql)
+        });
+        if (!res.ok) throw new Error("Overpass " + res.status);
+        const data = await res.json();
+        return parseOverpass(data);
+      } catch (e) {
+        lastErr = e;
+      }
+    }
+    throw lastErr || new Error("All Overpass endpoints failed");
+  }
+
+  function parseOverpass(data) {
+    const elements = data.elements || [];
+    const seen = new Set();
+    const places = [];
+
+    for (const el of elements) {
+      const tags = el.tags || {};
+      const name = tags.name || tags["name:en"] || null;
+      if (!name) continue;
+
+      let lat = el.lat;
+      let lon = el.lon;
+      if (lat == null && el.center) {
+        lat = el.center.lat;
+        lon = el.center.lon;
+      }
+      if (lat == null || lon == null) continue;
+
+      const key = `${name}|${lat.toFixed(4)}|${lon.toFixed(4)}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+
+      const amenity = tags.amenity || tags.leisure || tags.tourism || tags.shop || tags.office || "";
+      const categoryLabel = humanCategory(amenity, tags);
+      const address = formatAddress(tags);
+
+      places.push({
+        id: el.id,
+        name,
+        lat,
+        lon,
+        amenity,
+        categoryLabel,
+        address,
+        website: tags.website || tags["contact:website"] || null,
+        opening: tags.opening_hours || null,
+        phone: tags.phone || tags["contact:phone"] || null,
+        fee: tags.fee || null
+      });
+
+      if (places.length >= 35) break;
+    }
+    return places;
+  }
+
+  function humanCategory(amenity, tags) {
+    const map = {
+      cafe: "Café", coffee_shop: "Café", library: "Library",
+      community_centre: "Community Center", coworking_space: "Coworking",
+      bar: "Bar", pub: "Pub", restaurant: "Restaurant",
+      nightclub: "Nightclub", karaoke_box: "Karaoke",
+      cinema: "Cinema", theatre: "Theatre", arts_centre: "Arts Centre",
+      park: "Park", garden: "Garden", fitness_centre: "Gym",
+      sports_centre: "Sports Centre", stadium: "Stadium",
+      museum: "Museum", gallery: "Gallery", pitch: "Sports Pitch",
+      playground: "Playground", swimming_pool: "Swimming Pool",
+      amusement_arcade: "Arcade", bowling_alley: "Bowling",
+      internet_cafe: "Internet Café", food_court: "Food Court",
+      biergarten: "Beer Garden", social_facility: "Social Facility"
+    };
+    if (map[amenity]) return map[amenity];
+    if (tags.sport) return "Sports";
+    if (amenity) return amenity.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+    return "Place";
+  }
+
+  function formatAddress(tags) {
+    const parts = [
+      tags["addr:housenumber"],
+      tags["addr:street"],
+      tags["addr:suburb"] || tags["addr:neighbourhood"],
+      tags["addr:city"] || tags["addr:town"]
+    ].filter(Boolean);
+    return parts.join(", ") || tags["addr:full"] || "";
+  }
+
+  function applyQuickFilter(places, quick) {
+    if (quick === "all") return places;
+    if (quick === "free") {
+      return places.filter(p => {
+        if (p.fee === "yes" || p.fee === "customers") return false;
+        // Parks, libraries often free
+        const freeTypes = ["park", "garden", "library", "playground", "viewpoint"];
+        if (freeTypes.includes(p.amenity)) return true;
+        if (p.fee === "no") return true;
+        return true; // don't over-filter when unknown
+      });
+    }
+    if (quick === "paid") {
+      return places.filter(p => p.fee === "yes" || ["cafe", "restaurant", "bar", "pub", "nightclub", "cinema", "fitness_centre", "coworking_space"].includes(p.amenity));
+    }
+    if (quick === "social") {
+      return places.filter(p => ["cafe", "bar", "pub", "community_centre", "restaurant", "park"].includes(p.amenity));
+    }
+    if (quick === "gaming") {
+      return places.filter(p => ["amusement_arcade", "bowling_alley", "internet_cafe"].includes(p.amenity) || (p.name && /game|arcade|bowling|billiard/i.test(p.name)));
+    }
+    if (quick === "sports") {
+      return places.filter(p => ["sports_centre", "fitness_centre", "stadium", "pitch", "swimming_pool"].includes(p.amenity) || p.categoryLabel === "Sports");
+    }
+    if (quick === "nightlife") {
+      return places.filter(p => ["nightclub", "bar", "pub", "biergarten", "karaoke_box"].includes(p.amenity));
+    }
+    return places;
+  }
+
+  // ============================================================
+  // RENDER RESULTS
+  // ============================================================
+  function renderResults(places, label) {
+    els.resultsCount.textContent = places.length ? `${places.length} places` : "";
+
+    if (!places.length) {
+      els.resultsList.innerHTML = `
+        <div class="empty-state">
+          <h3>No third places found for this category in this area.</h3>
+          <p>Try another category, remove filters, or search a nearby city.</p>
+          <div class="suggestions">
+            <button type="button" class="btn btn-secondary btn-sm" data-action="cat-all">Show All categories</button>
+            <button type="button" class="btn btn-secondary btn-sm" data-action="reset">Clear Filters</button>
+          </div>
+        </div>`;
+      els.resultsList.querySelector('[data-action="cat-all"]')?.addEventListener("click", () => {
+        selectCategory("all");
+        selectQuick("all");
+        searchPlaces();
+      });
+      els.resultsList.querySelector('[data-action="reset"]')?.addEventListener("click", resetFilters);
+      return;
+    }
+
+    els.resultsList.innerHTML = places.map((p, i) => `
+      <article class="result-card" data-idx="${i}">
+        <h3>${escapeHtml(p.name)}</h3>
+        <div class="result-meta">
+          <span class="badge">${escapeHtml(p.categoryLabel)}</span>
+          ${p.distance != null ? `<span>${formatDistance(p.distance)}</span>` : ""}
+          ${p.opening ? `<span title="${escapeHtml(p.opening)}">Hours available</span>` : ""}
+        </div>
+        ${p.address ? `<div class="result-address">${escapeHtml(p.address)}</div>` : ""}
+        <div class="result-actions">
+          <a class="btn btn-primary btn-sm" href="${directionsUrl(p)}" target="_blank" rel="noopener">Directions</a>
+          <button type="button" class="btn btn-secondary btn-sm" data-view="${i}">View Map</button>
+          ${p.website ? `<a class="btn btn-outline btn-sm" href="${escapeAttr(p.website)}" target="_blank" rel="noopener">Website</a>` : ""}
+        </div>
+      </article>
+    `).join("");
+
+    els.resultsList.querySelectorAll("[data-view]").forEach(btn => {
+      btn.addEventListener("click", () => {
+        const idx = parseInt(btn.dataset.view, 10);
+        const place = state.results[idx];
+        if (place) viewPlaceOnMap(place);
+      });
+    });
+  }
+
+  function viewPlaceOnMap(place) {
+    if (place.lat == null) return;
+    state.map.setView([place.lat, place.lon], 16);
+    // Open matching marker popup
+    const marker = state.markers.find(m => {
+      const ll = m.getLatLng();
+      return Math.abs(ll.lat - place.lat) < 0.0001 && Math.abs(ll.lng - place.lon) < 0.0001;
+    });
+    if (marker) marker.openPopup();
+    // Scroll map into view on mobile
+    document.querySelector(".map-container")?.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  function directionsUrl(place) {
+    if (place.lat != null && place.lon != null) {
+      return `https://www.openstreetmap.org/directions?from=&to=${place.lat}%2C${place.lon}#map=16/${place.lat}/${place.lon}`;
+    }
+    const q = encodeURIComponent(place.name + (place.address ? " " + place.address : ""));
+    return `https://www.openstreetmap.org/search?query=${q}`;
+  }
+
+  // ============================================================
+  // UI HELPERS
+  // ============================================================
+  function showStatus(msg, type) {
+    els.status.textContent = msg;
+    els.status.className = "status-bar show " + (type || "info");
+  }
+
+  function hideStatus() {
+    els.status.className = "status-bar";
+    els.status.textContent = "";
+  }
+
+  function resetFilters() {
+    state.selectedCategory = "all";
+    state.selectedQuick = "all";
+    state.usingGeolocation = false;
+    state.userLat = null;
+    state.userLon = null;
+    state.searchLat = null;
+    state.searchLon = null;
+    state.searchLabel = "";
+    state.results = [];
+    els.keyword.value = "";
+    els.country.value = "";
+    els.city.value = "";
+    els.city.disabled = true;
+    els.citySug.classList.remove("show");
+    els.btnLocation.classList.remove("active");
+    els.btnLocation.innerHTML = `
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      Use My Location`;
+    selectCategory("all");
+    selectQuick("all");
+    clearMarkers();
+    els.resultsList.innerHTML = `
+      <div class="empty-state">
+        <h3>Ready to explore</h3>
+        <p>Choose a location and category, then tap Find Third Place.</p>
+      </div>`;
+    els.resultsCount.textContent = "";
+    hideStatus();
+    state.map.setView([20, 0], 2);
+  }
+
+  function escapeHtml(s) {
+    if (!s) return "";
+    return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+  }
+  function escapeAttr(s) {
+    return escapeHtml(s).replace(/'/g, "&#39;");
+  }
+  function escapeOverpass(s) {
+    return s.replace(/\\/g, "\\\\").replace(/"/g, '\\"');
+  }
+  function formatDistance(km) {
+    if (km < 1) return Math.round(km * 1000) + " m";
+    return km.toFixed(1) + " km";
+  }
+  function haversine(lat1, lon1, lat2, lon2) {
+    const R = 6371;
+    const dLat = (lat2 - lat1) * Math.PI / 180;
+    const dLon = (lon2 - lon1) * Math.PI / 180;
+    const a = Math.sin(dLat / 2) ** 2 +
+      Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+      Math.sin(dLon / 2) ** 2;
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  }
+
+  // ============================================================
+  // EVENTS
+  // ============================================================
+  function bindEvents() {
+    els.btnLocation.addEventListener("click", getUserLocation);
+    els.country.addEventListener("change", onCountryChange);
+    els.city.addEventListener("input", onCityInput);
+    els.city.addEventListener("focus", onCityInput);
+    els.citySug.addEventListener("click", onCitySugClick);
+    els.btnFind.addEventListener("click", searchPlaces);
+    els.btnReset.addEventListener("click", resetFilters);
+
+    // Enter key on keyword / city
+    els.keyword.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") searchPlaces();
+    });
+    els.city.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        els.citySug.classList.remove("show");
+        searchPlaces();
+      }
+      if (e.key === "Escape") els.citySug.classList.remove("show");
+    });
+
+    // Close suggestions on outside click
+    document.addEventListener("click", (e) => {
+      if (!els.city.contains(e.target) && !els.citySug.contains(e.target)) {
+        els.citySug.classList.remove("show");
+      }
+    });
+  }
+
+  // Boot
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+})();
+  </script>
+</body>
 </html>
