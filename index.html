@@ -44,7 +44,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 .s-item{padding:10px 12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;cursor:pointer}.s-item:hover{background:#f5f5f4}.s-item.active{background:#1c1917;color:#fff}
 .btn{height:46px;border-radius:9999px;border:1px solid #1c1917;background:#1c1917;color:#fff;padding:0 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;white-space:nowrap}.btn:disabled{opacity:.35;pointer-events:none}.btn.on{background:#111827}
 .filters{margin-top:12px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}.fbtn{border-radius:9999px;border:1px solid #e7e5e4;background:#fff;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;min-height:32px}.fbtn.active{background:#1c1917;color:#fff;border-color:#1c1917}.moreBtn{border:1px dashed #d6d3d1}
-.status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;color:#a8a29e}.dot{width:8px;height:8px;border-radius:50%;background:#10b981}.spinner{width:16px;height:16px;border:2px solid #e7e5e4;border-top-color:#1c1917;border-radius:50%;animation:spin .6s linear infinite;display:none}.spinner.on{display:inline-block}@keyframes spin{to{transform:rotate(360deg)}}
+.status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;color:#a8a29e;flex-wrap:wrap}.dot{width:8px;height:8px;border-radius:50%;background:#10b981}.spinner{width:16px;height:16px;border:2px solid #e7e5e4;border-top-color:#1c1917;border-radius:50%;animation:spin .6s linear infinite;display:none}.spinner.on{display:inline-block}@keyframes spin{to{transform:rotate(360deg)}}
 .look{margin-top:12px;padding-top:12px;border-top:1px solid #f5f5f4}.look-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#57534e;margin-bottom:8px}.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid #e7e5e4;background:#fff;border-radius:9999px;padding:6px 11px;font-size:12px;font-weight:500;cursor:pointer;display:flex;gap:5px;align-items:center;min-height:30px}.chip.active{background:#fef3c7;border-color:#fbbf24;color:#78350f}
 .main{margin-top:14px;display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1024px){.main{grid-template-columns:1.45fr 1fr}}
 .mapBox{border:1px solid #e7e5e4;border-radius:20px;overflow:hidden;background:#f5f5f4;position:relative}#map{width:100%;height:58vh;min-height:420px}@media(min-width:1024px){#map{height:760px;min-height:760px}}
@@ -52,7 +52,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 .listHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.listTitle{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#78716c}
 .list{max-height:760px;overflow:auto;display:flex;flex-direction:column;gap:12px;padding-right:2px}@media(max-width:1023px){.list{max-height:none;overflow:visible}}
 .place{border:1px solid #e7e5e4;border-radius:20px;background:#fff;overflow:hidden;cursor:pointer;position:relative}.place.selected{outline:2px solid #111827;outline-offset:0}
-.imgWrap{position:relative;height:170px;background:#f5f5f4;overflow:hidden;cursor:zoom-in}.img{width:100%;height:100%;object-fit:cover;display:block;pointer-events:none}
+.imgWrap{position:relative;height:170px;background:#f5f5f4;overflow:hidden;cursor:zoom-in}.img{width:100%;height:100%;object-fit:cover;display:block}
 .badges{position:absolute;left:10px;top:10px;display:flex;flex-wrap:wrap;gap:6px;z-index:2;max-width:85%;pointer-events:none}.b{padding:5px 10px;border-radius:9999px;font-size:11px;font-weight:600;backdrop-filter:blur(8px)}.b-free{background:rgba(16,185,129,.94);color:#fff}.b-paid{background:rgba(245,158,11,.94);color:#fff}.b-unk{background:rgba(120,113,108,.9);color:#fff}.b-cat{background:rgba(255,255,255,.96);color:#1c1917;border:1px solid rgba(0,0,0,.06)}
 .grad{position:absolute;left:0;right:0;bottom:0;height:70px;background:linear-gradient(to top,rgba(0,0,0,.6),transparent);display:flex;align-items:flex-end;padding:10px 12px;z-index:1;pointer-events:none}.gradName{color:#fff;font-size:13px;font-weight:700;text-shadow:0 1px 4px rgba(0,0,0,.6);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .body{padding:12px 14px}.top{display:flex;justify-content:space-between;gap:8px;align-items:flex-start}.name{font-size:15px;font-weight:700;line-height:1.2;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;flex:1}.dist{background:#1c1917;color:#fff;border-radius:9999px;padding:4px 8px;font-size:11px;font-weight:600;flex-shrink:0}
@@ -111,7 +111,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 <button class="fbtn" data-f="sports">🏆 Sports</button>
 <button class="fbtn" data-f="nightlife">🌙 Nightlife</button>
 <button class="fbtn moreBtn" id="moreFiltersBtn">More ▾</button>
-<div class="status"><span id="spin" class="spinner"></span><span id="statusDot" class="dot"></span><span id="statusText">Ready</span></div>
+<div class="status"><span id="spin" class="spinner"></span><span id="statusDot" class="dot"></span><span id="statusText">Select a city and click Find Third Place</span></div>
 <button id="findBtn" class="btn" style="margin-left:auto;width:auto;min-width:150px;padding:0 20px" disabled>🔍 Find Third Place</button>
 </div>
 
@@ -137,7 +137,9 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 <div class="mapBox"><div id="map"></div><div id="mapTag" class="mapTag">📍 Select a city</div></div>
 <div>
 <div class="listHead"><div class="listTitle">Nearby Third Places</div><div id="coord" style="font-size:11px;color:#a8a29e"></div></div>
-<div id="list" class="list"></div>
+<div id="list" class="list">
+<div class="empty"><b>👋 Welcome to Find Third Place</b><p style="margin-top:8px">Select your <b>Country</b> and <b>City</b> above, then click <b>Find Third Place</b>.<br>No auto-search — you control when search starts.<br>Uses free OpenStreetMap data, no API key needed.</p></div>
+</div>
 </div>
 </div>
 
@@ -151,10 +153,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 <div id="gallery" class="gallery"><div class="close" id="gClose">✕</div><img id="gImg" src=""><div id="gMeta" style="position:absolute;bottom:18px;left:12px;right:12px;color:#fff;font-size:12px;text-align:center"></div></div>
 
 <script>
-// CONFIG - Add Google API key here if you have it. If empty, uses Overpass (free, no key needed)
-const GOOGLE_API_KEY = ''; // e.g. 'AIzaSy...' - keep empty if you want Overpass only
-// If key exists, will try Google Places Text Search first, then fallback to Overpass
-
+// PURE FREE OPENSTREETMAP - NO API KEY NEEDED
 const COUNTRIES=["USA","UK","Canada","Australia","Germany","Netherlands","France","Japan","India","Brazil","Italy","Spain","Turkey","Pakistan","UAE","Saudi Arabia","Portugal","Poland","Sweden","Switzerland"];
 const CITIES={
 UK:[{name:"London",lat:51.5074,lng:-0.1278},{name:"Manchester",lat:53.4808,lng:-2.2426},{name:"Birmingham",lat:52.4862,lng:-1.8904},{name:"Liverpool",lat:53.4084,lng:-2.9916},{name:"Leeds",lat:53.8008,lng:-1.5491}],
@@ -169,7 +168,6 @@ Japan:[{name:"Tokyo",lat:35.6762,lng:139.6503}],Brazil:[{name:"Sao Paulo",lat:-2
 Netherlands:[{name:"Amsterdam",lat:52.3676,lng:4.9041}],UAE:[{name:"Dubai",lat:25.2048,lng:55.2708}],"Saudi Arabia":[{name:"Riyadh",lat:24.7136,lng:46.6753}],Portugal:[{name:"Lisbon",lat:38.7223,lng:-9.1393}],Poland:[{name:"Warsaw",lat:52.2297,lng:21.0122}],Sweden:[{name:"Stockholm",lat:59.3293,lng:18.0686}],Switzerland:[{name:"Zurich",lat:47.3769,lng:8.5417}]
 };
 
-// FIXED CATEGORY MAP - includes gym, cafe live music etc
 const CATEGORY_MAP={
  all:{queries:['amenity=cafe','amenity=library','amenity=community_centre','amenity=youth_centre','amenity=arts_centre','amenity=bar','amenity=pub','amenity=nightclub','amenity=restaurant','amenity=fast_food','amenity=cinema','amenity=theatre','amenity=gym','leisure=park','leisure=garden','leisure=sports_centre','leisure=fitness_centre','leisure=playground','leisure=pitch','leisure=amusement_arcade','shop=books']},
  parks:{queries:['leisure=park','leisure=garden','leisure=playground']},
@@ -179,14 +177,14 @@ const CATEGORY_MAP={
  youth:{queries:['amenity=youth_centre']},
  sports:{queries:['leisure=sports_centre','leisure=pitch','leisure=fitness_centre','leisure=stadium','amenity=gym']},
  gaming:{queries:['leisure=amusement_arcade','shop=video_games','amenity=internet_cafe']},
- recreation:{queries:['leisure=amusement_arcade','amenity=cinema','amenity=theatre','leisure=sports_centre']},
+ recreation:{queries:['leisure=amusement_arcade','amenity=cinema','amenity=theatre']},
  cowork:{queries:['office=coworking','amenity=cafe','amenity=library']},
  restaurants:{queries:['amenity=restaurant','amenity=fast_food']},
  art:{queries:['amenity=arts_centre','tourism=museum','tourism=gallery']},
  nightlife:{queries:['amenity=nightclub','amenity=bar','amenity=pub']},
  clubs:{queries:['amenity=nightclub','amenity=bar']},
  shisha:{queries:['amenity=shisha','amenity=hookah','shop=tobacco']},
- music:{queries:['amenity=bar','amenity=nightclub','amenity=theatre','amenity=pub','amenity=music_venue']},
+ music:{queries:['amenity=bar','amenity=nightclub','amenity=pub','amenity=music_venue','amenity=theatre']},
  entertainment:{queries:['amenity=theatre','amenity=cinema','amenity=nightclub']},
  karaoke:{queries:['amenity=karaoke','amenity=bar']},
  gym:{queries:['amenity=gym','leisure=fitness_centre','leisure=sports_centre','shop=sports']},
@@ -198,14 +196,14 @@ function classify(tags){
  const a=(tags.amenity||'')+'|'+(tags.leisure||'')+'|'+(tags.shop||'')+'|'+(tags.tourism||'');
  const l=a.toLowerCase();
  if(l.includes('nightclub')) return {cat:'Night Clubs',price:'Paid',good:'Nightlife • Music • Socializing',tags:['🌙 Nightlife','🎵 Live Music'],group:'clubs'};
- if(l.includes('bar')||l.includes('pub')||l.includes('music_venue')) return {cat:'Live Music',price:'Paid',good:'Live Music • Nightlife • Socializing',tags:['🎵 Live Music','🌙 Nightlife'],group:'music'};
- if(tags.amenity==='cafe') return {cat:'Cafés',price:'Paid',good:'Relax & socialize • Work • Chat • Live music sometimes',tags:['☕ Café','👥 Social'],group:'cafe'};
+ if(l.includes('bar')||l.includes('pub')||l.includes('music_venue')) return {cat:'Live Music',price:'Paid',good:'Live Music • Nightlife',tags:['🎵 Live Music','🌙 Nightlife'],group:'music'};
+ if(tags.amenity==='cafe') return {cat:'Cafés',price:'Paid',good:'Relax & socialize • Work • Chat',tags:['☕ Café','👥 Social'],group:'cafe'};
  if(tags.amenity==='library') return {cat:'Libraries',price:'Free',good:'Reading • Study',tags:['📚 Learning'],group:'books'};
  if(tags.amenity==='community_centre') return {cat:'Community Centers',price:'Free',good:'Group activities • Meeting people',tags:['👥 Social'],group:'community'};
  if(l.includes('youth')) return {cat:'Youth Spaces',price:'Free',good:'Meeting people • Activities',tags:['👥 Social'],group:'youth'};
  if(tags.leisure==='park'||tags.leisure==='garden') return {cat:'Parks & Outdoor',price:'Free',good:'Outdoor • Walking',tags:['🌳 Outdoor'],group:'parks'};
- if(tags.leisure==='fitness_centre'||tags.amenity==='gym'||tags.shop==='sports') return {cat:'Gyms',price:'Paid',good:'Fitness • Sports • Group activities',tags:['🏋️ Gym','🏆 Sports'],group:'gym'};
- if(tags.leisure.includes('sports')||tags.leisure==='pitch') return {cat:'Sports',price:'Paid',good:'Sports • Group',tags:['🏆 Sports'],group:'sports'};
+ if(tags.leisure==='fitness_centre'||tags.amenity==='gym') return {cat:'Gyms',price:'Paid',good:'Fitness • Sports • Group activities',tags:['🏋️ Gym','🏆 Sports'],group:'gym'};
+ if(l.includes('sports')||tags.leisure==='pitch') return {cat:'Sports',price:'Paid',good:'Sports • Group',tags:['🏆 Sports'],group:'sports'};
  if(tags.leisure==='amusement_arcade') return {cat:'Gaming',price:'Paid',good:'Gaming • Fun',tags:['🎮 Gaming'],group:'gaming'};
  if(tags.amenity==='arts_centre'||tags.tourism==='museum') return {cat:'Art & Culture',price:'Free',good:'Art • Culture',tags:['🎨 Art'],group:'art'};
  if(tags.amenity==='restaurant'||tags.amenity==='fast_food') return {cat:'Social Dining',price:'Paid',good:'Social dining',tags:['🍽️ Dining'],group:'restaurants'};
@@ -215,25 +213,48 @@ function classify(tags){
  return {cat:'Community Space',price:'Unknown',good:'Socializing',tags:['👥 Social'],group:'social'};
 }
 
-let map, markers=[], selectedCity=CITIES.Italy[3], selectedCountry="Italy", filter="all", priceFilter="all", purpose=null, userLoc=null, places=[], selectedId=null, cache=new Map();
+let map, markers=[], selectedCity=null, selectedCountry="Italy", filter="all", priceFilter="all", purpose=null, userLoc=null, places=[], selectedId=null, cache=new Map();
 const countrySel=document.getElementById('countrySel'),cityInput=document.getElementById('cityInput'),citySuggest=document.getElementById('citySuggest'),cityCount=document.getElementById('cityCount'),findBtn=document.getElementById('findBtn'),spin=document.getElementById('spin'),statusText=document.getElementById('statusText'),searchBox=document.getElementById('searchBox'),listEl=document.getElementById('list'),mapTag=document.getElementById('mapTag'),coord=document.getElementById('coord');
 
 COUNTRIES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;countrySel.appendChild(o)});countrySel.value="Italy";
 
-function initMap(){map=L.map('map',{zoomControl:false}).setView([selectedCity.lat,selectedCity.lng],13);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);L.control.zoom({position:'bottomright'}).addTo(map);updateTag();}
-function updateTag(){mapTag.textContent=`📍 ${selectedCity.name}, ${selectedCountry}`;coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;}
+function initMap(){
+ const startLat=41.9028,lng=12.4964;
+ map=L.map('map',{zoomControl:false}).setView([startLat,lng],5);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+ L.control.zoom({position:'bottomright'}).addTo(map);
+ mapTag.textContent='📍 Select a city and click Find Third Place';
+}
+function updateTag(){if(!selectedCity) return; mapTag.textContent=`📍 ${selectedCity.name}, ${selectedCountry}`;coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;}
 function setLoading(on,msg){spin.classList.toggle('on',on);statusText.textContent=msg||'';}
 function showSuggest(q){
  const all=CITIES[selectedCountry]||[];const filtered=q?all.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())).slice(0,12):all.slice(0,12);
- cityCount.textContent=`· ${filtered.length} found`;citySuggest.innerHTML='';filtered.forEach(c=>{const d=document.createElement('div');d.className='s-item'+(c.name===selectedCity.name?' active':'');d.innerHTML=`<span style="font-weight:600">${c.name}</span><span style="font-size:11px;color:#a8a29e">${c.lat.toFixed(2)}, ${c.lng.toFixed(2)}</span>`;d.onmousedown=()=>{selectedCity=c;cityInput.value=c.name;citySuggest.classList.remove('on');findBtn.disabled=false;findBtn.classList.add('on');updateTag();};citySuggest.appendChild(d);});citySuggest.classList.add('on');
+ cityCount.textContent=`· ${filtered.length} found`;citySuggest.innerHTML='';filtered.forEach(c=>{
+  const d=document.createElement('div');d.className='s-item'+(selectedCity&&c.name===selectedCity.name?' active':'');
+  d.innerHTML=`<span style="font-weight:600">${c.name}</span><span style="font-size:11px;color:#a8a29e">${c.lat.toFixed(2)}, ${c.lng.toFixed(2)}</span>`;
+  d.onmousedown=()=>{
+   selectedCity=c;cityInput.value=c.name;citySuggest.classList.remove('on');
+   findBtn.disabled=false;findBtn.classList.add('on');
+   updateTag();
+   if(map) map.setView([c.lat,c.lng],13);
+   statusText.textContent=`Ready to search in ${c.name} — click Find Third Place`;
+  };
+  citySuggest.appendChild(d);
+ });
+ citySuggest.classList.add('on');
 }
-countrySel.addEventListener('change',e=>{selectedCountry=e.target.value;selectedCity=CITIES[selectedCountry][0];cityInput.value=selectedCity.name;findBtn.disabled=false;findBtn.classList.add('on');updateTag();showSuggest('');});
+countrySel.addEventListener('change',e=>{
+ selectedCountry=e.target.value;const cities=CITIES[selectedCountry]||[];selectedCity=cities[0]||null;
+ cityInput.value=selectedCity?selectedCity.name:'';cityCount.textContent=cities.length?`· ${cities.length} cities`:'';
+ findBtn.disabled=!selectedCity;if(selectedCity) findBtn.classList.add('on');
+ updateTag();if(selectedCity&&map) map.setView([selectedCity.lat,selectedCity.lng],13);
+ statusText.textContent=selectedCity?`Ready to search in ${selectedCity.name}`:'Select a city';
+});
 cityInput.addEventListener('focus',()=>showSuggest(cityInput.value));cityInput.addEventListener('input',()=>showSuggest(cityInput.value));
 document.addEventListener('click',e=>{if(!e.target.closest('#cityInput')&&!e.target.closest('#citySuggest')) citySuggest.classList.remove('on');});
 
-// ROBUST OVERPASS WITH 3 FALLBACKS
 async function overpassFetch(query){
- const servers=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter','https://maps.mail.ru/osm/api/interpreter'];
+ const servers=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
  let last=null;
  for(let url of servers){
   try{
@@ -244,78 +265,46 @@ async function overpassFetch(query){
  }
  throw last;
 }
-
-// GOOGLE PLACES INTEGRATION (optional)
-async function googleFetch(center, catKey){
- if(!GOOGLE_API_KEY) throw new Error('No Google key');
- const mapping=CATEGORY_MAP[catKey]||CATEGORY_MAP.all;
- const keyword=mapping.queries[0]?mapping.queries[0].split('=')[1].replace('_',' '):'cafe';
- const query=`${keyword} in ${center.name}`;
- const url=`https://maps.googleapis.com/maps/api/place/textsearch/json?query=${encodeURIComponent(query)}&location=${center.lat},${center.lng}&radius=7000&key=${GOOGLE_API_KEY}`;
- // Note: This will fail CORS on GitHub Pages unless you use proxy. We try and fallback.
- const res=await fetch(url);
- if(!res.ok) throw new Error('Google failed');
- const data=await res.json();
- if(data.status!=='OK') throw new Error('Google status '+data.status);
- return data.results.map(r=>({
-  id:r.place_id,name:r.name,cat:catKey,price:'Unknown',good:'Good places to meet people',tags:['👥 Social'],group:catKey,lat:r.geometry.location.lat,lng:r.geometry.location.lng,addr:r.formatted_address,website:null,phone:null,opening:r.opening_hours?.open_now?'Open now':'Information unavailable',photo:r.photos?.[0]?.photo_reference||null
- }));
-}
-
 function buildQuery(center, catKey){
  const mapping=CATEGORY_MAP[catKey]||CATEGORY_MAP.all;
- let queries=mapping.queries;
- if(!queries||queries.length===0) queries=CATEGORY_MAP.all.queries;
+ let queries=mapping.queries;if(!queries||queries.length===0) queries=CATEGORY_MAP.all.queries;
  const parts=queries.map(q=>{const [k,v]=q.split('=');return `nwr["${k}"="${v}"](around:8000,${center.lat},${center.lng});`;}).join('');
  return `[out:json][timeout:25];(${parts});out center 70;`;
 }
-
 async function fetchPlaces(center, catKey='all'){
+ if(!center){listEl.innerHTML=`<div class="empty"><b>Please select a country and city first.</b></div>`;return;}
  const cacheKey=`${center.lat.toFixed(4)}_${center.lng.toFixed(4)}_${catKey}_${priceFilter}`;
  if(cache.has(cacheKey)){places=cache.get(cacheKey);render();setLoading(false,`${places.length} places found in ${center.name}`);return;}
  setLoading(true,`🔎 Searching for third places in ${center.name}…`);
- listEl.innerHTML=`<div class="skeleton"><div class="sk" style="width:60%"></div><div class="sk" style="width:90%"></div><div class="sk" style="width:80%"></div><div style="margin-top:10px;font-size:12px;color:#78716c">Searching: ${catKey} in ${center.name}...</div></div>`.repeat(3);
+ listEl.innerHTML=`<div class="skeleton"><div class="sk" style="width:60%"></div><div class="sk" style="width:90%"></div><div class="sk" style="width:80%"></div><div style="margin-top:10px;font-size:12px;color:#78716c">Searching in ${center.name}...</div></div>`.repeat(3);
  try{
-  let results=[];
-  // Try Google first if key exists
-  if(GOOGLE_API_KEY){
-   try{results=await googleFetch(center, catKey);}catch(gE){console.warn('Google fallback to Overpass',gE.message);}
-  }
-  if(results.length===0){
-   const q=buildQuery(center, catKey==='free'||catKey==='paid'? 'all': catKey);
-   const data=await overpassFetch(q);
-   const els=data.elements||[];
-   const seen=new Set();
-   els.forEach(el=>{
-    const lat=el.lat||el.center?.lat,lng=el.lon||el.center?.lon;if(!lat||!lng)return;
-    const id=String(el.id);if(seen.has(id))return;seen.add(id);
-    const tags=el.tags||{};if(!tags.name) return;
-    const cls=classify(tags);
-    results.push({id,name:tags.name,cat:cls.cat,price:cls.price,good:cls.good,tags:cls.tags,group:cls.group,lat,lng,addr:tags['addr:street']||null,website:tags.website||null,phone:tags.phone||null,opening:tags.opening_hours||null});
-   });
-  }
-  // Apply price filter separately
+  const q=buildQuery(center, catKey==='free'||catKey==='paid'? 'all': catKey);
+  const data=await overpassFetch(q);
+  const els=data.elements||[];const seen=new Set();let results=[];
+  els.forEach(el=>{
+   const lat=el.lat||el.center?.lat,lng=el.lon||el.center?.lon;if(!lat||!lng)return;
+   const id=String(el.id);if(seen.has(id))return;seen.add(id);
+   const tags=el.tags||{};if(!tags.name) return;
+   const cls=classify(tags);
+   results.push({id,name:tags.name,cat:cls.cat,price:cls.price,good:cls.good,tags:cls.tags,group:cls.group,lat,lng,addr:tags['addr:street']||null,website:tags.website||null,phone:tags.phone||null,opening:tags.opening_hours||null});
+  });
   if(priceFilter==='free') results=results.filter(r=>r.price==='Free');
   if(priceFilter==='paid') results=results.filter(r=>r.price==='Paid');
-  places=results;
-  cache.set(cacheKey,places);
-  render();
-  setLoading(false, places.length?`${places.length} places found in ${center.name}`:`No suitable places found in ${center.name}. Try All categories.`);
+  places=results;cache.set(cacheKey,places);
+  render();setLoading(false, places.length?`${places.length} places found in ${center.name}`:`No suitable places found in ${center.name}. Try All categories.`);
  }catch(e){
   setLoading(false,`Places search temporarily unavailable. Please try again.`);
-  listEl.innerHTML=`<div class="empty"><b>Places search temporarily unavailable.</b><p>${e.message}. Wait 10s and retry. If you have Google API key, add it to GOOGLE_API_KEY variable.</p><button onclick="fetchPlaces(selectedCity,filter)" class="btn" style="margin-top:10px">Retry</button></div>`;
+  listEl.innerHTML=`<div class="empty"><b>Places search temporarily unavailable.</b><p>${e.message}. Wait 10s and click Find again.</p><button onclick="fetchPlaces(selectedCity,filter)" class="btn" style="margin-top:10px">Retry</button></div>`;
  }
 }
-
 function hav(a,b,c,d){const R=6371,dLat=(c-a)*Math.PI/180,dLon=(d-b)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
-
 function render(){
  markers.forEach(m=>map.removeLayer(m));markers=[];
- const center=userLoc||selectedCity;map.setView([center.lat,center.lng],13);
+ const center=userLoc||selectedCity;if(!center) return;map.setView([center.lat,center.lng],13);
  const q=searchBox.value.toLowerCase();
  let filtered=places.map(p=>({...p,_dist:hav(center.lat,center.lng,p.lat,p.lng)}));
  if(purpose){
-  const boosts={meet:['Community Centers','Youth Spaces','Libraries','Cafés','Parks & Outdoor'],gaming:['Gaming'],sports:['Sports','Gyms'],music:['Live Music','Night Clubs','Entertainment'],events:['Community Centers','Entertainment'],night:['Night Clubs','Live Music','Nightlife'],relax:['Cafés','Parks & Outdoor','Libraries'],study:['Libraries','Cafés'],outdoor:['Parks & Outdoor']};
+  const boosts={meet:['Community Centers','Youth Spaces','Libraries','Cafés','Parks & Outdoor'],gaming:['Gaming'],sports:['Sports','Gyms'],music:['Live Music','Night Clubs','Entertainment'],events:['Community Centers','Entertainment'],night:['Night Clubs','Live Music'],relax:['Cafés','Parks & Outdoor','Libraries'],study:['Libraries','Cafés'],outdoor:['Parks & Outdoor']};
   const want=boosts[purpose]||[];filtered=filtered.sort((a,b)=>{const aB=want.includes(a.cat)?1:0,bB=want.includes(b.cat)?1:0;if(aB!==bB)return bB-aB;return 0;});
  }
  filtered=filtered.filter(p=>{
@@ -339,9 +328,8 @@ function render(){
   if(q&&!p.name.toLowerCase().includes(q)&&!p.cat.toLowerCase().includes(q))return false;
   return true;
  }).sort((a,b)=>a._dist-b._dist);
-
  listEl.innerHTML='';
- if(filtered.length===0){listEl.innerHTML=`<div class="empty"><b>No suitable places found in this city.</b><p>Try All categories or another nearby city. Florence example: 54 places found with All filter, Gyms now fixed with amenity=gym included.</p></div>`;return}
+ if(filtered.length===0){listEl.innerHTML=`<div class="empty"><b>No suitable places found.</b><p>Try All categories or another city.</p></div>`;return}
  filtered.slice(0,70).forEach(p=>{
   const color=p.price==='Free'?'#10b981':p.price==='Paid'?'#f59e0b':'#78716c';
   const icon=L.divIcon({html:`<div style="background:${color};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)">${p.group==='cafe'?'☕':p.group==='gaming'?'🎮':p.group==='gym'?'🏋️':p.group==='music'?'🎵':'📍'}</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
@@ -350,10 +338,8 @@ function render(){
   markers.push(m);
   const staticUrl=`https://staticmap.openstreetmap.de/staticmap.php?center=${p.lat},${p.lng}&zoom=16&size=500x300&markers=${p.lat},${p.lng},red-pushpin`;
   const el=document.createElement('div');el.className='place'+(selectedId===p.id?' selected':'');el.id='card-'+p.id;
-  // FIX: imgWrap click only opens gallery, buttons handle their own actions, card click selects
   el.innerHTML=`<div class="imgWrap"><img class="img" src="${staticUrl}" loading="lazy"><div class="badges"><span class="b ${p.price==='Free'?'b-free':p.price==='Paid'?'b-paid':'b-unk'}">${p.price==='Free'?'🟢 Free':p.price==='Paid'?'🟡 Paid':'⚪ Unknown'}</span><span class="b b-cat">${p.cat}</span></div><div class="grad"><div class="gradName">${p.name}</div></div></div><div class="body"><div class="top"><div class="name">${p.name}</div><div class="dist">${p._dist.toFixed(1)} km</div></div><div class="meta">Category: ${p.cat} • ${p.price==='Unknown'?'Price information unavailable':p.price}</div><div class="tags">${p.tags.map(t=>`<span class="t">${t}</span>`).join('')}</div><div class="good"><div class="good-l">Good for</div><div class="good-v">${p.good}</div></div><div class="btnRow"><button type="button" class="aBtn primary viewMap">📍 View on Map</button><a class="aBtn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener">🧭 Directions</a></div><div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="aBtn viewPhotos" style="flex:1;height:32px;font-size:11px">📸 View Photos</button><button type="button" class="aBtn openDetail" style="flex:1;height:32px;font-size:11px">ℹ️ Details</button></div></div>`;
-  const imgWrap=el.querySelector('.imgWrap');
-  imgWrap.addEventListener('click', (e)=>{e.stopPropagation();openGallery(p,staticUrl);});
+  el.querySelector('.imgWrap').addEventListener('click',(e)=>{e.stopPropagation();openGallery(p,staticUrl);});
   el.querySelector('.viewMap').addEventListener('click',(e)=>{e.stopPropagation();selectedId=p.id;map.setView([p.lat,p.lng],16,{animate:true});m.openPopup();document.querySelectorAll('.place').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');});
   el.querySelector('.viewPhotos').addEventListener('click',(e)=>{e.stopPropagation();openGallery(p,staticUrl);});
   el.querySelector('.openDetail').addEventListener('click',(e)=>{e.stopPropagation();openDetail(p);});
@@ -361,12 +347,11 @@ function render(){
   listEl.appendChild(el);
  });
 }
-
-function openGallery(p,url){document.getElementById('gImg').src=url;document.getElementById('gMeta').textContent=`${p.name} • ${p.cat} • ${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`;document.getElementById('gallery').classList.add('on');}
+function openGallery(p,url){document.getElementById('gImg').src=url;document.getElementById('gMeta').textContent=`${p.name} • ${p.cat}`;document.getElementById('gallery').classList.add('on');}
 document.getElementById('gClose').onclick=()=>document.getElementById('gallery').classList.remove('on');document.getElementById('gallery').onclick=e=>{if(e.target.id==='gallery')e.currentTarget.classList.remove('on');};
 function openDetail(p){
  const box=document.getElementById('detailBox');
- box.innerHTML=`<div class="detailImgWrap" id="detailImgWrap"><img src="https://staticmap.openstreetmap.de/staticmap.php?center=${p.lat},${p.lng}&zoom=16&size=600x340&markers=${p.lat},${p.lng},red-pushpin" style="width:100%;height:100%;object-fit:cover;display:block"><div style="position:absolute;left:12px;top:12px;display:flex;gap:6px"><span class="b ${p.price==='Free'?'b-free':'b-paid'}">${p.price}</span><span class="b b-cat">${p.cat}</span></div></div><div style="padding:16px"><div style="display:flex;justify-content:space-between;gap:8px"><div style="font-size:18px;font-weight:800">${p.name}</div><button id="detailClose" style="width:32px;height:32px;border-radius:9999px;border:1px solid #e7e5e4;background:#fff;cursor:pointer">✕</button></div><div style="font-size:12px;color:#78716c;margin-top:6px">${p.cat} • Good places to meet people</div><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:13px"><div><b>📍 Address:</b> ${p.addr||'Information unavailable'}</div><div><b>💰 Price:</b> ${p.price==='Unknown'?'Price information unavailable':p.price}</div><div><b>Good for:</b> ${p.good}</div><div><b>🕒 Opening:</b> ${p.opening||'Information unavailable'}</div><div><b>🌐 Website:</b> ${p.website?`<a href="${p.website}" target="_blank">${p.website}</a>`:'Information unavailable'}</div><div><b>☎ Contact:</b> ${p.phone||'Information unavailable'}</div><div style="padding:10px;background:#fffbeb;border:1px solid #fde68a;border-radius:12px;font-size:12px"><b>ℹ️ Events:</b> No current event information available.</div></div><div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="aBtn primary" id="dMap">📍 View on Map</button><a class="aBtn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank">🧭 Directions</a></div><div style="margin-top:8px"><button class="aBtn" id="dPhoto" style="width:100%">📸 View Photos</button></div></div>`;
+ box.innerHTML=`<div class="detailImgWrap" id="detailImgWrap"><img src="https://staticmap.openstreetmap.de/staticmap.php?center=${p.lat},${p.lng}&zoom=16&size=600x340&markers=${p.lat},${p.lng},red-pushpin" style="width:100%;height:100%;object-fit:cover;display:block"><div style="position:absolute;left:12px;top:12px;display:flex;gap:6px"><span class="b ${p.price==='Free'?'b-free':'b-paid'}">${p.price}</span><span class="b b-cat">${p.cat}</span></div></div><div style="padding:16px"><div style="display:flex;justify-content:space-between;gap:8px"><div style="font-size:18px;font-weight:800">${p.name}</div><button id="detailClose" style="width:32px;height:32px;border-radius:9999px;border:1px solid #e7e5e4;background:#fff;cursor:pointer">✕</button></div><div style="font-size:12px;color:#78716c;margin-top:6px">${p.cat}</div><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:13px"><div><b>📍 Address:</b> ${p.addr||'Information unavailable'}</div><div><b>💰 Price:</b> ${p.price==='Unknown'?'Price information unavailable':p.price}</div><div><b>Good for:</b> ${p.good}</div><div><b>🕒 Opening:</b> ${p.opening||'Information unavailable'}</div><div><b>🌐 Website:</b> ${p.website?`<a href="${p.website}" target="_blank">${p.website}</a>`:'Information unavailable'}</div></div><div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="aBtn primary" id="dMap">📍 View on Map</button><a class="aBtn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank">🧭 Directions</a></div><div style="margin-top:8px"><button class="aBtn" id="dPhoto" style="width:100%">📸 View Photos</button></div></div>`;
  document.getElementById('detailBg').classList.add('on');
  document.getElementById('detailClose').onclick=()=>document.getElementById('detailBg').classList.remove('on');
  document.getElementById('dMap').onclick=()=>{document.getElementById('detailBg').classList.remove('on');map.setView([p.lat,p.lng],16,{animate:true});};
@@ -375,33 +360,29 @@ function openDetail(p){
 }
 document.getElementById('detailBg').onclick=e=>{if(e.target.id==='detailBg')e.currentTarget.classList.remove('on');};
 
-findBtn.addEventListener('click',()=>fetchPlaces(selectedCity, filter==='all'?'all':filter));
+findBtn.addEventListener('click',()=>{if(!selectedCity){alert('Please select country and city first');return;}fetchPlaces(selectedCity, filter==='all'?'all':filter);});
 document.getElementById('locBtn').addEventListener('click',()=>{
  if(!navigator.geolocation) return;findBtn.textContent='Locating…';findBtn.disabled=true;spin.classList.add('on');
- navigator.geolocation.getCurrentPosition(pos=>{userLoc={lat:pos.coords.latitude,lng:pos.coords.longitude};findBtn.textContent='Find Third Place';findBtn.disabled=false;findBtn.classList.add('on');spin.classList.remove('on');fetchPlaces(userLoc,'all');},()=>{alert('Location denied');findBtn.textContent='Find Third Place';findBtn.disabled=false;spin.classList.remove('on');});
+ navigator.geolocation.getCurrentPosition(pos=>{userLoc={lat:pos.coords.latitude,lng:pos.coords.longitude};selectedCity={name:'My Location',lat:pos.coords.latitude,lng:pos.coords.longitude};findBtn.textContent='Find Third Place';findBtn.disabled=false;findBtn.classList.add('on');spin.classList.remove('on');updateTag();if(map) map.setView([userLoc.lat,userLoc.lng],13);fetchPlaces(userLoc,'all');},()=>{alert('Location denied');findBtn.textContent='Find Third Place';findBtn.disabled=false;spin.classList.remove('on');});
 });
 document.querySelectorAll('#mainFilters .fbtn').forEach(b=>b.addEventListener('click',()=>{
  if(b.id==='moreFiltersBtn') return;
- // free/paid are priceFilter, not category
  if(b.dataset.f==='free'||b.dataset.f==='paid'){
   priceFilter=b.dataset.f;document.querySelectorAll('#mainFilters .fbtn[data-f="free"],#mainFilters .fbtn[data-f="paid"],#mainFilters .fbtn[data-f="all"]').forEach(x=>x.classList.remove('active'));b.classList.add('active');
-  if(places.length) render(); else fetchPlaces(selectedCity,'all');
-  return;
+  if(places.length) render(); return;
  }
- if(b.dataset.f==='all'){priceFilter='all';filter='all';document.querySelectorAll('#mainFilters .fbtn').forEach(x=>{if(x.id!=='moreFiltersBtn') x.classList.remove('active');});b.classList.add('active');document.querySelectorAll('#extraFilters .fbtn').forEach(x=>x.classList.remove('active'));if(places.length) render(); else fetchPlaces(selectedCity,'all');return;}
+ if(b.dataset.f==='all'){priceFilter='all';filter='all';document.querySelectorAll('#mainFilters .fbtn').forEach(x=>{if(x.id!=='moreFiltersBtn') x.classList.remove('active');});b.classList.add('active');document.querySelectorAll('#extraFilters .fbtn').forEach(x=>x.classList.remove('active'));if(places.length) render(); return;}
  document.querySelectorAll('#mainFilters .fbtn').forEach(x=>{if(x.dataset.f!=='free'&&x.dataset.f!=='paid'&&x.id!=='moreFiltersBtn') x.classList.remove('active');});
  document.querySelectorAll('#extraFilters .fbtn').forEach(x=>x.classList.remove('active'));
  b.classList.add('active');filter=b.dataset.f;
- if(places.length) render(); else fetchPlaces(selectedCity, filter);
+ if(places.length) render();
 }));
-document.getElementById('moreFiltersBtn').onclick=()=>{
- const ex=document.getElementById('extraFilters');ex.classList.toggle('hidden');document.getElementById('moreFiltersBtn').textContent=ex.classList.contains('hidden')?'More ▾':'Less ▴';
-};
+document.getElementById('moreFiltersBtn').onclick=()=>{const ex=document.getElementById('extraFilters');ex.classList.toggle('hidden');document.getElementById('moreFiltersBtn').textContent=ex.classList.contains('hidden')?'More ▾':'Less ▴';};
 document.querySelectorAll('#extraFilters .fbtn').forEach(b=>b.addEventListener('click',()=>{
  document.querySelectorAll('#mainFilters .fbtn').forEach(x=>{if(x.dataset.f!=='free'&&x.dataset.f!=='paid'&&x.id!=='moreFiltersBtn') x.classList.remove('active');});
  document.querySelectorAll('#extraFilters .fbtn').forEach(x=>x.classList.remove('active'));
  b.classList.add('active');filter=b.dataset.f;
- if(places.length) render(); else fetchPlaces(selectedCity, filter);
+ if(places.length) render();
 }));
 document.querySelectorAll('#purposeChips .chip').forEach(b=>b.addEventListener('click',()=>{
  if(b.classList.contains('active')){b.classList.remove('active');purpose=null;}else{document.querySelectorAll('#purposeChips .chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');purpose=b.dataset.look;}
@@ -409,7 +390,10 @@ document.querySelectorAll('#purposeChips .chip').forEach(b=>b.addEventListener('
 }));
 searchBox.addEventListener('input',()=>{if(places.length) render();});
 
-cityInput.value=selectedCity.name;findBtn.disabled=false;findBtn.classList.add('on');initMap();fetchPlaces(selectedCity,'all');
+// NO AUTO SEARCH - only init map
+initMap();
+// Enable find button only after city selected
+findBtn.disabled=true;
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
 </html>
