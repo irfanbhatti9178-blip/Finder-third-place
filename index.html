@@ -252,28 +252,51 @@
       border-color: var(--primary);
     }
 
-    /* Quick filters */
-    .quick-filters {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+    /* Cost: Free / Paid */
+    .cost-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+    .cost-btn {
+      padding: 12px 8px;
+      border-radius: 12px;
+      border: 1.5px solid var(--border);
+      background: #fff;
+      color: var(--text);
+      font-weight: 650;
+      font-size: 0.95rem;
+      cursor: pointer;
+      text-align: center;
+    }
+    .cost-btn small {
+      display: block;
+      font-weight: 500;
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+    .cost-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+    .cost-btn.active small { color: rgba(255,255,255,0.85); }
+    .cost-btn.free.active { background: #047857; border-color: #047857; }
+    .cost-btn.paid.active { background: #b45309; border-color: #b45309; }
+    .cost-hint {
+      font-size: 0.82rem;
+      color: var(--text-muted);
       margin-bottom: 16px;
     }
-    .qchip {
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 500;
-      border: 1px solid var(--border);
-      background: #f8fafc;
-      color: var(--text-muted);
-      cursor: pointer;
-      transition: all 0.15s;
+    .badge-free {
+      background: #ecfdf5 !important;
+      color: #047857 !important;
     }
-    .qchip.active {
-      background: #fef3c7;
-      border-color: var(--accent);
-      color: #92400e;
+    .badge-paid {
+      background: #fff7ed !important;
+      color: #c2410c !important;
     }
 
     /* Find button */
@@ -398,15 +421,54 @@
       background: var(--card);
       border: 1.5px solid var(--border);
       border-radius: 12px;
-      padding: 14px;
+      padding: 12px;
       transition: box-shadow 0.15s;
     }
     .result-card:hover { box-shadow: var(--shadow); }
+    .result-card-inner {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 10px;
+    }
+    .result-thumb {
+      position: relative;
+      width: 72px;
+      height: 72px;
+      border-radius: 10px;
+      overflow: hidden;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, #ccfbf1, #99f6e4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .result-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .result-thumb .thumb-emoji {
+      position: absolute;
+      font-size: 1.5rem;
+      opacity: 0;
+      pointer-events: none;
+    }
+    .result-thumb.thumb-fallback .thumb-emoji { opacity: 1; }
+    .result-thumb.thumb-fallback { background: linear-gradient(135deg, #ccfbf1, #5eead4); }
+    .result-body { flex: 1; min-width: 0; }
     .result-card h3 {
       font-size: 1rem;
       font-weight: 650;
       margin-bottom: 4px;
       color: var(--text);
+      line-height: 1.3;
+    }
+    .btn-stop {
+      background: #dc2626 !important;
+    }
+    .btn-stop:hover:not(:disabled) {
+      background: #b91c1c !important;
     }
     .result-meta {
       display: flex;
@@ -556,6 +618,15 @@
 
   <div class="container">
     <div class="tool-card">
+      <!-- Cost first: what people actually search for -->
+      <div class="section-label">Free or paid?</div>
+      <div class="cost-row" id="costRow" role="group" aria-label="Free or paid places">
+        <button type="button" class="cost-btn active" data-cost="all" aria-pressed="true">All<small>Any place</small></button>
+        <button type="button" class="cost-btn free" data-cost="free" aria-pressed="false">Free<small>Parks, libraries</small></button>
+        <button type="button" class="cost-btn paid" data-cost="paid" aria-pressed="false">Paid<small>Cafés, gyms</small></button>
+      </div>
+      <p class="cost-hint" id="costHint">All places. Choose Free for parks, libraries and public spaces, or Paid for cafés, gyms and venues.</p>
+
       <!-- Search keyword -->
       <div class="section-label">What are you looking for?</div>
       <div class="search-row">
@@ -586,12 +657,6 @@
       <!-- Categories -->
       <div class="section-label">Category</div>
       <div class="categories" id="categoryChips" role="group" aria-label="Place categories">
-        <!-- filled by JS -->
-      </div>
-
-      <!-- Quick filters -->
-      <div class="section-label">Quick filters</div>
-      <div class="quick-filters" id="quickFilters" role="group" aria-label="Quick filters">
         <!-- filled by JS -->
       </div>
 
@@ -863,16 +928,36 @@
     { id: "dining", label: "Social Dining" }
   ];
 
-  // Quick filters act as modifiers (not exclusive with primary category)
-  const QUICK_FILTERS = [
-    { id: "all", label: "All" },
-    { id: "free", label: "Free" },
-    { id: "paid", label: "Paid" },
-    { id: "social", label: "Social" },
-    { id: "gaming", label: "Gaming" },
-    { id: "sports", label: "Sports" },
-    { id: "nightlife", label: "Nightlife" }
-  ];
+  // Cost mode replaces quick filters.
+  // Free = public places you can usually enter without paying (parks, libraries, playgrounds).
+  // Paid = places that typically charge or expect a purchase (cafés, gyms, bars, venues).
+  const FREE_TYPES = ["park","garden","playground","library","nature_reserve","viewpoint","beach","pitch","dog_park","picnic_site","community_centre","public_bookcase","fitness_station","common"];
+  const PAID_TYPES = ["cafe","coffee_shop","restaurant","bar","pub","nightclub","cinema","coworking_space","karaoke_box","fitness_centre","sports_centre","bowling_alley","amusement_arcade","spa","internet_cafe","food_court","biergarten","theatre"];
+
+  const COST_QUERIES = {
+    free: [
+      'node["leisure"~"park|garden|playground|nature_reserve|dog_park|pitch|fitness_station|picnic_site"]',
+      'way["leisure"~"park|garden|playground|nature_reserve|dog_park|pitch"]',
+      'node["amenity"~"library|community_centre|public_bookcase"]',
+      'way["amenity"~"library|community_centre"]',
+      'node["tourism"="viewpoint"]',
+      'node["natural"="beach"]'
+    ],
+    paid: [
+      'node["amenity"~"cafe|restaurant|bar|pub|nightclub|cinema|coworking_space|karaoke_box|internet_cafe|food_court"]',
+      'way["amenity"~"cafe|restaurant|bar|pub|nightclub|cinema|coworking_space"]',
+      'node["leisure"~"fitness_centre|sports_centre|bowling_alley|amusement_arcade"]',
+      'way["leisure"~"fitness_centre|sports_centre"]',
+      'node["tourism"="spa"]',
+      'node["office"="coworking"]'
+    ]
+  };
+
+  const COST_HINTS = {
+    all: "All places. Choose Free for parks, libraries and public spaces, or Paid for cafés, gyms and venues.",
+    free: "Free shows parks, libraries, playgrounds, community centres and other public places you can usually enter without paying.",
+    paid: "Paid shows cafés, restaurants, gyms, bars, coworking and venues that usually charge or expect a purchase."
+  };
 
   // Overpass query builders per category
   const CATEGORY_QUERIES = {
@@ -1006,7 +1091,9 @@
     searchLon: null,
     searchLabel: "",
     usingGeolocation: false,
+    costMode: "all",
     isSearching: false,
+    abortController: null,
     results: [],
     markers: [],
     map: null,
@@ -1024,7 +1111,8 @@
     city: $("cityInput"),
     citySug: $("citySuggestions"),
     catChips: $("categoryChips"),
-    quickFilters: $("quickFilters"),
+    costRow: $("costRow"),
+    costHint: $("costHint"),
     btnFind: $("btnFind"),
     btnReset: $("btnReset"),
     status: $("statusBar"),
@@ -1038,7 +1126,6 @@
   function init() {
     loadCountries();
     renderCategories();
-    renderQuickFilters();
     initMap();
     bindEvents();
   }
@@ -1067,22 +1154,8 @@
     });
   }
 
-  function renderQuickFilters() {
-    els.quickFilters.innerHTML = "";
-    QUICK_FILTERS.forEach(f => {
-      const chip = document.createElement("button");
-      chip.type = "button";
-      chip.className = "qchip" + (f.id === state.selectedQuick ? " active" : "");
-      chip.dataset.id = f.id;
-      chip.textContent = f.label;
-      chip.addEventListener("click", () => selectQuick(f.id));
-      els.quickFilters.appendChild(chip);
-    });
-  }
-
   function selectCategory(id) {
     state.selectedCategory = id;
-    // Update UI: only one active
     els.catChips.querySelectorAll(".chip").forEach(c => {
       const active = c.dataset.id === id;
       c.classList.toggle("active", active);
@@ -1090,11 +1163,14 @@
     });
   }
 
-  function selectQuick(id) {
-    state.selectedQuick = id;
-    els.quickFilters.querySelectorAll(".qchip").forEach(c => {
-      c.classList.toggle("active", c.dataset.id === id);
+  function selectCost(id) {
+    state.costMode = id;
+    els.costRow.querySelectorAll(".cost-btn").forEach(btn => {
+      const active = btn.dataset.cost === id;
+      btn.classList.toggle("active", active);
+      btn.setAttribute("aria-pressed", active ? "true" : "false");
     });
+    if (els.costHint) els.costHint.textContent = COST_HINTS[id] || COST_HINTS.all;
   }
 
   // ============================================================
@@ -1131,13 +1207,15 @@
     places.forEach((p, i) => {
       if (p.lat == null || p.lon == null) return;
       const marker = L.marker([p.lat, p.lon]);
+      const thumb = placeThumbUrl(p.lat, p.lon, 16);
       const popupHtml = `
+        <img src="${thumb}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px;margin-bottom:6px;display:block" loading="lazy" onerror="this.style.display='none'">
         <strong>${escapeHtml(p.name)}</strong>
-        <div style="color:#64748b;font-size:0.82rem;margin:2px 0">${escapeHtml(p.categoryLabel || "")}</div>
+        <div style="color:#64748b;font-size:0.82rem;margin:2px 0">${categoryEmoji(p.categoryLabel)} ${escapeHtml(p.categoryLabel || "")}</div>
         ${p.address ? `<div style="font-size:0.82rem">${escapeHtml(p.address)}</div>` : ""}
         <div class="popup-actions">
           <a class="dir" href="${directionsUrl(p)}" target="_blank" rel="noopener">Directions</a>
-          <a class="view" href="#" data-idx="${i}">View</a>
+          <a class="view" href="#" data-idx="${i}">Focus map</a>
         </div>
       `;
       marker.bindPopup(popupHtml);
@@ -1262,10 +1340,14 @@
     els.citySug.classList.remove("show");
     els.citySug.innerHTML = "";
     state.usingGeolocation = false;
+    state.searchLat = null;
+    state.searchLon = null;
+    state.searchLabel = "";
     els.btnLocation.classList.remove("active");
-    if (country) {
-      // Geocode country center roughly later on search
-    }
+    els.btnLocation.innerHTML = `
+      <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
+      Use My Location`;
+    // Do NOT change map zoom/view here – only when user searches
   }
 
   function onCityInput() {
@@ -1293,17 +1375,58 @@
   function onCitySugClick(e) {
     const div = e.target.closest("[data-city]");
     if (!div) return;
+    e.preventDefault();
+    e.stopPropagation();
     els.city.value = div.dataset.city;
     els.citySug.classList.remove("show");
     state.usingGeolocation = false;
     els.btnLocation.classList.remove("active");
+    // Keep focus on city input briefly then blur so mobile keyboard closes
+    // without scrolling the page or resetting the map
+    els.city.blur();
   }
 
   // ============================================================
   // SEARCH
   // ============================================================
+  function setFindButtonIdle() {
+    state.isSearching = false;
+    state.abortController = null;
+    els.btnFind.disabled = false;
+    els.btnFind.classList.remove("btn-stop");
+    els.btnFind.innerHTML = "Find Third Place";
+  }
+
+  function setFindButtonSearching() {
+    state.isSearching = true;
+    els.btnFind.disabled = false; // allow click to cancel
+    els.btnFind.classList.add("btn-stop");
+    els.btnFind.innerHTML = '<span class="spinner"></span> Stop finding';
+  }
+
+  function cancelSearch() {
+    if (state.abortController) {
+      try { state.abortController.abort(); } catch (_) {}
+    }
+    state.abortController = null;
+    state.isSearching = false;
+    setFindButtonIdle();
+    showStatus("Search stopped. Change filters and try again.", "info");
+    if (!state.results.length) {
+      els.resultsList.innerHTML = `
+        <div class="empty-state">
+          <h3>Search stopped</h3>
+          <p>Tap Find Third Place when you're ready.</p>
+        </div>`;
+    }
+  }
+
   async function searchPlaces() {
-    if (state.isSearching) return;
+    // If already searching → treat click as Stop
+    if (state.isSearching) {
+      cancelSearch();
+      return;
+    }
 
     // Resolve location
     let lat = state.searchLat;
@@ -1328,25 +1451,27 @@
         state.searchLabel = label;
         centerMap(lat, lon, 13);
       } catch (err) {
+        if (err.name === "AbortError") return;
         showStatus("Could not find that city. Please check the spelling or try another city.", "error");
         return;
       }
     }
 
-    state.isSearching = true;
-    els.btnFind.disabled = true;
-    els.btnFind.innerHTML = '<span class="spinner"></span> Finding third places...';
+    state.abortController = new AbortController();
+    const signal = state.abortController.signal;
+    setFindButtonSearching();
     showStatus("Finding third places near you...", "loading");
     clearMarkers();
     els.resultsList.innerHTML = `<div class="empty-state"><span class="spinner"></span><p style="margin-top:12px">Searching...</p></div>`;
 
     try {
-      const places = await fetchPlaces(lat, lon, state.selectedCategory, els.keyword.value.trim());
-      // Apply quick filter client-side
-      let filtered = applyQuickFilter(places, state.selectedQuick);
-      // Sort by distance
+      const places = await fetchPlaces(lat, lon, state.selectedCategory, els.keyword.value.trim(), signal);
+      if (signal.aborted) return;
+
+      let filtered = places.filter(p => matchesCost(p, state.costMode));
       filtered = filtered.map(p => {
         p.distance = haversine(lat, lon, p.lat, p.lon);
+        p.cost = placeCost(p);
         return p;
       }).sort((a, b) => a.distance - b.distance);
 
@@ -1355,11 +1480,14 @@
       renderMarkers(filtered);
 
       if (filtered.length === 0) {
-        showStatus("No third places found for this category in this area.", "info");
+        const which = state.costMode === "free" ? "free" : state.costMode === "paid" ? "paid" : "these";
+        showStatus(`No ${which} third places found in this area. Try All, another category, or a nearby city.`, "info");
       } else {
-        showStatus(`Found ${filtered.length} place${filtered.length === 1 ? "" : "s"} near ${escapeHtml(label)}`, "success");
+        const tag = state.costMode === "free" ? "free " : state.costMode === "paid" ? "paid " : "";
+        showStatus(`Found ${filtered.length} ${tag}place${filtered.length === 1 ? "" : "s"} near ${label}`, "success");
       }
     } catch (err) {
+      if (err.name === "AbortError") return;
       console.error(err);
       showStatus("Search failed. The map service may be busy — please try again in a moment.", "error");
       els.resultsList.innerHTML = `
@@ -1372,9 +1500,10 @@
         </div>`;
       $("retryBtn")?.addEventListener("click", searchPlaces);
     } finally {
-      state.isSearching = false;
-      els.btnFind.disabled = false;
-      els.btnFind.textContent = "Find Third Place";
+      // Only reset button if we weren't cancelled (cancelSearch already resets)
+      if (state.isSearching) {
+        setFindButtonIdle();
+      }
     }
   }
 
@@ -1394,19 +1523,29 @@
     };
   }
 
-  async function fetchPlaces(lat, lon, category, keyword) {
-    const radius = 3500; // meters
-    const queries = CATEGORY_QUERIES[category] || CATEGORY_QUERIES.all;
+  async function fetchPlaces(lat, lon, category, keyword, signal) {
+    const radius = 3500;
+    let queries;
+    if (state.costMode === "free") {
+      queries = COST_QUERIES.free;
+    } else if (state.costMode === "paid") {
+      queries = COST_QUERIES.paid;
+    } else {
+      queries = CATEGORY_QUERIES[category] || CATEGORY_QUERIES.all;
+    }
+    // Category still narrows when it matches the chosen cost (e.g. Free + Parks).
+    if (state.costMode !== "all" && category && category !== "all" && CATEGORY_QUERIES[category]) {
+      const narrowed = CATEGORY_QUERIES[category].filter(q => queryMatchesCost(q, state.costMode));
+      if (narrowed.length) queries = narrowed;
+    }
 
     // Build Overpass QL
     let filters = queries.map(q => {
-      // Inject around
       if (q.startsWith("node")) return `${q}(around:${radius},${lat},${lon});`;
       if (q.startsWith("way")) return `${q}(around:${radius},${lat},${lon});`;
       return q;
     }).join("\n");
 
-    // Keyword refinement: if user typed something, prefer matching name or amenity
     let keywordFilter = "";
     if (keyword && keyword.length >= 2) {
       const kw = keyword.toLowerCase().replace(/[^\w\s]/g, "").trim();
@@ -1419,7 +1558,6 @@
           node["leisure"="${tag}"](around:${radius},${lat},${lon});
         `;
       } else {
-        // Name search via regex (Overpass supports case-insensitive)
         keywordFilter = `
           node["name"~"${escapeOverpass(kw)}",i](around:${radius},${lat},${lon});
           way["name"~"${escapeOverpass(kw)}",i](around:${radius},${lat},${lon});
@@ -1443,16 +1581,19 @@
 
     let lastErr;
     for (const endpoint of endpoints) {
+      if (signal && signal.aborted) throw new DOMException("Aborted", "AbortError");
       try {
         const res = await fetch(endpoint, {
           method: "POST",
           headers: { "Content-Type": "application/x-www-form-urlencoded" },
-          body: "data=" + encodeURIComponent(ql)
+          body: "data=" + encodeURIComponent(ql),
+          signal
         });
         if (!res.ok) throw new Error("Overpass " + res.status);
         const data = await res.json();
         return parseOverpass(data);
       } catch (e) {
+        if (e.name === "AbortError") throw e;
         lastErr = e;
       }
     }
@@ -1535,34 +1676,63 @@
     return parts.join(", ") || tags["addr:full"] || "";
   }
 
-  function applyQuickFilter(places, quick) {
-    if (quick === "all") return places;
-    if (quick === "free") {
-      return places.filter(p => {
-        if (p.fee === "yes" || p.fee === "customers") return false;
-        // Parks, libraries often free
-        const freeTypes = ["park", "garden", "library", "playground", "viewpoint"];
-        if (freeTypes.includes(p.amenity)) return true;
-        if (p.fee === "no") return true;
-        return true; // don't over-filter when unknown
-      });
-    }
-    if (quick === "paid") {
-      return places.filter(p => p.fee === "yes" || ["cafe", "restaurant", "bar", "pub", "nightclub", "cinema", "fitness_centre", "coworking_space"].includes(p.amenity));
-    }
-    if (quick === "social") {
-      return places.filter(p => ["cafe", "bar", "pub", "community_centre", "restaurant", "park"].includes(p.amenity));
-    }
-    if (quick === "gaming") {
-      return places.filter(p => ["amusement_arcade", "bowling_alley", "internet_cafe"].includes(p.amenity) || (p.name && /game|arcade|bowling|billiard/i.test(p.name)));
-    }
-    if (quick === "sports") {
-      return places.filter(p => ["sports_centre", "fitness_centre", "stadium", "pitch", "swimming_pool"].includes(p.amenity) || p.categoryLabel === "Sports");
-    }
-    if (quick === "nightlife") {
-      return places.filter(p => ["nightclub", "bar", "pub", "biergarten", "karaoke_box"].includes(p.amenity));
-    }
-    return places;
+  function queryMatchesCost(q, cost) {
+    const freeHit = /park|garden|playground|library|community_centre|viewpoint|beach|nature_reserve|pitch|dog_park/.test(q);
+    const paidHit = /cafe|restaurant|bar|pub|nightclub|cinema|coworking|karaoke|fitness_centre|sports_centre|bowling|arcade|spa/.test(q);
+    if (cost === "free") return freeHit && !/cafe|restaurant|bar|pub|nightclub|fitness_centre|coworking|karaoke/.test(q);
+    if (cost === "paid") return paidHit;
+    return true;
+  }
+
+  function placeCost(p) {
+    if (p.fee === "no") return "free";
+    if (p.fee === "yes") return "paid";
+    if (FREE_TYPES.includes(p.amenity)) return "free";
+    if (PAID_TYPES.includes(p.amenity)) return "paid";
+    return "unknown";
+  }
+
+  function matchesCost(p, cost) {
+    if (!cost || cost === "all") return true;
+    const c = placeCost(p);
+    if (cost === "free") return c === "free";
+    if (cost === "paid") return c === "paid";
+    return true;
+  }
+
+  function costBadge(p) {
+    const c = p.cost || placeCost(p);
+    if (c === "free") return `<span class="badge badge-free">Free</span>`;
+    if (c === "paid") return `<span class="badge badge-paid">Paid</span>`;
+    return "";
+  }
+
+  /** Static map thumbnail for a place (no API key) */
+  function placeThumbUrl(lat, lon, zoom) {
+    // Use OSM static-ish tile center as visual preview
+    const z = zoom || 16;
+    const n = Math.pow(2, z);
+    const x = Math.floor((lon + 180) / 360 * n);
+    const latRad = lat * Math.PI / 180;
+    const y = Math.floor((1 - Math.log(Math.tan(latRad) + 1 / Math.cos(latRad)) / Math.PI) / 2 * n);
+    return `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
+  }
+
+  function categoryEmoji(label) {
+    const l = (label || "").toLowerCase();
+    if (l.includes("café") || l.includes("cafe")) return "☕";
+    if (l.includes("library")) return "📚";
+    if (l.includes("park") || l.includes("garden")) return "🌳";
+    if (l.includes("gym") || l.includes("fitness")) return "💪";
+    if (l.includes("cowork")) return "💼";
+    if (l.includes("community")) return "🏛️";
+    if (l.includes("night") || l.includes("bar") || l.includes("pub") || l.includes("club")) return "🌙";
+    if (l.includes("karaoke")) return "🎤";
+    if (l.includes("museum") || l.includes("art") || l.includes("gallery")) return "🎨";
+    if (l.includes("sport")) return "⚽";
+    if (l.includes("restaurant") || l.includes("dining") || l.includes("food")) return "🍽️";
+    if (l.includes("cinema") || l.includes("theatre")) return "🎭";
+    return "📍";
   }
 
   // ============================================================
@@ -1583,7 +1753,7 @@
         </div>`;
       els.resultsList.querySelector('[data-action="cat-all"]')?.addEventListener("click", () => {
         selectCategory("all");
-        selectQuick("all");
+        selectCost("all");
         searchPlaces();
       });
       els.resultsList.querySelector('[data-action="reset"]')?.addEventListener("click", resetFilters);
@@ -1592,13 +1762,23 @@
 
     els.resultsList.innerHTML = places.map((p, i) => `
       <article class="result-card" data-idx="${i}">
-        <h3>${escapeHtml(p.name)}</h3>
-        <div class="result-meta">
-          <span class="badge">${escapeHtml(p.categoryLabel)}</span>
-          ${p.distance != null ? `<span>${formatDistance(p.distance)}</span>` : ""}
-          ${p.opening ? `<span title="${escapeHtml(p.opening)}">Hours available</span>` : ""}
+        <div class="result-card-inner">
+          <div class="result-thumb" aria-hidden="true">
+            <img src="${placeThumbUrl(p.lat, p.lon, 16)}" alt="" loading="lazy" width="72" height="72"
+              onerror="this.style.display='none';this.parentElement.classList.add('thumb-fallback')">
+            <span class="thumb-emoji">${categoryEmoji(p.categoryLabel)}</span>
+          </div>
+          <div class="result-body">
+            <h3>${escapeHtml(p.name)}</h3>
+            <div class="result-meta">
+              <span class="badge">${escapeHtml(p.categoryLabel)}</span>
+              ${costBadge(p)}
+              ${p.distance != null ? `<span>${formatDistance(p.distance)}</span>` : ""}
+              ${p.opening ? `<span title="${escapeHtml(p.opening)}">Hours</span>` : ""}
+            </div>
+            ${p.address ? `<div class="result-address">${escapeHtml(p.address)}</div>` : ""}
+          </div>
         </div>
-        ${p.address ? `<div class="result-address">${escapeHtml(p.address)}</div>` : ""}
         <div class="result-actions">
           <a class="btn btn-primary btn-sm" href="${directionsUrl(p)}" target="_blank" rel="noopener">Directions</a>
           <button type="button" class="btn btn-secondary btn-sm" data-view="${i}">View Map</button>
@@ -1651,8 +1831,16 @@
   }
 
   function resetFilters() {
+    // Stop any in-flight search first
+    if (state.isSearching && state.abortController) {
+      try { state.abortController.abort(); } catch (_) {}
+    }
+    state.abortController = null;
+    state.isSearching = false;
+    setFindButtonIdle();
+
     state.selectedCategory = "all";
-    state.selectedQuick = "all";
+    state.costMode = "all";
     state.usingGeolocation = false;
     state.userLat = null;
     state.userLon = null;
@@ -1670,7 +1858,7 @@
       <svg width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 5-7 13-7 13S5 14 5 9a7 7 0 0 1 7-7z"/><circle cx="12" cy="9" r="2.5"/></svg>
       Use My Location`;
     selectCategory("all");
-    selectQuick("all");
+    selectCost("all");
     clearMarkers();
     els.resultsList.innerHTML = `
       <div class="empty-state">
@@ -1679,6 +1867,7 @@
       </div>`;
     els.resultsCount.textContent = "";
     hideStatus();
+    // Don't force world zoom if user already had a view – only reset when fully clearing
     state.map.setView([20, 0], 2);
   }
 
@@ -1717,6 +1906,11 @@
     els.citySug.addEventListener("click", onCitySugClick);
     els.btnFind.addEventListener("click", searchPlaces);
     els.btnReset.addEventListener("click", resetFilters);
+    els.costRow.addEventListener("click", (e) => {
+      const btn = e.target.closest("[data-cost]");
+      if (!btn) return;
+      selectCost(btn.dataset.cost);
+    });
 
     // Enter key on keyword / city
     els.keyword.addEventListener("keydown", (e) => {
