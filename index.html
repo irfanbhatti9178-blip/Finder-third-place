@@ -139,7 +139,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 <div>
 <div class="listHead"><div class="listTitle">Nearby Third Places</div><div id="coord" style="font-size:11px;color:#a8a29e"></div></div>
 <div id="list" class="list">
-<div class="empty"><b>👋 Welcome</b><p style="margin-top:8px">Select Country & City, then press <b>Find Third Place</b>. No auto-search.<br>Free OpenStreetMap + ⚡ Cloudflare Fast cache</p></div>
+<div class="empty"><b>👋 Welcome</b><p style="margin-top:8px">Select Country & City, then press <b>Find Third Place</b>. No auto-search.</p></div>
 </div>
 </div>
 </div>
@@ -154,7 +154,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 <div id="gallery" class="gallery"><div class="close" id="gClose">✕</div><img id="gImg" src="" alt="Place preview"><div id="gMeta" style="color:#fff;font-size:12px;text-align:center;max-width:90%"></div><div style="display:flex;gap:8px"><a id="gDir" class="aBtn" href="#" target="_blank" style="background:#fff;color:#111;padding:0 18px;height:36px">🧭 Directions</a><button id="gMapBtn" class="aBtn" style="background:#111;color:#fff;border-color:#111;padding:0 18px;height:36px">📍 View on Map</button></div></div>
 
 <script>
-// --- CLOUDFLARE FAST METHOD - YOUR URL ---
+// CLOUDFLARE FAST METHOD - HIDDEN FROM USER
 const CLOUDFLARE_FAST_URL = 'https://lucky-smoke-b76b.irfanbhatti9178.workers.dev';
 const FAST_TIMEOUT_MS = 3500;
 
@@ -238,7 +238,7 @@ async function cloudflareFastFetch(center){
    headers:{'Content-Type':'application/json'},
    body: JSON.stringify({lat:center.lat, lng:center.lng})
  });
- if(!res.ok) throw new Error('Cloudflare fast failed '+res.status);
+ if(!res.ok) throw new Error('fast failed');
  const text = await res.text();
  try { return JSON.parse(text); } catch { return {elements:[]}; }
 }
@@ -251,7 +251,7 @@ async function fetchPlaces(center, catKey='all'){
  if(!center){listEl.innerHTML=`<div class="empty"><b>Please select country and city first.</b></div>`;return;}
  const cacheKey=`${center.lat.toFixed(4)}_${center.lng.toFixed(4)}_${catKey}_${priceFilter}`;
  if(cache.has(cacheKey)){places=cache.get(cacheKey);render();setLoading(false,`${places.length} places found in ${center.name}`);return;}
- setLoading(true,`🔎 Searching for third places in ${center.name}…`);
+ setLoading(true,`🔎 Searching places near ${center.name}...`);
  listEl.innerHTML=`<div class="skeleton"><div class="sk" style="width:60%"></div><div class="sk" style="width:90%"></div><div class="sk" style="width:80%"></div></div>`.repeat(3);
  try{
   const q=buildQuery(center, catKey==='free'||catKey==='paid'?'all':catKey);
@@ -261,7 +261,8 @@ async function fetchPlaces(center, catKey='all'){
     data = await Promise.race([overpassFetch(q), timeoutPromise]);
   }catch(e){
     if(e.message==='SLOW' && CLOUDFLARE_FAST_URL){
-      setLoading(true,`⚡ Overpass slow, Cloudflare fast cache se load ho raha hai...`);
+      // UX FIX: No technical message, just continue searching
+      setLoading(true,`🔎 Finding best places near ${center.name}...`);
       data = await cloudflareFastFetch(center);
     }else{ throw e; }
   }
@@ -269,8 +270,8 @@ async function fetchPlaces(center, catKey='all'){
   els.forEach(el=>{const lat=el.lat||el.center?.lat,lng=el.lon||el.center?.lon;if(!lat||!lng)return;const id=String(el.id);if(seen.has(id))return;seen.add(id);const tags=el.tags||{};if(!tags.name) return;const cls=classify(tags);results.push({id,name:tags.name,cat:cls.cat,price:cls.price,good:cls.good,tags:cls.tags,group:cls.group,lat,lng,addr:tags['addr:street']||null,website:tags.website||null,phone:tags.phone||null,opening:tags.opening_hours||null});});
   if(priceFilter==='free') results=results.filter(r=>r.price==='Free');
   if(priceFilter==='paid') results=results.filter(r=>r.price==='Paid');
-  places=results;cache.set(cacheKey,places);render();setLoading(false, places.length?`${places.length} places found in ${center.name}`:`No suitable places found in ${center.name}.`);
- }catch(e){setLoading(false,`Temporarily unavailable. Try again.`);listEl.innerHTML=`<div class="empty"><b>Temporarily unavailable.</b><p>${e.message}</p><button onclick="fetchPlaces(selectedCity,filter)" class="btn" style="margin-top:10px">Retry</button></div>`;}
+  places=results;cache.set(cacheKey,places);render();setLoading(false, places.length?`${places.length} places found in ${center.name}`:`No places found near ${center.name}. Try another city.`);
+ }catch(e){setLoading(false,`Couldn't load places. Please try again.`);listEl.innerHTML=`<div class="empty"><b>Couldn't load places.</b><p style="font-size:12px;color:#78716c;margin-top:6px">Please check your connection and try again.</p><button onclick="fetchPlaces(selectedCity,filter)" class="btn" style="margin-top:10px">Retry</button></div>`;}
 }
 function hav(a,b,c,d){const R=6371,dLat=(c-a)*Math.PI/180,dLon=(d-b)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
 let currentGalleryPlace=null;
