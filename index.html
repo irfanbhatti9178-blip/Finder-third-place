@@ -139,7 +139,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 <div>
 <div class="listHead"><div class="listTitle">Nearby Third Places</div><div id="coord" style="font-size:11px;color:#a8a29e"></div></div>
 <div id="list" class="list">
-<div class="empty"><b>👋 Welcome</b><p style="margin-top:8px">Select Country & City, then press <b>Find Third Place</b>. No auto-search.</p></div>
+<div class="empty"><b>👋 Welcome</b><p style="margin-top:8px">Select Country & City, then press <b>Find Third Place</b>. No auto-search.<br>Free OpenStreetMap data — no API key needed.</p></div>
 </div>
 </div>
 </div>
@@ -154,10 +154,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 <div id="gallery" class="gallery"><div class="close" id="gClose">✕</div><img id="gImg" src="" alt="Place preview"><div id="gMeta" style="color:#fff;font-size:12px;text-align:center;max-width:90%"></div><div style="display:flex;gap:8px"><a id="gDir" class="aBtn" href="#" target="_blank" style="background:#fff;color:#111;padding:0 18px;height:36px">🧭 Directions</a><button id="gMapBtn" class="aBtn" style="background:#111;color:#fff;border-color:#111;padding:0 18px;height:36px">📍 View on Map</button></div></div>
 
 <script>
-// CLOUDFLARE FAST METHOD - HIDDEN FROM USER
-const CLOUDFLARE_FAST_URL = 'https://lucky-smoke-b76b.irfanbhatti9178.workers.dev';
-const FAST_TIMEOUT_MS = 3500;
-
+// NO API KEY - FREE OSM ONLY
 const COUNTRIES=["USA","UK","Canada","Australia","Germany","Netherlands","France","Japan","India","Brazil","Italy","Spain","Turkey","Pakistan","UAE","Saudi Arabia","Portugal","Poland","Sweden","Switzerland"];
 const CITIES={
 UK:[{name:"London",lat:51.5074,lng:-0.1278},{name:"Manchester",lat:53.4808,lng:-2.2426},{name:"Birmingham",lat:52.4862,lng:-1.8904}],
@@ -210,8 +207,10 @@ function classify(tags){
  if(l.includes('shisha')||l.includes('tobacco')) return {cat:'Smoking / Shisha',price:'Paid',good:'Relax • Evening',tags:['🚬 Shisha'],group:'shisha'};
  return {cat:'Community Space',price:'Unknown',good:'Socializing',tags:['👥 Social'],group:'social'};
 }
+
 let map, markers=[], selectedCity=null, selectedCountry="Italy", filter="all", priceFilter="all", purpose=null, userLoc=null, places=[], selectedId=null, cache=new Map();
 const countrySel=document.getElementById('countrySel'),cityInput=document.getElementById('cityInput'),citySuggest=document.getElementById('citySuggest'),cityCount=document.getElementById('cityCount'),findBtn=document.getElementById('findBtn'),spin=document.getElementById('spin'),statusText=document.getElementById('statusText'),searchBox=document.getElementById('searchBox'),listEl=document.getElementById('list'),mapTag=document.getElementById('mapTag'),coord=document.getElementById('coord');
+
 COUNTRIES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;countrySel.appendChild(o)});countrySel.value="Italy";
 function initMap(){map=L.map('map',{zoomControl:false}).setView([41.9028,12.4964],5);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);L.control.zoom({position:'bottomright'}).addTo(map);mapTag.textContent='📍 Select a city and click Find Third Place';}
 function updateTag(){if(!selectedCity) return;mapTag.textContent=`📍 ${selectedCity.name}, ${selectedCountry}`;coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;}
@@ -228,19 +227,10 @@ function showSuggest(q){
 countrySel.addEventListener('change',e=>{selectedCountry=e.target.value;const cities=CITIES[selectedCountry]||[];selectedCity=cities[0]||null;cityInput.value=selectedCity?selectedCity.name:'';cityCount.textContent=cities.length?`· ${cities.length} cities`:'';findBtn.disabled=!selectedCity;if(selectedCity) findBtn.classList.add('on');updateTag();if(selectedCity&&map) map.setView([selectedCity.lat,selectedCity.lng],13);statusText.textContent=selectedCity?`Ready to search in ${selectedCity.name}`:'Select a city';});
 cityInput.addEventListener('focus',()=>showSuggest(cityInput.value));cityInput.addEventListener('input',()=>showSuggest(cityInput.value));
 document.addEventListener('click',e=>{if(!e.target.closest('#cityInput')&&!e.target.closest('#citySuggest')) citySuggest.classList.remove('on');});
+
 async function overpassFetch(query){
  const servers=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
  let last=null;for(let url of servers){try{const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(query)});if(!res.ok) throw new Error('HTTP '+res.status);return await res.json();}catch(e){last=e;continue;}}throw last;
-}
-async function cloudflareFastFetch(center){
- const res = await fetch(CLOUDFLARE_FAST_URL, {
-   method:'POST',
-   headers:{'Content-Type':'application/json'},
-   body: JSON.stringify({lat:center.lat, lng:center.lng})
- });
- if(!res.ok) throw new Error('fast failed');
- const text = await res.text();
- try { return JSON.parse(text); } catch { return {elements:[]}; }
 }
 function buildQuery(center, catKey){
  const mapping=CATEGORY_MAP[catKey]||CATEGORY_MAP.all;let queries=mapping.queries;if(!queries||queries.length===0) queries=CATEGORY_MAP.all.queries;
@@ -251,31 +241,23 @@ async function fetchPlaces(center, catKey='all'){
  if(!center){listEl.innerHTML=`<div class="empty"><b>Please select country and city first.</b></div>`;return;}
  const cacheKey=`${center.lat.toFixed(4)}_${center.lng.toFixed(4)}_${catKey}_${priceFilter}`;
  if(cache.has(cacheKey)){places=cache.get(cacheKey);render();setLoading(false,`${places.length} places found in ${center.name}`);return;}
- setLoading(true,`🔎 Searching places near ${center.name}...`);
+ setLoading(true,`🔎 Searching for third places in ${center.name}…`);
  listEl.innerHTML=`<div class="skeleton"><div class="sk" style="width:60%"></div><div class="sk" style="width:90%"></div><div class="sk" style="width:80%"></div></div>`.repeat(3);
  try{
   const q=buildQuery(center, catKey==='free'||catKey==='paid'?'all':catKey);
-  let data;
-  try{
-    const timeoutPromise = new Promise((_, rej) => setTimeout(()=>rej(new Error('SLOW')), FAST_TIMEOUT_MS));
-    data = await Promise.race([overpassFetch(q), timeoutPromise]);
-  }catch(e){
-    if(e.message==='SLOW' && CLOUDFLARE_FAST_URL){
-      // UX FIX: No technical message, just continue searching
-      setLoading(true,`🔎 Finding best places near ${center.name}...`);
-      data = await cloudflareFastFetch(center);
-    }else{ throw e; }
-  }
-  const els=data.elements||[];const seen=new Set();let results=[];
+  const data=await overpassFetch(q);const els=data.elements||[];const seen=new Set();let results=[];
   els.forEach(el=>{const lat=el.lat||el.center?.lat,lng=el.lon||el.center?.lon;if(!lat||!lng)return;const id=String(el.id);if(seen.has(id))return;seen.add(id);const tags=el.tags||{};if(!tags.name) return;const cls=classify(tags);results.push({id,name:tags.name,cat:cls.cat,price:cls.price,good:cls.good,tags:cls.tags,group:cls.group,lat,lng,addr:tags['addr:street']||null,website:tags.website||null,phone:tags.phone||null,opening:tags.opening_hours||null});});
   if(priceFilter==='free') results=results.filter(r=>r.price==='Free');
   if(priceFilter==='paid') results=results.filter(r=>r.price==='Paid');
-  places=results;cache.set(cacheKey,places);render();setLoading(false, places.length?`${places.length} places found in ${center.name}`:`No places found near ${center.name}. Try another city.`);
- }catch(e){setLoading(false,`Couldn't load places. Please try again.`);listEl.innerHTML=`<div class="empty"><b>Couldn't load places.</b><p style="font-size:12px;color:#78716c;margin-top:6px">Please check your connection and try again.</p><button onclick="fetchPlaces(selectedCity,filter)" class="btn" style="margin-top:10px">Retry</button></div>`;}
+  places=results;cache.set(cacheKey,places);render();setLoading(false, places.length?`${places.length} places found in ${center.name}`:`No suitable places found in ${center.name}.`);
+ }catch(e){setLoading(false,`Temporarily unavailable. Try again.`);listEl.innerHTML=`<div class="empty"><b>Temporarily unavailable.</b><p>${e.message}</p><button onclick="fetchPlaces(selectedCity,filter)" class="btn" style="margin-top:10px">Retry</button></div>`;}
 }
 function hav(a,b,c,d){const R=6371,dLat=(c-a)*Math.PI/180,dLon=(d-b)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
+
 let currentGalleryPlace=null;
 function getStaticUrl(lat,lng, size='500x300'){return `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=16&size=${size}&markers=${lat},${lng},red-pushpin`;}
+function getPlaceholderSvg(name){const t=encodeURIComponent(name.substring(0,20));return `data:image/svg+xml,${encodeURIComponent(`<svg xmlns='http://www.w3.org/2000/svg' width='500' height='300'><rect width='100%' height='100%' fill='#f5f5f4'/><text x='50%' y='45%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' font-weight='700' fill='#57534e'>${name}</text><text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#a8a29e'>Map preview • Tap to enlarge</text></svg>`)}`;}
+
 function render(){
  markers.forEach(m=>map.removeLayer(m));markers=[];
  const center=userLoc||selectedCity;if(!center) return;map.setView([center.lat,center.lng],13);
@@ -302,11 +284,14 @@ function render(){
   m.on('click',()=>{selectedId=p.id;document.querySelectorAll('.place').forEach(el=>el.classList.remove('selected'));document.getElementById('card-'+p.id)?.classList.add('selected');});
   markers.push(m);
   const staticUrl=getStaticUrl(p.lat,p.lng,'500x300');
+  const fallback=getPlaceholderSvg(p.name);
   const el=document.createElement('div');el.className='place'+(selectedId===p.id?' selected':'');el.id='card-'+p.id;
   el.innerHTML=`<div class="imgWrap"><img class="img" src="${staticUrl}" loading="lazy" alt="${p.name}"><div class="imgFallback" style="display:none">📍<span>${p.name}</span><small>Tap to view map</small></div><div class="badges"><span class="b ${p.price==='Free'?'b-free':p.price==='Paid'?'b-paid':'b-unk'}">${p.price==='Free'?'🟢 Free':p.price==='Paid'?'🟡 Paid':'⚪ Unknown'}</span><span class="b b-cat">${p.cat}</span></div><div class="grad"><div class="gradName">${p.name}</div></div></div><div class="body"><div class="top"><div class="name">${p.name}</div><div class="dist">${p._dist.toFixed(1)} km</div></div><div class="meta">Category: ${p.cat} • ${p.price==='Unknown'?'Price information unavailable':p.price}</div><div class="tags">${p.tags.map(t=>`<span class="t">${t}</span>`).join('')}</div><div class="good"><div class="good-l">Good for</div><div class="good-v">${p.good}</div></div><div class="btnRow"><button type="button" class="aBtn primary viewMap">📍 View on Map</button><a class="aBtn" href="https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}" target="_blank" rel="noopener">🧭 Directions</a></div><div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="aBtn viewPhotos" style="flex:1;height:32px;font-size:11px">📸 View Photos</button><button type="button" class="aBtn openDetail" style="flex:1;height:32px;font-size:11px">ℹ️ Details</button></div></div>`;
-  const img=el.querySelector('.img');const fb=el.querySelector('.imgFallback');
+  const img=el.querySelector('.img');
+  const fb=el.querySelector('.imgFallback');
   img.addEventListener('error',()=>{img.style.display='none';fb.style.display='flex';});
   img.addEventListener('load',()=>{fb.style.display='none';});
+  // Single press image shows gallery
   el.querySelector('.imgWrap').addEventListener('click',(e)=>{e.stopPropagation();openGallery(p);});
   el.querySelector('.viewMap').addEventListener('click',(e)=>{e.stopPropagation();selectedId=p.id;map.setView([p.lat,p.lng],16,{animate:true});m.openPopup();document.querySelectorAll('.place').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');});
   el.querySelector('.viewPhotos').addEventListener('click',(e)=>{e.stopPropagation();openGallery(p);});
@@ -315,12 +300,13 @@ function render(){
   listEl.appendChild(el);
  });
 }
+
 function openGallery(p){
  currentGalleryPlace=p;
  const url=getStaticUrl(p.lat,p.lng,'800x600');
  const gImg=document.getElementById('gImg');
  gImg.src=url;
- gImg.onerror=()=>{gImg.style.display='none';};
+ gImg.onerror=()=>{gImg.src=getPlaceholderSvg(p.name);};
  document.getElementById('gMeta').textContent=`${p.name} • ${p.cat} • ${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`;
  document.getElementById('gDir').href=`https://www.google.com/maps/dir/?api=1&destination=${p.lat},${p.lng}`;
  document.getElementById('gallery').classList.add('on');
@@ -328,6 +314,7 @@ function openGallery(p){
 document.getElementById('gClose').onclick=()=>document.getElementById('gallery').classList.remove('on');
 document.getElementById('gMapBtn').onclick=()=>{document.getElementById('gallery').classList.remove('on');if(currentGalleryPlace&&map){map.setView([currentGalleryPlace.lat,currentGalleryPlace.lng],16,{animate:true});}};
 document.getElementById('gallery').onclick=e=>{if(e.target.id==='gallery') e.currentTarget.classList.remove('on');};
+
 function openDetail(p){
  const box=document.getElementById('detailBox');
  const url=getStaticUrl(p.lat,p.lng,'600x340');
@@ -339,6 +326,7 @@ function openDetail(p){
  document.getElementById('detailImgWrap').onclick=()=>{openGallery(p);};
 }
 document.getElementById('detailBg').onclick=e=>{if(e.target.id==='detailBg')e.currentTarget.classList.remove('on');};
+
 findBtn.addEventListener('click',()=>{if(!selectedCity){alert('Please select country and city first');return;}fetchPlaces(selectedCity, filter==='all'?'all':filter);});
 document.getElementById('locBtn').addEventListener('click',()=>{
  if(!navigator.geolocation) return;findBtn.textContent='Locating…';findBtn.disabled=true;spin.classList.add('on');
@@ -354,6 +342,7 @@ document.getElementById('moreFiltersBtn').onclick=()=>{const ex=document.getElem
 document.querySelectorAll('#extraFilters .fbtn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#mainFilters .fbtn').forEach(x=>{if(x.dataset.f!=='free'&&x.dataset.f!=='paid'&&x.id!=='moreFiltersBtn') x.classList.remove('active');});document.querySelectorAll('#extraFilters .fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.f;if(places.length) render();}));
 document.querySelectorAll('#purposeChips .chip').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('active')){b.classList.remove('active');purpose=null;}else{document.querySelectorAll('#purposeChips .chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');purpose=b.dataset.look;}if(places.length) render();}));
 searchBox.addEventListener('input',()=>{if(places.length) render();});
+
 initMap();findBtn.disabled=true;
 </script>
 <script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
