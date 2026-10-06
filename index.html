@@ -1,9 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<head><style>
+@font-face {
+  font-family: "Optimistic";
+  font-style: normal;
+  font-weight: 400 600;
+  font-display: swap;
+  src: url("/fonts/OptimisticAI_VF_Optimized.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Optimistic Mono";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/fonts/OptimisticMono_W_TextRegular.woff2") format("woff2");
+}
+:where(html) {
+  font-family: "Optimistic", system-ui, sans-serif;
+}
+:where(code, pre, kbd, samp) {
+  font-family: "Optimistic Mono", ui-monospace, monospace;
+}
+</style>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Third Place Near Me – Free Meetup & Map Finder | 500+ Cities, 20 Countries</title>
+<title>Third Place Near Me – Free Meetup & Map Finder | 500+ Cities, 20+ Countries</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -22,11 +43,15 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 .suggest{position:absolute;z-index:80;top:52px;left:0;right:0;max-height:300px;overflow:auto;background:#fff;border:1px solid #e7e5e4;border-radius:16px;box-shadow:0 20px 40px rgba(0,0,0,.15);padding:6px;display:none}.suggest.on{display:block}
 .s-item{padding:10px 12px;border-radius:12px;display:flex;justify-content:space-between;align-items:center;font-size:13px;cursor:pointer}.s-item:hover{background:#f5f5f4}.s-item.active{background:#1c1917;color:#fff}
 .btn{height:46px;border-radius:9999px;border:1px solid #1c1917;background:#1c1917;color:#fff;padding:0 18px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;width:100%;white-space:nowrap}.btn:disabled{opacity:.35;pointer-events:none}.btn.on{background:#111827}
-.filters{margin-top:12px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}.fbtn{border-radius:9999px;border:1px solid #e7e5e4;background:#fff;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;min-height:32px}.fbtn.active{background:#1c1917;color:#fff;border-color:#1c1917}.moreBtn{border:1px dashed #d6d3d1}
-.status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;color:#a8a29e}.dot{width:8px;height:8px;border-radius:50%;background:#10b981}.spinner{width:16px;height:16px;border:2px solid #e7e5e4;border-top-color:#1c1917;border-radius:50%;animation:spin.6s linear infinite;display:none}.spinner.on{display:inline-block}@keyframes spin{to{transform:rotate(360deg)}}
-.look{margin-top:12px;padding-top:12px;border-top:1px solid #f5f5f4}.look-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#57534e;margin-bottom:8px}.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid #e7e5e4;background:#fff;border-radius:9999px;padding:6px 11px;font-size:12px;font-weight:500;cursor:pointer;display:flex;gap:5px;align-items:center;min-height:30px}.chip.active{background:#fef3c7;border-color:#fbbf24;color:#78350f}
+.filters{margin-top:12px;display:flex;flex-wrap:wrap;gap:7px;align-items:center}.fbtn{border-radius:9999px;border:1px solid #e7e5e4;background:#fff;padding:7px 12px;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;min-height:32px;transition:.15s}.fbtn.active{background:#1c1917;color:#fff;border-color:#1c1917;transform:scale(1.02)}.moreBtn{border:1px dashed #d6d3d1}
+.status{margin-left:auto;display:flex;align-items:center;gap:6px;font-size:11px;color:#a8a29e}.dot{width:8px;height:8px;border-radius:50%;background:#10b981}.spinner{width:16px;height:16px;border:2px solid #e7e5e4;border-top-color:#1c1917;border-radius:50%;animation:spin .6s linear infinite;display:none}.spinner.on{display:inline-block}@keyframes spin{to{transform:rotate(360deg)}}
+.look{margin-top:12px;padding-top:12px;border-top:1px solid #f5f5f4}.look-title{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#57534e;margin-bottom:8px}.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid #e7e5e4;background:#fff;border-radius:9999px;padding:6px 11px;font-size:12px;font-weight:500;cursor:pointer;display:flex;gap:5px;align-items:center;min-height:30px;transition:.15s}.chip.active{background:#fef3c7;border-color:#fbbf24;color:#78350f;transform:scale(1.03);font-weight:700}
 .main{margin-top:14px;display:grid;grid-template-columns:1fr;gap:12px}@media(min-width:1024px){.main{grid-template-columns:1.45fr 1fr}}
-.mapBox{border:1px solid #e7e5e4;border-radius:20px;overflow:hidden;background:#f5f5f4;position:relative}#map{width:100%;height:58vh;min-height:420px}@media(min-width:1024px){#map{height:760px;min-height:760px}}
+.mapBox{border:1px solid #e7e5e4;border-radius:20px;overflow:hidden;background:#f5f5f4;position:relative}
+/* MAP HEIGHT FIX - MOBILE 280-330px */
+#map{width:100%;height:300px;min-height:280px;max-height:330px}
+@media(min-width:768px){#map{height:480px;min-height:480px;max-height:none}}
+@media(min-width:1024px){#map{height:760px;min-height:760px;max-height:none}}
 .mapTag{position:absolute;left:10px;top:10px;z-index:400;background:rgba(255,255,255,.92);backdrop-filter:blur(8px);padding:6px 12px;border-radius:9999px;font-size:11px;font-weight:600;box-shadow:0 2px 10px rgba(0,0,0,.08);max-width:78%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .listHead{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}.listTitle{font-size:11px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#78716c}
 .list{max-height:760px;overflow:auto;display:flex;flex-direction:column;gap:12px;padding-right:2px}@media(max-width:1023px){.list{max-height:none;overflow:visible}}
@@ -44,7 +69,7 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 .seo{margin-top:22px;padding:18px;border-radius:18px;background:#fff;border:1px solid #e7e5e4}.seo h2{font-size:17px;font-weight:700}.seo p{font-size:13px;color:#57534e;margin-top:8px;line-height:1.6}
 .detailBg{position:fixed;inset:0;background:rgba(0,0,0,.5);backdrop-filter:blur(6px);z-index:1200;display:none;padding:12px;overflow:auto}.detailBg.on{display:block}.detail{max-width:560px;margin:20px auto;background:#fff;border-radius:22px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.3)}
 .detailImgWrap{height:260px;background:#f5f5f4;position:relative;overflow:hidden;cursor:zoom-in}
-.gallery{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1300;display:none;align-items:center;justify-content:center;padding:12px;flex-direction:column;gap:12px}.gallery.on{display:flex}.gallery img{max-width:100%;max-height:78vh;border-radius:12px;background:#111}.gallery.close{position:absolute;top:14px;right:14px;background:#fff;border-radius:9999px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
+.gallery{position:fixed;inset:0;background:rgba(0,0,0,.92);z-index:1300;display:none;align-items:center;justify-content:center;padding:12px;flex-direction:column;gap:12px}.gallery.on{display:flex}.gallery img{max-width:100%;max-height:78vh;border-radius:12px;background:#111}.gallery .close{position:absolute;top:14px;right:14px;background:#fff;border-radius:9999px;width:36px;height:36px;display:flex;align-items:center;justify-content:center;font-weight:700;cursor:pointer}
 .hidden{display:none!important}
 </style>
 </head>
@@ -136,19 +161,71 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 function openGoogleMapsPlace(lat,lng){const url=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lat+','+lng)}`;window.open(url,'_blank','noopener,noreferrer');}
 function getGoogleDirectionsUrl(lat,lng){return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat+','+lng)}`;}
 
-const COUNTRIES=["USA","UK","Canada","Australia","Germany","Netherlands","France","Japan","India","Brazil","Italy","Spain","Turkey","Pakistan","UAE","Saudi Arabia","Portugal","Poland","Sweden","Switzerland"];
+const COUNTRIES=["USA","UK","Australia","Germany","France","Italy","Spain","Turkey","Pakistan","Canada","India","Brazil","Netherlands","UAE","Saudi Arabia","Portugal","Poland","Sweden","Switzerland","Japan"];
+
 const CITIES={
-UK:[{name:"London",lat:51.5074,lng:-0.1278},{name:"Manchester",lat:53.4808,lng:-2.2426},{name:"Birmingham",lat:52.4862,lng:-1.8904}],
-USA:[{name:"New York",lat:40.7128,lng:-74.006},{name:"Los Angeles",lat:34.0522,lng:-118.2437},{name:"Chicago",lat:41.8781,lng:-87.6298},{name:"Miami",lat:25.7617,lng:-80.1918}],
-Italy:[{name:"Rome",lat:41.9028,lng:12.4964},{name:"Milan",lat:45.4642,lng:9.19},{name:"Venice",lat:45.4408,lng:12.3155},{name:"Florence",lat:43.7696,lng:11.2558},{name:"Naples",lat:40.8518,lng:14.2681}],
-Spain:[{name:"Madrid",lat:40.4168,lng:-3.7038},{name:"Barcelona",lat:41.3851,lng:2.1734}],
-Turkey:[{name:"Istanbul",lat:41.0082,lng:28.9784},{name:"Ankara",lat:39.9334,lng:32.8597}],
-Pakistan:[{name:"Pattoki",lat:31.02,lng:74.85},{name:"Lahore",lat:31.5204,lng:74.3587},{name:"Karachi",lat:24.8607,lng:67.0011},{name:"Islamabad",lat:33.6844,lng:73.0479}],
-Germany:[{name:"Berlin",lat:52.52,lng:13.405}],France:[{name:"Paris",lat:48.8566,lng:2.3522}],
-India:[{name:"Mumbai",lat:19.076,lng:72.8777}],Canada:[{name:"Toronto",lat:43.6532,lng:-79.3832}],Australia:[{name:"Sydney",lat:-33.8688,lng:151.2093}],
-Japan:[{name:"Tokyo",lat:35.6762,lng:139.6503}],Brazil:[{name:"Sao Paulo",lat:-23.5505,lng:-46.6333}],
-Netherlands:[{name:"Amsterdam",lat:52.3676,lng:4.9041}],UAE:[{name:"Dubai",lat:25.2048,lng:55.2708}],"Saudi Arabia":[{name:"Riyadh",lat:24.7136,lng:46.6753}],Portugal:[{name:"Lisbon",lat:38.7223,lng:-9.1393}],Poland:[{name:"Warsaw",lat:52.2297,lng:21.0122}],Sweden:[{name:"Stockholm",lat:59.3293,lng:18.0686}],Switzerland:[{name:"Zurich",lat:47.3769,lng:8.5417}]
+"USA":[
+{name:"New York",lat:40.7128,lng:-74.0060},{name:"Los Angeles",lat:34.0522,lng:-118.2437},{name:"Chicago",lat:41.8781,lng:-87.6298},{name:"Houston",lat:29.7604,lng:-95.3698},{name:"Phoenix",lat:33.4484,lng:-112.0740},{name:"Philadelphia",lat:39.9526,lng:-75.1652},{name:"San Antonio",lat:29.4241,lng:-98.4936},{name:"San Diego",lat:32.7157,lng:-117.1611},{name:"Dallas",lat:32.7767,lng:-96.7970},{name:"Austin",lat:30.2672,lng:-97.7431},{name:"San Jose",lat:37.3382,lng:-121.8863},{name:"Jacksonville",lat:30.3322,lng:-81.6557},{name:"Fort Worth",lat:32.7555,lng:-97.3308},{name:"Columbus",lat:39.9612,lng:-82.9988},{name:"Charlotte",lat:35.2271,lng:-80.8431},{name:"Indianapolis",lat:39.7684,lng:-86.1581},{name:"Seattle",lat:47.6062,lng:-122.3321},{name:"Denver",lat:39.7392,lng:-104.9903},{name:"Washington DC",lat:38.9072,lng:-77.0369},{name:"Boston",lat:42.3601,lng:-71.0589},{name:"Nashville",lat:36.1627,lng:-86.7816},{name:"Detroit",lat:42.3314,lng:-83.0458},{name:"Portland",lat:45.5155,lng:-122.6789},{name:"Las Vegas",lat:36.1699,lng:-115.1398},{name:"Miami",lat:25.7617,lng:-80.1918},{name:"Atlanta",lat:33.7490,lng:-84.3880},{name:"Orlando",lat:28.5383,lng:-81.3792},{name:"Minneapolis",lat:44.9778,lng:-93.2650},{name:"New Orleans",lat:29.9511,lng:-90.0715},{name:"San Francisco",lat:37.7749,lng:-122.4194}
+],
+"UK":[
+{name:"London",lat:51.5074,lng:-0.1278},{name:"Birmingham",lat:52.4862,lng:-1.8904},{name:"Manchester",lat:53.4808,lng:-2.2426},{name:"Liverpool",lat:53.4084,lng:-2.9916},{name:"Leeds",lat:53.8008,lng:-1.5491},{name:"Glasgow",lat:55.8642,lng:-4.2518},{name:"Edinburgh",lat:55.9533,lng:-3.1883},{name:"Bristol",lat:51.4545,lng:-2.5879},{name:"Cardiff",lat:51.4816,lng:-3.1790},{name:"Belfast",lat:54.5973,lng:-5.9301},{name:"Sheffield",lat:53.3811,lng:-1.4701},{name:"Nottingham",lat:52.9548,lng:-1.1581},{name:"Leicester",lat:52.6369,lng:-1.1398},{name:"Coventry",lat:52.4068,lng:-1.5197},{name:"Newcastle",lat:54.9783,lng:-1.6178},{name:"Southampton",lat:50.9097,lng:-1.4044},{name:"Brighton",lat:50.8225,lng:-0.1372},{name:"Oxford",lat:51.7520,lng:-1.2577},{name:"Cambridge",lat:52.2053,lng:0.1218},{name:"Aberdeen",lat:57.1497,lng:-2.0943},{name:"Dundee",lat:56.4620,lng:-2.9707},{name:"Plymouth",lat:50.3755,lng:-4.1427},{name:"Exeter",lat:50.7184,lng:-3.5339},{name:"York",lat:53.9590,lng:-1.0815},{name:"Reading",lat:51.4543,lng:-0.9781}
+],
+"Australia":[
+{name:"Sydney",lat:-33.8688,lng:151.2093},{name:"Melbourne",lat:-37.8136,lng:144.9631},{name:"Brisbane",lat:-27.4698,lng:153.0251},{name:"Perth",lat:-31.9505,lng:115.8605},{name:"Adelaide",lat:-34.9285,lng:138.6007},{name:"Canberra",lat:-35.2809,lng:149.1300},{name:"Hobart",lat:-42.8821,lng:147.3272},{name:"Darwin",lat:-12.4634,lng:130.8456},{name:"Gold Coast",lat:-28.0167,lng:153.4000},{name:"Newcastle",lat:-32.9283,lng:151.7817},{name:"Wollongong",lat:-34.4278,lng:150.8931},{name:"Geelong",lat:-38.1499,lng:144.3617},{name:"Cairns",lat:-16.9186,lng:145.7781},{name:"Townsville",lat:-19.2589,lng:146.8169},{name:"Toowoomba",lat:-27.5608,lng:151.9537},{name:"Ballarat",lat:-37.5622,lng:143.8503},{name:"Bendigo",lat:-36.7570,lng:144.2786},{name:"Albury",lat:-36.0737,lng:146.9135},{name:"Launceston",lat:-41.4332,lng:147.1441},{name:"Mackay",lat:-21.1412,lng:149.1860},{name:"Rockhampton",lat:-23.3791,lng:150.5100},{name:"Bunbury",lat:-33.3267,lng:115.6347},{name:"Coffs Harbour",lat:-30.2963,lng:153.1159},{name:"Wagga Wagga",lat:-35.1150,lng:147.3677}
+],
+"Germany":[
+{name:"Berlin",lat:52.5200,lng:13.4050},{name:"Munich",lat:48.1351,lng:11.5820},{name:"Hamburg",lat:53.5511,lng:9.9937},{name:"Cologne",lat:50.9375,lng:6.9603},{name:"Frankfurt",lat:50.1109,lng:8.6821},{name:"Stuttgart",lat:48.7758,lng:9.1829},{name:"Düsseldorf",lat:51.2277,lng:6.7735},{name:"Leipzig",lat:51.3397,lng:12.3731},{name:"Dortmund",lat:51.5136,lng:7.4653},{name:"Essen",lat:51.4556,lng:7.0116},{name:"Bremen",lat:53.0793,lng:8.8017},{name:"Dresden",lat:51.0504,lng:13.7373},{name:"Hanover",lat:52.3759,lng:9.7320},{name:"Nuremberg",lat:49.4521,lng:11.0767},{name:"Duisburg",lat:51.4344,lng:6.7623},{name:"Bochum",lat:51.4818,lng:7.2162},{name:"Wuppertal",lat:51.2562,lng:7.1508},{name:"Bielefeld",lat:52.0302,lng:8.5325},{name:"Bonn",lat:50.7374,lng:7.0982},{name:"Münster",lat:51.9607,lng:7.6261},{name:"Karlsruhe",lat:49.0069,lng:8.4037},{name:"Mannheim",lat:49.4875,lng:8.4660},{name:"Augsburg",lat:48.3705,lng:10.8978},{name:"Wiesbaden",lat:50.0782,lng:8.2398}
+],
+"France":[
+{name:"Paris",lat:48.8566,lng:2.3522},{name:"Marseille",lat:43.2965,lng:5.3698},{name:"Lyon",lat:45.7640,lng:4.8357},{name:"Toulouse",lat:43.6047,lng:1.4442},{name:"Nice",lat:43.7102,lng:7.2620},{name:"Nantes",lat:47.2184,lng:-1.5536},{name:"Strasbourg",lat:48.5734,lng:7.7521},{name:"Montpellier",lat:43.6108,lng:3.8767},{name:"Bordeaux",lat:44.8378,lng:-0.5792},{name:"Lille",lat:50.6292,lng:3.0573},{name:"Rennes",lat:48.1173,lng:-1.6778},{name:"Reims",lat:49.2583,lng:4.0317},{name:"Le Havre",lat:49.4944,lng:0.1079},{name:"Toulon",lat:43.1242,lng:5.9280},{name:"Grenoble",lat:45.1885,lng:5.7245},{name:"Dijon",lat:47.3220,lng:5.0415},{name:"Angers",lat:47.4784,lng:-0.5632},{name:"Nîmes",lat:43.8367,lng:4.3601},{name:"Villeurbanne",lat:45.7662,lng:4.8796},{name:"Saint-Denis",lat:48.9362,lng:2.3579},{name:"Aix-en-Provence",lat:43.5297,lng:5.4474},{name:"Brest",lat:48.3904,lng:-4.4861}
+],
+"Italy":[
+{name:"Rome",lat:41.9028,lng:12.4964},{name:"Milan",lat:45.4642,lng:9.1900},{name:"Naples",lat:40.8518,lng:14.2681},{name:"Turin",lat:45.0703,lng:7.6869},{name:"Palermo",lat:38.1157,lng:13.3615},{name:"Genoa",lat:44.4056,lng:8.9463},{name:"Bologna",lat:44.4949,lng:11.3426},{name:"Florence",lat:43.7696,lng:11.2558},{name:"Bari",lat:41.1171,lng:16.8719},{name:"Catania",lat:37.5079,lng:15.0830},{name:"Venice",lat:45.4408,lng:12.3155},{name:"Verona",lat:45.4386,lng:10.9928},{name:"Messina",lat:38.1938,lng:15.5540},{name:"Padua",lat:45.4064,lng:11.8768},{name:"Trieste",lat:45.6495,lng:13.7768},{name:"Brescia",lat:45.5416,lng:10.2118},{name:"Parma",lat:44.8015,lng:10.3279},{name:"Prato",lat:43.8777,lng:11.1022},{name:"Modena",lat:44.6471,lng:10.9252},{name:"Reggio Calabria",lat:38.1113,lng:15.6473},{name:"Reggio Emilia",lat:44.6980,lng:10.6312},{name:"Perugia",lat:43.1107,lng:12.3908}
+],
+"Spain":[
+{name:"Madrid",lat:40.4168,lng:-3.7038},{name:"Barcelona",lat:41.3851,lng:2.1734},{name:"Valencia",lat:39.4699,lng:-0.3763},{name:"Seville",lat:37.3891,lng:-5.9845},{name:"Zaragoza",lat:41.6488,lng:-0.8891},{name:"Málaga",lat:36.7213,lng:-4.4214},{name:"Murcia",lat:37.9922,lng:-1.1307},{name:"Palma",lat:39.5696,lng:2.6502},{name:"Las Palmas",lat:28.1235,lng:-15.4363},{name:"Bilbao",lat:43.2630,lng:-2.9350},{name:"Alicante",lat:38.3452,lng:-0.4810},{name:"Córdoba",lat:37.8882,lng:-4.7794},{name:"Valladolid",lat:41.6523,lng:-4.7245},{name:"Vigo",lat:42.2406,lng:-8.7207},{name:"Gijón",lat:43.5322,lng:-5.6611},{name:"L'Hospitalet",lat:41.3597,lng:2.1000},{name:"A Coruña",lat:43.3623,lng:-8.4115},{name:"Granada",lat:37.1773,lng:-3.5986},{name:"Vitoria",lat:42.8467,lng:-2.6716},{name:"Elche",lat:38.2699,lng:-0.7126},{name:"Oviedo",lat:43.3614,lng:-5.8593},{name:"Badalona",lat:41.4500,lng:2.2474}
+],
+"Turkey":[
+{name:"Istanbul",lat:41.0082,lng:28.9784},{name:"Ankara",lat:39.9334,lng:32.8597},{name:"Izmir",lat:38.4237,lng:27.1428},{name:"Bursa",lat:40.1885,lng:29.0609},{name:"Antalya",lat:36.8969,lng:30.7133},{name:"Adana",lat:37.0000,lng:35.3213},{name:"Konya",lat:37.8667,lng:32.4833},{name:"Gaziantep",lat:37.0662,lng:37.3833},{name:"Mersin",lat:36.8000,lng:34.6333},{name:"Diyarbakır",lat:37.9144,lng:40.2306},{name:"Şanlıurfa",lat:37.1591,lng:38.7969},{name:"Eskişehir",lat:39.7767,lng:30.5206},{name:"Kayseri",lat:38.7312,lng:35.4787},{name:"Samsun",lat:41.2867,lng:36.33},{name:"Denizli",lat:37.7765,lng:29.0864},{name:"Adapazarı",lat:40.7731,lng:30.3948},{name:"Malatya",lat:38.3552,lng:38.3095},{name:"Erzurum",lat:39.9000,lng:41.2700},{name:"Trabzon",lat:41.0015,lng:39.7178},{name:"Van",lat:38.4898,lng:43.4089},{name:"Elazığ",lat:38.6810,lng:39.2264},{name:"Batman",lat:37.8812,lng:41.1351}
+],
+"Pakistan":[
+{name:"Karachi",lat:24.8607,lng:67.0011},{name:"Lahore",lat:31.5204,lng:74.3587},{name:"Islamabad",lat:33.6844,lng:73.0479},{name:"Faisalabad",lat:31.4504,lng:73.1350},{name:"Rawalpindi",lat:33.5651,lng:73.0169},{name:"Multan",lat:30.1575,lng:71.5249},{name:"Peshawar",lat:34.0151,lng:71.5249},{name:"Quetta",lat:30.1798,lng:66.9750},{name:"Sialkot",lat:32.4945,lng:74.5229},{name:"Gujranwala",lat:32.1877,lng:74.1945},{name:"Sargodha",lat:32.0836,lng:72.6711},{name:"Bahawalpur",lat:29.3956,lng:71.6836},{name:"Sahiwal",lat:30.6682,lng:73.1114},{name:"Okara",lat:30.8100,lng:73.4590},{name:"Pattoki",lat:31.0200,lng:73.8500},{name:"Kasur",lat:31.1155,lng:74.4467},{name:"Sheikhupura",lat:32.0711,lng:74.0000},{name:"Gujrat",lat:32.5731,lng:74.0789},{name:"Jhelum",lat:32.9337,lng:73.7264},{name:"Mardan",lat:34.1986,lng:72.0231},{name:"Mingora",lat:34.7717,lng:72.3604},{name:"Sukkur",lat:27.7058,lng:68.8574}
+],
+"Canada":[
+{name:"Toronto",lat:43.6532,lng:-79.3832},{name:"Montreal",lat:45.5017,lng:-73.5673},{name:"Vancouver",lat:49.2827,lng:-123.1207},{name:"Calgary",lat:51.0447,lng:-114.0719},{name:"Edmonton",lat:53.5461,lng:-113.4938},{name:"Ottawa",lat:45.4215,lng:-75.6972},{name:"Winnipeg",lat:49.8951,lng:-97.1384},{name:"Quebec City",lat:46.8139,lng:-71.2080},{name:"Hamilton",lat:43.2557,lng:-79.8711},{name:"Kitchener",lat:43.4516,lng:-80.4925},{name:"London",lat:42.9849,lng:-81.2453},{name:"Victoria",lat:48.4284,lng:-123.3656},{name:"Halifax",lat:44.6488,lng:-63.5752},{name:"Oshawa",lat:43.8971,lng:-78.8658},{name:"Windsor",lat:42.3149,lng:-83.0364},{name:"Saskatoon",lat:52.1332,lng:-106.6700},{name:"St. Catharines",lat:43.1594,lng:-79.2468},{name:"Regina",lat:50.4452,lng:-104.6189},{name:"Kelowna",lat:49.8880,lng:-119.4960},{name:"Barrie",lat:44.3894,lng:-79.6903},{name:"Sherbrooke",lat:45.4000,lng:-71.9000},{name:"Guelph",lat:43.5448,lng:-80.2482}
+],
+"India":[
+{name:"Mumbai",lat:19.0760,lng:72.8777},{name:"Delhi",lat:28.7041,lng:77.1025},{name:"Bangalore",lat:12.9716,lng:77.5946},{name:"Hyderabad",lat:17.3850,lng:78.4867},{name:"Chennai",lat:13.0827,lng:80.2707},{name:"Kolkata",lat:22.5726,lng:88.3639},{name:"Pune",lat:18.5204,lng:73.8567},{name:"Ahmedabad",lat:23.0225,lng:72.5714},{name:"Jaipur",lat:26.9124,lng:75.7873},{name:"Lucknow",lat:26.8467,lng:80.9462},{name:"Kanpur",lat:26.4499,lng:80.3319},{name:"Nagpur",lat:21.1458,lng:79.0882},{name:"Indore",lat:22.7196,lng:75.8577},{name:"Thane",lat:19.2183,lng:72.9781},{name:"Bhopal",lat:23.2599,lng:77.4126},{name:"Visakhapatnam",lat:17.6868,lng:83.2185},{name:"Pimpri",lat:18.6298,lng:73.7997},{name:"Patna",lat:25.5941,lng:85.1376},{name:"Vadodara",lat:22.3072,lng:73.1812},{name:"Ghaziabad",lat:28.6692,lng:77.4538},{name:"Ludhiana",lat:30.9010,lng:75.8573},{name:"Agra",lat:27.1767,lng:78.0081}
+],
+"Brazil":[
+{name:"São Paulo",lat:-23.5505,lng:-46.6333},{name:"Rio de Janeiro",lat:-22.9068,lng:-43.1729},{name:"Brasília",lat:-15.7939,lng:-47.8828},{name:"Salvador",lat:-12.9777,lng:-38.5016},{name:"Fortaleza",lat:-3.7172,lng:-38.5433},{name:"Belo Horizonte",lat:-19.9167,lng:-43.9345},{name:"Manaus",lat:-3.1190,lng:-60.0217},{name:"Curitiba",lat:-25.4284,lng:-49.2733},{name:"Recife",lat:-8.0476,lng:-34.8770},{name:"Porto Alegre",lat:-30.0346,lng:-51.2177},{name:"Belém",lat:-1.4558,lng:-48.4902},{name:"Goiânia",lat:-16.6869,lng:-49.2648},{name:"Guarulhos",lat:-23.4538,lng:-46.5333},{name:"Campinas",lat:-22.9099,lng:-47.0626},{name:"São Luís",lat:-2.5307,lng:-44.3068},{name:"São Gonçalo",lat:-22.8268,lng:-43.0634},{name:"Maceió",lat:-9.6658,lng:-35.7353},{name:"Duque de Caxias",lat:-22.7858,lng:-43.3117},{name:"Natal",lat:-5.7945,lng:-35.2110},{name:"Teresina",lat:-5.0919,lng:-42.8034},{name:"São Bernardo",lat:-23.6914,lng:-46.5646},{name:"Campo Grande",lat:-20.4697,lng:-54.6201}
+],
+"Netherlands":[
+{name:"Amsterdam",lat:52.3676,lng:4.9041},{name:"Rotterdam",lat:51.9244,lng:4.4777},{name:"The Hague",lat:52.0705,lng:4.3007},{name:"Utrecht",lat:52.0907,lng:5.1214},{name:"Eindhoven",lat:51.4416,lng:5.4697},{name:"Tilburg",lat:51.5555,lng:5.0913},{name:"Groningen",lat:53.2194,lng:6.5665},{name:"Almere",lat:52.3508,lng:5.2647},{name:"Breda",lat:51.5719,lng:4.7683},{name:"Nijmegen",lat:51.8426,lng:5.8528},{name:"Enschede",lat:52.2215,lng:6.8937},{name:"Apeldoorn",lat:52.2112,lng:5.9699},{name:"Haarlem",lat:52.3874,lng:4.6462},{name:"Arnhem",lat:51.9851,lng:5.8987},{name:"Amersfoort",lat:52.1561,lng:5.3878},{name:"Zaanstad",lat:52.4420,lng:4.8292},{name:"Haarlemmermeer",lat:52.3030,lng:4.6920},{name:"'s-Hertogenbosch",lat:51.6978,lng:5.3037},{name:"Zwolle",lat:52.5168,lng:6.0830},{name:"Zoetermeer",lat:52.0575,lng:4.4937},{name:"Leiden",lat:52.1601,lng:4.4970},{name:"Maastricht",lat:50.8514,lng:5.6910}
+],
+"UAE":[
+{name:"Dubai",lat:25.2048,lng:55.2708},{name:"Abu Dhabi",lat:24.4539,lng:54.3773},{name:"Sharjah",lat:25.3463,lng:55.4209},{name:"Al Ain",lat:24.2075,lng:55.7447},{name:"Ajman",lat:25.4052,lng:55.5136},{name:"Ras Al Khaimah",lat:25.7895,lng:55.9432},{name:"Fujairah",lat:25.1338,lng:56.3267},{name:"Umm Al Quwain",lat:25.5420,lng:55.5533},{name:"Khor Fakkan",lat:25.3347,lng:56.3561},{name:"Dibba Al-Fujairah",lat:25.5907,lng:56.2610},{name:"Dibba Al-Hisn",lat:25.6150,lng:56.2728},{name:"Kalba",lat:25.0728,lng:56.3561},{name:"Jebel Ali",lat:24.9857,lng:55.0556},{name:"Hatta",lat:24.8130,lng:56.1265},{name:"Madinat Zayed",lat:23.6500,lng:53.7167},{name:"Ruwais",lat:24.1300,lng:52.7300},{name:"Liwa Oasis",lat:23.1333,lng:53.7833},{name:"Al Mirfa",lat:24.1000,lng:53.4000},{name:"Ghayathi",lat:23.8400,lng:52.8100},{name:"Sila",lat:24.0500,lng:51.7500}
+],
+"Saudi Arabia":[
+{name:"Riyadh",lat:24.7136,lng:46.6753},{name:"Jeddah",lat:21.5433,lng:39.1728},{name:"Mecca",lat:21.3891,lng:39.8579},{name:"Medina",lat:24.4672,lng:39.6111},{name:"Dammam",lat:26.3927,lng:50.1986},{name:"Taif",lat:21.2703,lng:40.4158},{name:"Tabuk",lat:28.3835,lng:36.5660},{name:"Buraidah",lat:26.3260,lng:43.9750},{name:"Khamis Mushait",lat:18.3000,lng:42.7333},{name:"Al Hofuf",lat:25.3647,lng:49.5877},{name:"Al Mubarraz",lat:25.4030,lng:49.5877},{name:"Hafar Al-Batin",lat:28.3871,lng:45.9650},{name:"Hail",lat:27.5114,lng:41.7208},{name:"Najran",lat:17.4924,lng:44.1277},{name:"Jubail",lat:27.0047,lng:49.6458},{name:"Abha",lat:18.2164,lng:42.5053},{name:"Yanbu",lat:24.0895,lng:47.3067},{name:"Khobar",lat:26.2172,lng:50.1971},{name:"Arar",lat:30.9753,lng:41.0387},{name:"Sakakah",lat:29.9697,lng:40.2064},{name:"Jizan",lat:16.8892,lng:42.5706},{name:"Qurayyat",lat:31.3250,lng:37.3436}
+],
+"Portugal":[
+{name:"Lisbon",lat:38.7223,lng:-9.1393},{name:"Porto",lat:41.1579,lng:-8.6291},{name:"Amadora",lat:38.7538,lng:-9.2306},{name:"Braga",lat:41.5454,lng:-8.4265},{name:"Setúbal",lat:38.5244,lng:-8.8882},{name:"Coimbra",lat:40.2033,lng:-8.4103},{name:"Queluz",lat:38.7567,lng:-9.2588},{name:"Funchal",lat:32.6500,lng:-16.9083},{name:"Cacém",lat:38.7687,lng:-9.3020},{name:"Vila Nova de Gaia",lat:41.1238,lng:-8.6118},{name:"Loures",lat:38.8308,lng:-9.1680},{name:"Rio de Mouro",lat:38.7720,lng:-9.3250},{name:"Odivelas",lat:38.7940,lng:-9.1800},{name:"Aveiro",lat:40.6405,lng:-8.6538},{name:"Amora",lat:38.6291,lng:-9.1160},{name:"Corroios",lat:38.6428,lng:-9.1450},{name:"Barreiro",lat:38.6600,lng:-9.0700},{name:"Águas Santas",lat:41.2147,lng:-8.5768},{name:"Massamá",lat:38.7500,lng:-9.2800},{name:"Matosinhos",lat:41.1843,lng:-8.6853},{name:"Guimarães",lat:41.4422,lng:-8.2935},{name:"Oeiras",lat:38.6970,lng:-9.3150}
+],
+"Poland":[
+{name:"Warsaw",lat:52.2297,lng:21.0122},{name:"Kraków",lat:50.0647,lng:19.9450},{name:"Łódź",lat:51.7592,lng:19.4560},{name:"Wrocław",lat:51.1079,lng:17.0385},{name:"Poznań",lat:52.4064,lng:16.9252},{name:"Gdańsk",lat:54.3520,lng:18.6466},{name:"Szczecin",lat:53.4285,lng:14.5528},{name:"Bydgoszcz",lat:53.1235,lng:18.0084},{name:"Lublin",lat:51.2465,lng:22.5684},{name:"Białystok",lat:53.1325,lng:23.1688},{name:"Katowice",lat:50.2649,lng:19.0238},{name:"Gdynia",lat:54.5189,lng:18.5305},{name:"Częstochowa",lat:50.8118,lng:19.1203},{name:"Radom",lat:51.4027,lng:21.1471},{name:"Sosnowiec",lat:50.2868,lng:19.1040},{name:"Toruń",lat:53.0138,lng:18.5984},{name:"Kielce",lat:50.8661,lng:20.6286},{name:"Rzeszów",lat:50.0412,lng:21.9991},{name:"Gliwice",lat:50.2945,lng:18.6714},{name:"Zabrze",lat:50.3010,lng:18.7857},{name:"Olsztyn",lat:53.7784,lng:20.4801},{name:"Bielsko-Biała",lat:49.8224,lng:19.0444}
+],
+"Sweden":[
+{name:"Stockholm",lat:59.3293,lng:18.0686},{name:"Gothenburg",lat:57.7089,lng:11.9746},{name:"Malmö",lat:55.6050,lng:13.0038},{name:"Uppsala",lat:59.8586,lng:17.6389},{name:"Västerås",lat:59.6099,lng:16.5448},{name:"Örebro",lat:59.2741,lng:15.2066},{name:"Linköping",lat:58.4108,lng:15.6214},{name:"Helsingborg",lat:56.0465,lng:12.6945},{name:"Jönköping",lat:57.7826,lng:14.1618},{name:"Norrköping",lat:58.5877,lng:16.1924},{name:"Lund",lat:55.7047,lng:13.1910},{name:"Umeå",lat:63.8258,lng:20.2630},{name:"Gävle",lat:60.6745,lng:17.1417},{name:"Borås",lat:57.7210,lng:12.9401},{name:"Södertälje",lat:59.1955,lng:17.6253},{name:"Eskilstuna",lat:59.3666,lng:16.5077},{name:"Halmstad",lat:56.6745,lng:12.8578},{name:"Växjö",lat:56.8777,lng:14.8091},{name:"Karlstad",lat:59.4022,lng:13.5115},{name:"Sundsvall",lat:62.3908,lng:17.3069},{name:"Östersund",lat:63.1792,lng:14.6357},{name:"Trollhättan",lat:58.2837,lng:12.2886}
+],
+"Switzerland":[
+{name:"Zurich",lat:47.3769,lng:8.5417},{name:"Geneva",lat:46.2044,lng:6.1432},{name:"Basel",lat:47.5596,lng:7.5886},{name:"Bern",lat:46.9480,lng:7.4474},{name:"Lausanne",lat:46.5197,lng:6.6323},{name:"Lucerne",lat:47.0502,lng:8.3093},{name:"Winterthur",lat:47.4984,lng:8.7246},{name:"St. Gallen",lat:47.4245,lng:9.3768},{name:"Lugano",lat:46.0037,lng:8.9511},{name:"Biel",lat:47.1368,lng:7.2469},{name:"Thun",lat:46.7580,lng:7.6288},{name:"Bellinzona",lat:46.1936,lng:9.0210},{name:"Fribourg",lat:46.8065,lng:7.1610},{name:"Chur",lat:46.8508,lng:9.5329},{name:"Sion",lat:46.2333,lng:7.3606},{name:"Neuchâtel",lat:46.9929,lng:6.9319},{name:"Schaffhausen",lat:47.6973,lng:8.6338},{name:"Sierre",lat:46.2927,lng:7.5329},{name:"Montreux",lat:46.4312,lng:6.9107},{name:"Zug",lat:47.1662,lng:8.5155},{name:"Yverdon",lat:46.7785,lng:6.6406},{name:"Davos",lat:46.8027,lng:9.8300}
+],
+"Japan":[
+{name:"Tokyo",lat:35.6762,lng:139.6503},{name:"Yokohama",lat:35.4437,lng:139.6380},{name:"Osaka",lat:34.6937,lng:135.5023},{name:"Nagoya",lat:35.1815,lng:136.9066},{name:"Sapporo",lat:43.0618,lng:141.3545},{name:"Fukuoka",lat:33.5902,lng:130.4017},{name:"Kobe",lat:34.6901,lng:135.1955},{name:"Kyoto",lat:35.0116,lng:135.7681},{name:"Kawasaki",lat:35.5308,lng:139.7028},{name:"Saitama",lat:34.8579,lng:139.6430},{name:"Hiroshima",lat:34.3853,lng:132.4553},{name:"Sendai",lat:38.2682,lng:140.8694},{name:"Chiba",lat:35.6074,lng:140.1065},{name:"Kitakyushu",lat:33.8833,lng:130.8750},{name:"Sakai",lat:34.5731,lng:135.4830},{name:"Niigata",lat:37.9162,lng:139.0364},{name:"Hamamatsu",lat:34.7107,lng:137.7261},{name:"Kumamoto",lat:32.8031,lng:130.7079},{name:"Sagamihara",lat:35.5718,lng:139.3730},{name:"Shizuoka",lat:34.9756,lng:138.3828},{name:"Okayama",lat:34.6551,lng:133.9195},{name:"Kagoshima",lat:31.5966,lng:130.5571}
+]
 };
+
 const CATEGORY_MAP={
  all:{queries:['amenity=cafe','amenity=library','amenity=community_centre','amenity=youth_centre','amenity=arts_centre','amenity=bar','amenity=pub','amenity=nightclub','amenity=restaurant','amenity=fast_food','amenity=cinema','amenity=theatre','amenity=gym','leisure=park','leisure=garden','leisure=sports_centre','leisure=fitness_centre','leisure=playground','leisure=pitch','leisure=amusement_arcade','shop=books']},
  parks:{queries:['leisure=park','leisure=garden','leisure=playground']},
@@ -188,35 +265,46 @@ function classify(tags){
  if(l.includes('shisha')||l.includes('tobacco')) return {cat:'Smoking / Shisha',price:'Paid',good:'Relax • Evening',tags:['🚬 Shisha'],group:'shisha'};
  return {cat:'Community Space',price:'Unknown',good:'Socializing',tags:['👥 Social'],group:'social'};
 }
-let map, markers=[], selectedCity=null, selectedCountry="Italy", filter="all", priceFilter="all", purpose=null, userLoc=null, places=[], selectedId=null, cache=new Map();
+let map, markers=[], selectedCity=null, selectedCountry="USA", filter="all", priceFilter="all", purpose=null, userLoc=null, places=[], selectedId=null, cache=new Map();
 const countrySel=document.getElementById('countrySel'),cityInput=document.getElementById('cityInput'),citySuggest=document.getElementById('citySuggest'),cityCount=document.getElementById('cityCount'),findBtn=document.getElementById('findBtn'),spin=document.getElementById('spin'),statusText=document.getElementById('statusText'),searchBox=document.getElementById('searchBox'),listEl=document.getElementById('list'),mapTag=document.getElementById('mapTag'),coord=document.getElementById('coord');
+
 function init(){
+ countrySel.innerHTML='';
  COUNTRIES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;countrySel.appendChild(o);});
- countrySel.value="Italy";
- selectedCountry="Italy";
+ countrySel.value="USA";
+ selectedCountry="USA";
  const cities=CITIES[selectedCountry]||[];
- selectedCity=cities.find(x=>x.name==="Florence")||cities[0]||null;
+ selectedCity=cities[0]||null;
  if(selectedCity){cityInput.value=selectedCity.name;findBtn.disabled=false;findBtn.classList.add('on');}
  cityCount.textContent=`· ${cities.length} cities`;
- map=L.map('map',{zoomControl:false}).setView([41.9028,12.4964],5);
+ map=L.map('map',{zoomControl:false}).setView([40.7128,-74.0060],4);
  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
  L.control.zoom({position:'bottomright'}).addTo(map);
- mapTag.textContent=`📍 ${selectedCity?selectedCity.name+', '+selectedCountry:'Select a city and click Find Third Place'}`;
- if(selectedCity) coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;
- statusText.textContent=`Ready to search in ${selectedCity?selectedCity.name:'Florence'}`;
+ if(selectedCity){map.setView([selectedCity.lat,selectedCity.lng],11);mapTag.textContent=`📍 ${selectedCity.name}, ${selectedCountry}`;coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;statusText.textContent=`Ready to search in ${selectedCity.name}`;}
 }
 function updateTag(){if(!selectedCity) return;mapTag.textContent=`📍 ${selectedCity.name}, ${selectedCountry}`;coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;}
 function setLoading(on,msg){spin.classList.toggle('on',on);statusText.textContent=msg||'';}
 function showSuggest(q){
  const all=CITIES[selectedCountry]||[];const filtered=q?all.filter(c=>c.name.toLowerCase().includes(q.toLowerCase())).slice(0,12):all.slice(0,12);
- cityCount.textContent=`· ${filtered.length} found`;citySuggest.innerHTML='';filtered.forEach(c=>{
+ cityCount.textContent=`· ${filtered.length} / ${all.length} cities`;citySuggest.innerHTML='';filtered.forEach(c=>{
   const d=document.createElement('div');d.className='s-item'+(selectedCity&&c.name===selectedCity.name?' active':'');
   d.innerHTML=`<span style="font-weight:600">${c.name}</span><span style="font-size:11px;color:#a8a29e">${c.lat.toFixed(2)}, ${c.lng.toFixed(2)}</span>`;
   d.onmousedown=()=>{selectedCity=c;cityInput.value=c.name;citySuggest.classList.remove('on');findBtn.disabled=false;findBtn.classList.add('on');updateTag();if(map) map.setView([c.lat,c.lng],13);statusText.textContent=`Ready to search in ${c.name}`;};
   citySuggest.appendChild(d);
  });citySuggest.classList.add('on');
 }
-countrySel.addEventListener('change',e=>{selectedCountry=e.target.value;const cities=CITIES[selectedCountry]||[];selectedCity=cities[0]||null;cityInput.value=selectedCity?selectedCity.name:'';cityCount.textContent=cities.length?`· ${cities.length} cities`:'';findBtn.disabled=!selectedCity;if(selectedCity) findBtn.classList.add('on');updateTag();if(selectedCity&&map) map.setView([selectedCity.lat,selectedCity.lng],13);statusText.textContent=selectedCity?`Ready to search in ${selectedCity.name}`:'Select a city';});
+countrySel.addEventListener('change',e=>{
+ selectedCountry=e.target.value;
+ const cities=CITIES[selectedCountry]||[];
+ selectedCity=cities[0]||null;
+ cityInput.value=selectedCity?selectedCity.name:'';
+ cityCount.textContent=cities.length?`· ${cities.length} cities`:'';
+ findBtn.disabled=!selectedCity;
+ if(selectedCity) findBtn.classList.add('on');
+ updateTag();
+ if(selectedCity&&map) map.setView([selectedCity.lat,selectedCity.lng],11);
+ statusText.textContent=selectedCity?`Ready to search in ${selectedCity.name} - ${cities.length} cities available`:'Select a city';
+});
 cityInput.addEventListener('focus',()=>showSuggest(cityInput.value));cityInput.addEventListener('input',()=>showSuggest(cityInput.value));
 document.addEventListener('click',e=>{if(!e.target.closest('#cityInput')&&!e.target.closest('#citySuggest')) citySuggest.classList.remove('on');});
 async function overpassFetch(query){
@@ -264,7 +352,7 @@ function render(){
   if(q&&!p.name.toLowerCase().includes(q)&&!p.cat.toLowerCase().includes(q))return false;return true;
  }).sort((a,b)=>a._dist-b._dist);
  listEl.innerHTML='';
- if(filtered.length===0){listEl.innerHTML=`<div class="empty"><b>No suitable places found.</b><p>Try All categories.</p></div>`;return}
+ if(filtered.length===0){listEl.innerHTML=`<div class="empty"><b>No suitable places found.</b><p>Try All categories or change filter.</p></div>`;return}
  filtered.slice(0,70).forEach(p=>{
   const color=p.price==='Free'?'#10b981':p.price==='Paid'?'#f59e0b':'#78716c';
   const icon=L.divIcon({html:`<div style="background:${color};width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#fff;font-size:14px;border:2px solid #fff;box-shadow:0 2px 8px rgba(0,0,0,.2)">${p.group==='cafe'?'☕':p.group==='gaming'?'🎮':p.group==='gym'?'🏋️':p.group==='music'?'🎵':'📍'}</div>`,className:'',iconSize:[34,34],iconAnchor:[17,17]});
@@ -309,22 +397,65 @@ function openDetail(p){
  document.getElementById('detailImgWrap').onclick=()=>{openGallery(p);};
 }
 document.getElementById('detailBg').onclick=e=>{if(e.target.id==='detailBg')e.currentTarget.classList.remove('on');};
-findBtn.addEventListener('click',()=>{if(!selectedCity){alert('Please select country and city first');return;}fetchPlaces(selectedCity, filter==='all'?'all':filter);});
+findBtn.addEventListener('click',()=>{if(!selectedCity){alert('Please select country and city first');return;}fetchPlaces(selectedCity, filter);});
 document.getElementById('locBtn').addEventListener('click',()=>{
  if(!navigator.geolocation) return;findBtn.textContent='Locating…';findBtn.disabled=true;spin.classList.add('on');
  navigator.geolocation.getCurrentPosition(pos=>{userLoc={lat:pos.coords.latitude,lng:pos.coords.longitude};selectedCity={name:'My Location',lat:pos.coords.latitude,lng:pos.coords.longitude};findBtn.textContent='Find Third Place';findBtn.disabled=false;findBtn.classList.add('on');spin.classList.remove('on');updateTag();if(map) map.setView([userLoc.lat,userLoc.lng],13);fetchPlaces(userLoc,'all');},()=>{alert('Location denied');findBtn.textContent='Find Third Place';findBtn.disabled=false;spin.classList.remove('on');});
 });
-document.querySelectorAll('#mainFilters.fbtn').forEach(b=>b.addEventListener('click',()=>{
- if(b.id==='moreFiltersBtn') return;
- if(b.dataset.f==='free'||b.dataset.f==='paid'){priceFilter=b.dataset.f;document.querySelectorAll('#mainFilters.fbtn[data-f="free"],#mainFilters.fbtn[data-f="paid"],#mainFilters.fbtn[data-f="all"]').forEach(x=>x.classList.remove('active'));b.classList.add('active');if(places.length) render();return;}
- if(b.dataset.f==='all'){priceFilter='all';filter='all';document.querySelectorAll('#mainFilters.fbtn').forEach(x=>{if(x.id!=='moreFiltersBtn') x.classList.remove('active');});b.classList.add('active');document.querySelectorAll('#extraFilters.fbtn').forEach(x=>x.classList.remove('active'));if(places.length) render();return;}
- document.querySelectorAll('#mainFilters.fbtn').forEach(x=>{if(x.dataset.f!=='free'&&x.dataset.f!=='paid'&&x.id!=='moreFiltersBtn') x.classList.remove('active');});document.querySelectorAll('#extraFilters.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.f;if(places.length) render();
-}));
+
+// CATEGORY ACTIVE FIX - 1. PROPER ACTIVE STATE
+function clearAllCategoryActive(){
+ document.querySelectorAll('#mainFilters .fbtn').forEach(x=>{if(x.id!=='moreFiltersBtn') x.classList.remove('active');});
+ document.querySelectorAll('#extraFilters .fbtn').forEach(x=>x.classList.remove('active'));
+ document.querySelectorAll('#purposeChips .chip').forEach(x=>x.classList.remove('active'));
+}
+document.querySelectorAll('#mainFilters .fbtn').forEach(b=>{
+ b.addEventListener('click',()=>{
+  if(b.id==='moreFiltersBtn') return;
+  if(b.dataset.f==='free'||b.dataset.f==='paid'){
+   priceFilter=b.dataset.f;
+   document.querySelectorAll('#mainFilters .fbtn[data-f="free"],#mainFilters .fbtn[data-f="paid"],#mainFilters .fbtn[data-f="all"]').forEach(x=>x.classList.remove('active'));
+   b.classList.add('active');
+   if(places.length) render();
+   return;
+  }
+  if(b.dataset.f==='all'){
+   priceFilter='all';filter='all';purpose=null;
+   clearAllCategoryActive();
+   b.classList.add('active');
+   if(places.length) render();
+   return;
+  }
+  clearAllCategoryActive();
+  b.classList.add('active');
+  filter=b.dataset.f;purpose=null;
+  if(places.length) render();
+ });
+});
 document.getElementById('moreFiltersBtn').onclick=()=>{const ex=document.getElementById('extraFilters');ex.classList.toggle('hidden');document.getElementById('moreFiltersBtn').textContent=ex.classList.contains('hidden')?'More ▾':'Less ▴';};
-document.querySelectorAll('#extraFilters.fbtn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#mainFilters.fbtn').forEach(x=>{if(x.dataset.f!=='free'&&x.dataset.f!=='paid'&&x.id!=='moreFiltersBtn') x.classList.remove('active');});document.querySelectorAll('#extraFilters.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.f;if(places.length) render();}));
-document.querySelectorAll('#purposeChips.chip').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('active')){b.classList.remove('active');purpose=null;}else{document.querySelectorAll('#purposeChips.chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');purpose=b.dataset.look;}if(places.length) render();}));
+document.querySelectorAll('#extraFilters .fbtn').forEach(b=>{
+ b.addEventListener('click',()=>{
+  clearAllCategoryActive();
+  b.classList.add('active');
+  filter=b.dataset.f;purpose=null;
+  if(places.length) render();
+ });
+});
+document.querySelectorAll('#purposeChips .chip').forEach(b=>{
+ b.addEventListener('click',()=>{
+  if(b.classList.contains('active')){
+   b.classList.remove('active');purpose=null;filter='all';
+   document.querySelectorAll('#mainFilters .fbtn[data-f="all"]').forEach(x=>x.classList.add('active'));
+  }else{
+   clearAllCategoryActive();
+   b.classList.add('active');
+   purpose=b.dataset.look;filter='all';
+  }
+  if(places.length) render();
+ });
+});
 searchBox.addEventListener('input',()=>{if(places.length) render();});
 init();
 </script>
-</body>
- </html>
+<script>(function(){var loc=location.href.replace(/#.*$/,"");var ATTR_NAMES=["data-product-id","data-productid","data-product_id","product-id","productid","product_id","data-source-entity-id","source-entity-id","source_entity_id","data-product","data-metadata","data-meta"];var DATASET_KEYS=["productId","productid","product_id","sourceEntityId","sourceentityid","source_entity_id","product","metadata","meta"];function readProductId(value){if(typeof value!=="string"||value.length===0)return null;if(/^[0-9]{6,}$/.test(value))return value;var match=value.match(/(?:product(?:_|-)?id|source(?:_|-)?entity(?:_|-)?id)["'=:\s]+([0-9]{6,})/i);return match?match[1]:null}function extractProductId(start){for(var node=start;node&&node!==document.body;node=node.parentElement){for(var i=0;i<ATTR_NAMES.length;i++){var attrValue=node.getAttribute&&node.getAttribute(ATTR_NAMES[i]);var attrProductId=readProductId(attrValue);if(attrProductId)return attrProductId}var dataset=node.dataset||null;if(dataset){for(var j=0;j<DATASET_KEYS.length;j++){var dataValue=dataset[DATASET_KEYS[j]];var dataProductId=readProductId(dataValue);if(dataProductId)return dataProductId}}}return null}function isInlineMediaSlotElement(node){return !!(node&&node.getAttribute&&node.getAttribute("data-clippy-inline-media-slot")!==null)}function findInlineMediaSlot(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(isInlineMediaSlotElement(node))return node}return null}function readInlineMediaUrl(node){if(!node)return null;return node.getAttribute&&((node.getAttribute("data-clippy-inline-media-url")||node.getAttribute("data-url")||node.getAttribute("data_url")))||node.href||null}function stripHash(url){return String(url).replace(/#.*$/,"")}function urlsMatch(a,b){if(!a||!b)return false;try{return stripHash(new URL(a,loc).href)===stripHash(new URL(b,loc).href)}catch(_){return stripHash(a)===stripHash(b)}}function isFirstPartyReelUrl(value){try{var url=new URL(value,loc);if(url.protocol!=="https:")return false;var host=url.hostname.toLowerCase();var supported=host==="instagram.com"||host.endsWith(".instagram.com")||host==="facebook.com"||host.endsWith(".facebook.com");return supported&&/\/reels?\//i.test(url.pathname)}catch(_){return false}}function isInlineMediaUrlClick(node,href){var slot=findInlineMediaSlot(node);if(!slot)return false;var slotUrl=readInlineMediaUrl(slot);if(slotUrl)return urlsMatch(href,slotUrl);return isFirstPartyReelUrl(href)}function findDataHref(start){for(var node=start;node&&node!==document.body;node=node.parentElement){if(node.getAttribute){var href=node.getAttribute("data-href")||node.getAttribute("data-url");if(href)return{href:href,node:node}}}return null}var nativeOpen=window.open;window.open=function(url){if(parent!==window&&typeof url==="string"&&/^https?:\/\//.test(url)){parent.postMessage({type:"ecto:usercontent-link-click",href:url},"*");return null}return nativeOpen?nativeOpen.apply(window,arguments):null};document.addEventListener("click",function(e){var target=e.target instanceof Element?e.target:null;if(!target)return;if(parent===window)return;var a=target.closest?target.closest("a[href]"):null;if(a&&a.href&&/^https?:\/\//.test(a.href)&&a.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(a,a.href))return;var productId=extractProductId(target)||extractProductId(a);if(productId){e.preventDefault();parent.postMessage({type:"ecto-artifact-link-click",productId:productId},"*");return}e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:a.href},"*");return}var dataHref=findDataHref(target);if(dataHref&&/^https?:\/\//.test(dataHref.href)&&dataHref.href.replace(/#.*$/,"")!==loc){if(isInlineMediaUrlClick(dataHref.node,dataHref.href))return;e.preventDefault();parent.postMessage({type:"ecto:usercontent-link-click",href:dataHref.href},"*")}},true)})();</script><script>(function(){var FOCUS_TYPE="ecto:artifact-focus-request";var CLOSE_TYPE="ecto:artifact-close-request";function focusArtifactDocument(){var body=document.body;if(!body)return;try{window.focus();}catch(e){}if(!body.hasAttribute("tabindex"))body.setAttribute("tabindex","-1");try{body.focus({preventScroll:true});}catch(e){try{body.focus();}catch(e2){}}}window.addEventListener("message",function(event){if(event.source!==window.parent)return;var data=event.data;if(!data||typeof data!=="object"||data.type!==FOCUS_TYPE)return;if(document.readyState==="loading"){document.addEventListener("DOMContentLoaded",focusArtifactDocument,{once:true});return;}focusArtifactDocument();});window.addEventListener("keydown",function(event){if(event.key!=="Escape")return;window.setTimeout(function(){if(event.defaultPrevented)return;window.parent.postMessage({type:CLOSE_TYPE},"*");},0);});})();</script></body>
+</html>
