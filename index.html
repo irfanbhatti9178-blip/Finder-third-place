@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
-<title>Find Third Place — Find places to relax, socialize, connect and spend time</title>
+<title>Third Place Near Me – Free Meetup & Map Finder | 500+ Cities, 20 Countries</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <style>
@@ -133,16 +133,9 @@ label{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:upperca
 <div id="gallery" class="gallery"><div class="close" id="gClose">✕</div><img id="gImg" src="" alt="Place preview"><div id="gMeta" style="color:#fff;font-size:12px;text-align:center;max-width:90%"></div><div style="display:flex;gap:8px"><a id="gDir" class="aBtn" href="#" target="_blank" rel="noopener noreferrer" style="background:#fff;color:#111;padding:0 18px;height:36px">🧭 Directions</a><button id="gMapBtn" class="aBtn" style="background:#111;color:#fff;border-color:#111;padding:0 18px;height:36px">📍 View on Map</button></div></div>
 
 <script>
-// GOOGLE MAPS REUSABLE FUNCTIONS - FIX FOR IFRAME + MOBILE
-function openGoogleMapsPlace(lat, lng) {
-  const url = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lat + ',' + lng)}`;
-  window.open(url, '_blank', 'noopener,noreferrer');
-}
-function getGoogleDirectionsUrl(lat, lng) {
-  return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat + ',' + lng)}`;
-}
+function openGoogleMapsPlace(lat,lng){const url=`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(lat+','+lng)}`;window.open(url,'_blank','noopener,noreferrer');}
+function getGoogleDirectionsUrl(lat,lng){return `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(lat+','+lng)}`;}
 
-// NO API KEY - FREE OSM ONLY
 const COUNTRIES=["USA","UK","Canada","Australia","Germany","Netherlands","France","Japan","India","Brazil","Italy","Spain","Turkey","Pakistan","UAE","Saudi Arabia","Portugal","Poland","Sweden","Switzerland"];
 const CITIES={
 UK:[{name:"London",lat:51.5074,lng:-0.1278},{name:"Manchester",lat:53.4808,lng:-2.2426},{name:"Birmingham",lat:52.4862,lng:-1.8904}],
@@ -195,12 +188,23 @@ function classify(tags){
  if(l.includes('shisha')||l.includes('tobacco')) return {cat:'Smoking / Shisha',price:'Paid',good:'Relax • Evening',tags:['🚬 Shisha'],group:'shisha'};
  return {cat:'Community Space',price:'Unknown',good:'Socializing',tags:['👥 Social'],group:'social'};
 }
-
 let map, markers=[], selectedCity=null, selectedCountry="Italy", filter="all", priceFilter="all", purpose=null, userLoc=null, places=[], selectedId=null, cache=new Map();
 const countrySel=document.getElementById('countrySel'),cityInput=document.getElementById('cityInput'),citySuggest=document.getElementById('citySuggest'),cityCount=document.getElementById('cityCount'),findBtn=document.getElementById('findBtn'),spin=document.getElementById('spin'),statusText=document.getElementById('statusText'),searchBox=document.getElementById('searchBox'),listEl=document.getElementById('list'),mapTag=document.getElementById('mapTag'),coord=document.getElementById('coord');
-
-COUNTRIES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;countrySel.appendChild(o)});countrySel.value="Italy";
-function initMap(){map=L.map('map',{zoomControl:false}).setView([41.9028,12.4964],5);L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);L.control.zoom({position:'bottomright'}).addTo(map);mapTag.textContent='📍 Select a city and click Find Third Place';}
+function init(){
+ COUNTRIES.forEach(c=>{const o=document.createElement('option');o.value=c;o.textContent=c;countrySel.appendChild(o);});
+ countrySel.value="Italy";
+ selectedCountry="Italy";
+ const cities=CITIES[selectedCountry]||[];
+ selectedCity=cities.find(x=>x.name==="Florence")||cities[0]||null;
+ if(selectedCity){cityInput.value=selectedCity.name;findBtn.disabled=false;findBtn.classList.add('on');}
+ cityCount.textContent=`· ${cities.length} cities`;
+ map=L.map('map',{zoomControl:false}).setView([41.9028,12.4964],5);
+ L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
+ L.control.zoom({position:'bottomright'}).addTo(map);
+ mapTag.textContent=`📍 ${selectedCity?selectedCity.name+', '+selectedCountry:'Select a city and click Find Third Place'}`;
+ if(selectedCity) coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;
+ statusText.textContent=`Ready to search in ${selectedCity?selectedCity.name:'Florence'}`;
+}
 function updateTag(){if(!selectedCity) return;mapTag.textContent=`📍 ${selectedCity.name}, ${selectedCountry}`;coord.textContent=`${selectedCity.lat.toFixed(3)}, ${selectedCity.lng.toFixed(3)}`;}
 function setLoading(on,msg){spin.classList.toggle('on',on);statusText.textContent=msg||'';}
 function showSuggest(q){
@@ -215,24 +219,23 @@ function showSuggest(q){
 countrySel.addEventListener('change',e=>{selectedCountry=e.target.value;const cities=CITIES[selectedCountry]||[];selectedCity=cities[0]||null;cityInput.value=selectedCity?selectedCity.name:'';cityCount.textContent=cities.length?`· ${cities.length} cities`:'';findBtn.disabled=!selectedCity;if(selectedCity) findBtn.classList.add('on');updateTag();if(selectedCity&&map) map.setView([selectedCity.lat,selectedCity.lng],13);statusText.textContent=selectedCity?`Ready to search in ${selectedCity.name}`:'Select a city';});
 cityInput.addEventListener('focus',()=>showSuggest(cityInput.value));cityInput.addEventListener('input',()=>showSuggest(cityInput.value));
 document.addEventListener('click',e=>{if(!e.target.closest('#cityInput')&&!e.target.closest('#citySuggest')) citySuggest.classList.remove('on');});
-
 async function overpassFetch(query){
  const servers=['https://overpass-api.de/api/interpreter','https://overpass.kumi.systems/api/interpreter'];
  let last=null;for(let url of servers){try{const res=await fetch(url,{method:'POST',headers:{'Content-Type':'application/x-www-form-urlencoded'},body:'data='+encodeURIComponent(query)});if(!res.ok) throw new Error('HTTP '+res.status);return await res.json();}catch(e){last=e;continue;}}throw last;
 }
-function buildQuery(center, catKey){
+function buildQuery(center,catKey){
  const mapping=CATEGORY_MAP[catKey]||CATEGORY_MAP.all;let queries=mapping.queries;if(!queries||queries.length===0) queries=CATEGORY_MAP.all.queries;
  const parts=queries.map(q=>{const [k,v]=q.split('=');return `nwr["${k}"="${v}"](around:8000,${center.lat},${center.lng});`;}).join('');
  return `[out:json][timeout:25];(${parts});out center 70;`;
 }
-async function fetchPlaces(center, catKey='all'){
+async function fetchPlaces(center,catKey='all'){
  if(!center){listEl.innerHTML=`<div class="empty"><b>Please select country and city first.</b></div>`;return;}
  const cacheKey=`${center.lat.toFixed(4)}_${center.lng.toFixed(4)}_${catKey}_${priceFilter}`;
  if(cache.has(cacheKey)){places=cache.get(cacheKey);render();setLoading(false,`${places.length} places found in ${center.name}`);return;}
  setLoading(true,`🔎 Searching for third places in ${center.name}…`);
  listEl.innerHTML=`<div class="skeleton"><div class="sk" style="width:60%"></div><div class="sk" style="width:90%"></div><div class="sk" style="width:80%"></div></div>`.repeat(3);
  try{
-  const q=buildQuery(center, catKey==='free'||catKey==='paid'?'all':catKey);
+  const q=buildQuery(center,catKey==='free'||catKey==='paid'?'all':catKey);
   const data=await overpassFetch(q);const els=data.elements||[];const seen=new Set();let results=[];
   els.forEach(el=>{const lat=el.lat||el.center?.lat,lng=el.lon||el.center?.lon;if(!lat||!lng)return;const id=String(el.id);if(seen.has(id))return;seen.add(id);const tags=el.tags||{};if(!tags.name) return;const cls=classify(tags);results.push({id,name:tags.name,cat:cls.cat,price:cls.price,good:cls.good,tags:cls.tags,group:cls.group,lat,lng,addr:tags['addr:street']||null,website:tags.website||null,phone:tags.phone||null,opening:tags.opening_hours||null});});
   if(priceFilter==='free') results=results.filter(r=>r.price==='Free');
@@ -241,11 +244,8 @@ async function fetchPlaces(center, catKey='all'){
  }catch(e){setLoading(false,`Temporarily unavailable. Try again.`);listEl.innerHTML=`<div class="empty"><b>Temporarily unavailable.</b><p>${e.message}</p><button onclick="fetchPlaces(selectedCity,filter)" class="btn" style="margin-top:10px">Retry</button></div>`;}
 }
 function hav(a,b,c,d){const R=6371,dLat=(c-a)*Math.PI/180,dLon=(d-b)*Math.PI/180;const x=Math.sin(dLat/2)**2+Math.cos(a*Math.PI/180)*Math.cos(c*Math.PI/180)*Math.sin(dLon/2)**2;return R*2*Math.atan2(Math.sqrt(x),Math.sqrt(1-x));}
-
 let currentGalleryPlace=null;
-function getStaticUrl(lat,lng, size='500x300'){return `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=16&size=${size}&markers=${lat},${lng},red-pushpin`;}
-function getPlaceholderSvg(name){const t=encodeURIComponent(name.substring(0,20));return `data:image/svg+xml,[STRIPPED]svg xmlns='http://www.w3.org/2000/svg' width='500' height='300'><rect width='100%' height='100%' fill='#f5f5f4'/><text x='50%' y='45%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='16' font-weight='700' fill='#57534e'>${name}</text><text x='50%' y='60%' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#a8a29e'>Map preview • Tap to enlarge</text></svg>`)}`;}
-
+function getStaticUrl(lat,lng,size='500x300'){return `https://staticmap.openstreetmap.de/staticmap.php?center=${lat},${lng}&zoom=16&size=${size}&markers=${lat},${lng},red-pushpin`;}
 function render(){
  markers.forEach(m=>map.removeLayer(m));markers=[];
  const center=userLoc||selectedCity;if(!center) return;map.setView([center.lat,center.lng],13);
@@ -272,61 +272,43 @@ function render(){
   m.on('click',()=>{selectedId=p.id;document.querySelectorAll('.place').forEach(el=>el.classList.remove('selected'));document.getElementById('card-'+p.id)?.classList.add('selected');});
   markers.push(m);
   const staticUrl=getStaticUrl(p.lat,p.lng,'500x300');
-  const fallback=getPlaceholderSvg(p.name);
   const el=document.createElement('div');el.className='place'+(selectedId===p.id?' selected':'');el.id='card-'+p.id;
   el.innerHTML=`<div class="imgWrap"><img class="img" src="${staticUrl}" loading="lazy" alt="${p.name}"><div class="imgFallback" style="display:none">📍<span>${p.name}</span><small>Tap to view map</small></div><div class="badges"><span class="b ${p.price==='Free'?'b-free':p.price==='Paid'?'b-paid':'b-unk'}">${p.price==='Free'?'🟢 Free':p.price==='Paid'?'🟡 Paid':'⚪ Unknown'}</span><span class="b b-cat">${p.cat}</span></div><div class="grad"><div class="gradName">${p.name}</div></div></div><div class="body"><div class="top"><div class="name">${p.name}</div><div class="dist">${p._dist.toFixed(1)} km</div></div><div class="meta">Category: ${p.cat} • ${p.price==='Unknown'?'Price information unavailable':p.price}</div><div class="tags">${p.tags.map(t=>`<span class="t">${t}</span>`).join('')}</div><div class="good"><div class="good-l">Good for</div><div class="good-v">${p.good}</div></div><div class="btnRow"><button type="button" class="aBtn primary viewMap">📍 View on Map</button><a class="aBtn" href="${getGoogleDirectionsUrl(p.lat,p.lng)}" target="_blank" rel="noopener noreferrer">🧭 Directions</a></div><div style="display:flex;gap:6px;margin-top:6px"><button type="button" class="aBtn viewPhotos" style="flex:1;height:32px;font-size:11px">📸 View Photos</button><button type="button" class="aBtn openDetail" style="flex:1;height:32px;font-size:11px">ℹ️ Details</button></div></div>`;
-  const img=el.querySelector('.img');
-  const fb=el.querySelector('.imgFallback');
+  const img=el.querySelector('.img');const fb=el.querySelector('.imgFallback');
   img.addEventListener('error',()=>{img.style.display='none';fb.style.display='flex';});
   img.addEventListener('load',()=>{fb.style.display='none';});
-  // Image press -> gallery
   el.querySelector('.imgWrap').addEventListener('click',(e)=>{e.stopPropagation();openGallery(p);});
-  // FIXED: View on Map -> Google Maps new tab
   el.querySelector('.viewMap').addEventListener('click',(e)=>{e.stopPropagation();openGoogleMapsPlace(p.lat,p.lng);});
   el.querySelector('.viewPhotos').addEventListener('click',(e)=>{e.stopPropagation();openGallery(p);});
   el.querySelector('.openDetail').addEventListener('click',(e)=>{e.stopPropagation();openDetail(p);});
-  // Card click still moves internal Leaflet map
   el.addEventListener('click',()=>{selectedId=p.id;map.setView([p.lat,p.lng],16,{animate:true});m.openPopup();document.querySelectorAll('.place').forEach(x=>x.classList.remove('selected'));el.classList.add('selected');});
   listEl.appendChild(el);
  });
 }
-
 function openGallery(p){
  currentGalleryPlace=p;
  const url=getStaticUrl(p.lat,p.lng,'800x600');
  const gImg=document.getElementById('gImg');
  gImg.src=url;
- gImg.onerror=()=>{gImg.src=getPlaceholderSvg(p.name);};
+ gImg.onerror=()=>{gImg.style.display='none';};
  document.getElementById('gMeta').textContent=`${p.name} • ${p.cat} • ${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`;
  document.getElementById('gDir').href=getGoogleDirectionsUrl(p.lat,p.lng);
  document.getElementById('gallery').classList.add('on');
 }
 document.getElementById('gClose').onclick=()=>document.getElementById('gallery').classList.remove('on');
-// FIXED: Gallery View on Map -> Google Maps
-document.getElementById('gMapBtn').onclick=()=>{
-  if(!currentGalleryPlace) return;
-  document.getElementById('gallery').classList.remove('on');
-  openGoogleMapsPlace(currentGalleryPlace.lat,currentGalleryPlace.lng);
-};
+document.getElementById('gMapBtn').onclick=()=>{if(currentGalleryPlace){const p=currentGalleryPlace;document.getElementById('gallery').classList.remove('on');openGoogleMapsPlace(p.lat,p.lng);}};
 document.getElementById('gallery').onclick=e=>{if(e.target.id==='gallery') e.currentTarget.classList.remove('on');};
-
 function openDetail(p){
  const box=document.getElementById('detailBox');
  const url=getStaticUrl(p.lat,p.lng,'600x340');
  box.innerHTML=`<div class="detailImgWrap" id="detailImgWrap"><img src="${url}" style="width:100%;height:100%;object-fit:cover;display:block" alt="${p.name}" onerror="this.style.display='none'"><div style="position:absolute;left:12px;top:12px;display:flex;gap:6px"><span class="b ${p.price==='Free'?'b-free':'b-paid'}">${p.price}</span><span class="b b-cat">${p.cat}</span></div></div><div style="padding:16px"><div style="display:flex;justify-content:space-between;gap:8px"><div style="font-size:18px;font-weight:800">${p.name}</div><button id="detailClose" style="width:32px;height:32px;border-radius:9999px;border:1px solid #e7e5e4;background:#fff;cursor:pointer">✕</button></div><div style="font-size:12px;color:#78716c;margin-top:6px">${p.cat}</div><div style="margin-top:12px;display:flex;flex-direction:column;gap:8px;font-size:13px"><div><b>📍 Address:</b> ${p.addr||'Information unavailable'}</div><div><b>💰 Price:</b> ${p.price==='Unknown'?'Price information unavailable':p.price}</div><div><b>Good for:</b> ${p.good}</div><div><b>🕒 Opening:</b> ${p.opening||'Information unavailable'}</div></div><div style="margin-top:14px;display:grid;grid-template-columns:1fr 1fr;gap:8px"><button class="aBtn primary" id="dMap">📍 View on Map</button><a class="aBtn" href="${getGoogleDirectionsUrl(p.lat,p.lng)}" target="_blank" rel="noopener noreferrer">🧭 Directions</a></div><div style="margin-top:8px"><button class="aBtn" id="dPhoto" style="width:100%">📸 View Photos</button></div></div>`;
  document.getElementById('detailBg').classList.add('on');
  document.getElementById('detailClose').onclick=()=>document.getElementById('detailBg').classList.remove('on');
- // FIXED: Details View on Map -> Google Maps
- document.getElementById('dMap').onclick=()=>{
-   const lat=p.lat, lng=p.lng;
-   document.getElementById('detailBg').classList.remove('on');
-   openGoogleMapsPlace(lat,lng);
- };
+ document.getElementById('dMap').onclick=()=>{document.getElementById('detailBg').classList.remove('on');openGoogleMapsPlace(p.lat,p.lng);};
  document.getElementById('dPhoto').onclick=()=>{openGallery(p);};
  document.getElementById('detailImgWrap').onclick=()=>{openGallery(p);};
 }
 document.getElementById('detailBg').onclick=e=>{if(e.target.id==='detailBg')e.currentTarget.classList.remove('on');};
-
 findBtn.addEventListener('click',()=>{if(!selectedCity){alert('Please select country and city first');return;}fetchPlaces(selectedCity, filter==='all'?'all':filter);});
 document.getElementById('locBtn').addEventListener('click',()=>{
  if(!navigator.geolocation) return;findBtn.textContent='Locating…';findBtn.disabled=true;spin.classList.add('on');
@@ -342,8 +324,7 @@ document.getElementById('moreFiltersBtn').onclick=()=>{const ex=document.getElem
 document.querySelectorAll('#extraFilters.fbtn').forEach(b=>b.addEventListener('click',()=>{document.querySelectorAll('#mainFilters.fbtn').forEach(x=>{if(x.dataset.f!=='free'&&x.dataset.f!=='paid'&&x.id!=='moreFiltersBtn') x.classList.remove('active');});document.querySelectorAll('#extraFilters.fbtn').forEach(x=>x.classList.remove('active'));b.classList.add('active');filter=b.dataset.f;if(places.length) render();}));
 document.querySelectorAll('#purposeChips.chip').forEach(b=>b.addEventListener('click',()=>{if(b.classList.contains('active')){b.classList.remove('active');purpose=null;}else{document.querySelectorAll('#purposeChips.chip').forEach(x=>x.classList.remove('active'));b.classList.add('active');purpose=b.dataset.look;}if(places.length) render();}));
 searchBox.addEventListener('input',()=>{if(places.length) render();});
-
-initMap();findBtn.disabled=true;
+init();
 </script>
 </body>
 </html>
